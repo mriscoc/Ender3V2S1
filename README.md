@@ -1,21 +1,21 @@
-# Professional Firmware for the Creality Ender 3 v2 3D Printer 
+# Professional Firmware for the Creality Ender 3 V2/S1 3D Printer 
 
-![GitHub](https://img.shields.io/github/license/mriscoc/Ender3v2.svg)
-![GitHub contributors](https://img.shields.io/github/contributors/mriscoc/Ender3v2.svg)
-![GitHub Release Date](https://img.shields.io/github/release-date/mriscoc/Ender3v2.svg)
-[![Build Status](https://github.com/mriscoc/Ender3v2/workflows/CI/badge.svg?branch=bugfix-2.0.x)](https://github.com/mriscoc/Ender3v2/actions)
+![GitHub](https://img.shields.io/github/license/mriscoc/Ender3V2S1.svg)
+![GitHub contributors](https://img.shields.io/github/contributors/mriscoc/Ender3V2S1.svg)
+![GitHub Release Date](https://img.shields.io/github/release-date/mriscoc/Ender3V2S1.svg)
+[![Build Status](https://github.com/mriscoc/Ender3V2S1/workflows/CI/badge.svg?branch=bugfix-2.0.x)](https://github.com/mriscoc/Ender3V2S1/actions)
 
 <img align="right" width=200 src="buildroot/share/pixmaps/Ender-3V2.jpg" />
 
 Please test this firmware and let us know if it misbehaves in any way. Volunteers are standing by!
 
-![](https://raw.githubusercontent.com/mriscoc/Ender3v2/Ender3v2-Released/screenshots/main.jpg)  
+![](https://raw.githubusercontent.com/mriscoc/Ender3V2S1/Ender3V2S1-Released/screenshots/main.jpg)  
 
 ## Wiki
- - [How to install the firmware](https://github.com/mriscoc/Ender3v2/wiki/How-to-install-the-firmware)
- - [Installing a 3D/BLTouch](https://github.com/mriscoc/Ender3v2/wiki/3D-BLTouch)
- - [Color themes](https://github.com/mriscoc/Ender3v2/wiki/Color-Themes)
- - [How to use with Octoprint](https://github.com/mriscoc/Ender3v2/wiki/Octoprint)
+ - [How to install the firmware](https://github.com/mriscoc/Ender3V2S1/wiki/How-to-install-the-firmware)
+ - [Installing a 3D/BLTouch](https://github.com/mriscoc/Ender3V2S1/wiki/3D-BLTouch)
+ - [Color themes](https://github.com/mriscoc/Ender3V2S1/wiki/Color-Themes)
+ - [How to use with Octoprint](https://github.com/mriscoc/Ender3V2S1/wiki/Octoprint)
   
 ## Community links
 * Telegram
