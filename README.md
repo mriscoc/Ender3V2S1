@@ -1,15 +1,19 @@
-# Professional Firmware for the Creality Ender 3 V2/S1 3D Printer 
+# Professional Firmware for the Creality Ender 3 V2/S1 Printers
 
-![GitHub](https://img.shields.io/github/license/mriscoc/Ender3V2S1.svg)
 ![GitHub contributors](https://img.shields.io/github/contributors/mriscoc/Ender3V2S1.svg)
 ![GitHub Release Date](https://img.shields.io/github/release-date/mriscoc/Ender3V2S1.svg)
-[![Build Status](https://github.com/mriscoc/Ender3V2S1/workflows/CI/badge.svg?branch=bugfix-2.0.x)](https://github.com/mriscoc/Ender3V2S1/actions)
+[![Build Status](https://github.com/mriscoc/Ender3V2S1/workflows/CI/badge.svg?branch=Ender3V2S1-Released)](https://github.com/mriscoc/Ender3V2S1/actions)
 
-<img align="right" width=200 src="buildroot/share/pixmaps/Ender-3V2.jpg" />
+## Universal RET6/RCT6 Ender 3 V2/S1 Edition
 
-Please test this firmware and let us know if it misbehaves in any way. Volunteers are standing by!
+Please test this firmware and let us know if it misbehaves in any way.
+Volunteers are standing by!  
+Precompiled binary files can be downloader from:
+[Latest Release](https://github.com/mriscoc/Ender3V2S1/releases/latest)
 
-![](https://raw.githubusercontent.com/mriscoc/Ender3V2S1/Ender3V2S1-Released/screenshots/main.jpg)  
+<img height=240 src="buildroot/share/pixmaps/Ender-3V2.jpg" />
+<img height=300 src="buildroot/share/pixmaps/Ender-3S1.jpg" />
+<BR/>
 
 ## Wiki
  - [How to install the firmware](https://github.com/mriscoc/Ender3V2S1/wiki/How-to-install-the-firmware)
@@ -21,6 +25,8 @@ Please test this firmware and let us know if it misbehaves in any way. Volunteer
 * Telegram
 * [Reddit](https://www.reddit.com/r/Ender3v2Firmware) 
 * [Facebook](https://www.facebook.com/groups/ender3v2firmware)
+
+![](https://raw.githubusercontent.com/mriscoc/Ender3V2S1/Ender3V2S1-Released/screenshots/main.jpg")
 
 ## Credits
 
