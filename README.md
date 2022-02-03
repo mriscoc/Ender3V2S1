@@ -26,7 +26,7 @@ Precompiled binary files can be downloader from:
 * [Reddit](https://www.reddit.com/r/Ender3v2Firmware) 
 * [Facebook](https://www.facebook.com/groups/ender3v2firmware)
 
-![](https://raw.githubusercontent.com/mriscoc/Ender3V2S1/Ender3V2S1-Released/screenshots/main.jpg")
+![](https://raw.githubusercontent.com/mriscoc/Ender3V2S1/Ender3V2S1-Released/screenshots/main.jpg)
 
 ## Credits
 
