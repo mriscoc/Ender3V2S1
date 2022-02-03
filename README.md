@@ -11,8 +11,7 @@ Volunteers are standing by!
 Precompiled binary files can be downloader from:
 [Latest Release](https://github.com/mriscoc/Ender3V2S1/releases/latest)
 
-<img height=240 src="buildroot/share/pixmaps/Ender-3V2.jpg" />
-<img height=300 src="buildroot/share/pixmaps/Ender-3S1.jpg" />
+<img aling=left height=240 src="buildroot/share/pixmaps/Ender-3V2.jpg" /> <img height=300 src="buildroot/share/pixmaps/Ender-3S1.jpg" />
 <BR/>
 
 ## Wiki
