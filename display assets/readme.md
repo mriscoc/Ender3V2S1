@@ -1,5 +1,5 @@
 # Display firmware, boot image and icons compilations
-This page list the display assets compilations compatible with [MRISCOC's](https://github.com/mriscoc/Marlin_Ender3v2/releases/latest) firmware fork.
+This page list the display assets compilations compatible with [MRISCOC's](https://github.com/mriscoc/Ender3V2S1/releases/latest) firmware fork.
 
 ## How to install
 1. Get an µSD card of 8GB or less.
@@ -20,7 +20,7 @@ inside of the DWIN_SET folder.
 If you weren't able to update the display, verify the format of the µSD Card
 (MBR, FAT32 and allocation unit of 4096 bytes) and the CRC of the files.
   
-<img src="https://raw.githubusercontent.com/mriscoc/Marlin_Ender3v2/Ender3v2-Released/display%20assets/DWIN_SET-folder.jpg" height="350" />  
+<img src="https://raw.githubusercontent.com/mriscoc/Ender3V2S1/Ender3V2S1-Released/display%20assets/DWIN_SET-folder.jpg" height="350" />  
 
 Be sure to leave **only** the `DWIN_SET` folder at the root of the card.  
   
@@ -28,22 +28,22 @@ Be sure to leave **only** the `DWIN_SET` folder at the root of the card.
   
 ---
 
-## [Stock display firmware](https://github.com/mriscoc/Marlin_Ender3v2/tree/Ender3v2-Released/display%20assets/stock)  
+## [Stock display firmware](https://github.com/mriscoc/Ender3V2S1/tree/Ender3V2S1-Released/display%20assets/stock)  
 
-<img src="https://raw.githubusercontent.com/mriscoc/Marlin_Ender3v2/Ender3v2-Released/display%20assets/stock/preview1.jpg" height="400" />  
+<img src="https://raw.githubusercontent.com/mriscoc/Ender3V2S1/Ender3V2S1-Released/display%20assets/stock/preview1.jpg" height="400" />  
   
 <br>
   
 ---
 
-## [Giadej compilation](https://github.com/mriscoc/Marlin_Ender3v2/tree/Ender3v2-Released/display%20assets/Giadej%20compilation)
+## [Giadej compilation](https://github.com/mriscoc/Ender3V2S1/tree/Ender3V2S1-Released/display%20assets/Giadej%20compilation)
 
-<img src="https://raw.githubusercontent.com/mriscoc/Marlin_Ender3v2/Ender3v2-Released/display%20assets/Giadej%20compilation/preview1.jpg"  height="400" />  
+<img src="https://raw.githubusercontent.com/mriscoc/Ender3V2S1/Ender3V2S1-Released/display%20assets/Giadej%20compilation/preview1.jpg"  height="400" />  
   
 <br>
   
 ---
 
 ### Updating printer firmware
-For update your printer firmware and get the latest version go here: <https://github.com/mriscoc/Marlin_Ender3v2/releases/latest>  
+For update your printer firmware and get the latest version go here: <https://github.com/mriscoc/Ender3V2S1/releases/latest>  
 
