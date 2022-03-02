@@ -143,6 +143,7 @@ M140 S60 ; set bed temp
 M190 S60 ; wait for bed temp
 M109 S210 ; wait for extruder temp
 G28 ; home all
+M420 S1 Z2 ; enable ABL mesh
 G1 Z2 F240
 G1 X2 Y10 F3000
 G1 Z0.28 F240
