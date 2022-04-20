@@ -14,6 +14,11 @@ Precompiled binary files can be downloader from:
 <img aling=left height=240 src="buildroot/share/pixmaps/Ender-3V2.jpg" /> <img height=300 src="buildroot/share/pixmaps/Ender-3S1.jpg" />
 <BR/>
 
+## Donations
+Thank you for your support, I receive donations through [Patreon](https://www.patreon.com/mriscoc) and [Paypal](https://www.paypal.com/paypalme/mriscoc)   
+
+[<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif">](https://www.paypal.com/donate?business=85SPAAR6UZEE8&currency_code=USD)   
+
 ## Wiki
  - [How to install the firmware](https://github.com/mriscoc/Ender3V2S1/wiki/How-to-install-the-firmware)
  - [Installing a 3D/BLTouch](https://github.com/mriscoc/Ender3V2S1/wiki/3D-BLTouch)
