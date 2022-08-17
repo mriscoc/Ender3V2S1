@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 # ------------------------------------------------------------------------------
 # Prusa / Super Slicer post-processor script for the Professional Firmware
