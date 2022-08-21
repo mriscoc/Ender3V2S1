@@ -6,13 +6,16 @@
 
 ## Universal RET6/RCT6 Ender 3 V2/S1 Edition
 
-Please test this firmware and let us know if it misbehaves in any way.
-Volunteers are standing by!  
-Precompiled binary files can be downloader from:
+The Precompiled binary files of this firmware can work with STM32FX RET6 or RCT6 and can be downloader from:
 [Latest Release](https://github.com/mriscoc/Ender3V2S1/releases/latest)
 
 <img aling=left height=240 src="buildroot/share/pixmaps/Ender-3V2.jpg" /> <img height=300 src="buildroot/share/pixmaps/Ender-3S1.jpg" />
 <BR/>
+
+## Donations
+Thank you for your support, I receive donations through [Patreon](https://www.patreon.com/mriscoc) and [Paypal](https://www.paypal.com/paypalme/mriscoc)   
+
+[<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif">](https://www.paypal.com/donate?business=85SPAAR6UZEE8&currency_code=USD)   
 
 ## Wiki
  - [How to install the firmware](https://github.com/mriscoc/Ender3V2S1/wiki/How-to-install-the-firmware)
