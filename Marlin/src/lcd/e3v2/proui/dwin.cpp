@@ -2059,23 +2059,29 @@ void ApplyMoveE() {
   }
 }
 
-void SetMoveX() { 
+void SetMoveX() {
   if (!HMI_data.SetLiveMove) {
-  HMI_value.axis = X_AXIS; SetPFloatOnClick(X_MIN_POS, X_MAX_POS, UNITFDIGITS, LiveMove, planner.synchronize); }
+  HMI_value.axis = X_AXIS; SetPFloatOnClick(X_MIN_POS, X_MAX_POS, UNITFDIGITS, LiveMove); 
+  }
   else {
-  HMI_value.axis = X_AXIS; SetPFloatOnClick(X_MIN_POS, X_MAX_POS, UNITFDIGITS, planner.synchronize, LiveMove); }
+  HMI_value.axis = X_AXIS; SetPFloatOnClick(X_MIN_POS, X_MAX_POS, UNITFDIGITS, planner.synchronize, LiveMove); 
+  }
 }
-void SetMoveY() { 
+void SetMoveY() {
   if (!HMI_data.SetLiveMove) {
-  HMI_value.axis = Y_AXIS; SetPFloatOnClick(Y_MIN_POS, Y_MAX_POS, UNITFDIGITS, LiveMove, planner.synchronize); }
+  HMI_value.axis = Y_AXIS; SetPFloatOnClick(Y_MIN_POS, Y_MAX_POS, UNITFDIGITS, LiveMove); 
+  }
   else { 
-  HMI_value.axis = Y_AXIS; SetPFloatOnClick(Y_MIN_POS, Y_MAX_POS, UNITFDIGITS, planner.synchronize, LiveMove); }
+  HMI_value.axis = Y_AXIS; SetPFloatOnClick(Y_MIN_POS, Y_MAX_POS, UNITFDIGITS, planner.synchronize, LiveMove); 
+  }
 }
-void SetMoveZ() { 
+void SetMoveZ() {
   if (!HMI_data.SetLiveMove) {
-  HMI_value.axis = Z_AXIS; SetPFloatOnClick(Z_MIN_POS, Z_MAX_POS, UNITFDIGITS, LiveMove, planner.synchronize); }
-  else { 
-  HMI_value.axis = Z_AXIS; SetPFloatOnClick(Z_MIN_POS, Z_MAX_POS, UNITFDIGITS, planner.synchronize, LiveMove); }
+  HMI_value.axis = Z_AXIS; SetPFloatOnClick(Z_MIN_POS, Z_MAX_POS, UNITFDIGITS, LiveMove);
+  }
+  else {
+  HMI_value.axis = Z_AXIS; SetPFloatOnClick(Z_MIN_POS, Z_MAX_POS, UNITFDIGITS, planner.synchronize, LiveMove); 
+  }
 }
 
 #if HAS_HOTEND
