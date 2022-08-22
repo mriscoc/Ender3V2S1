@@ -2084,7 +2084,7 @@ void SetMoveZ() {
   }
 }
 
-//TEST;//
+//TEST
 #if HAS_HOTEND
   void SetMoveE() {
     #if ENABLED(PREVENT_COLD_EXTRUSION)
