@@ -1146,7 +1146,7 @@ void HMI_WaitForUser() {
 
 void HMI_Init() {
   DWINUI::Draw_Box(1, Color_Black, {5, 220, DWIN_WIDTH-5, DWINUI::fontHeight()});
-  DWINUI::Draw_CenteredString(Color_White, 220, F("Professional Firmware "));
+  DWINUI::Draw_CenteredString(3, Color_White, 220, F("Aquila"));
   for (uint16_t t = 15; t <= 257; t += 10) {
     DWINUI::Draw_Icon(ICON_Bar, 15, 260);
     DWIN_Draw_Rectangle(1, HMI_data.Background_Color, t, 260, 257, 280);
@@ -1631,6 +1631,7 @@ void DWIN_SetColorDefaults() {
   HMI_data.Barfill_Color    = Def_Barfill_Color;
   HMI_data.Indicator_Color  = Def_Indicator_Color;
   HMI_data.Coordinate_Color = Def_Coordinate_Color;
+  HMI_data.Button_Color     = Def_Button_Color;
 }
 
 void DWIN_SetDataDefaults() {
@@ -1647,9 +1648,10 @@ void DWIN_SetDataDefaults() {
   #if BOTH(HAS_HEATED_BED, PREHEAT_BEFORE_LEVELING)
     HMI_data.BedLevT = LEVELING_BED_TEMP;
   #endif
-  TERN_(BAUD_RATE_GCODE, HMI_data.Baud115K = (BAUDRATE == 115200));
+  TERN_(BAUD_RATE_GCODE, HMI_data.Baud250K = (BAUDRATE == 250000));
   HMI_data.FullManualTramming = false;
   HMI_data.MediaAutoMount = ENABLED(HAS_SD_EXTENDER);
+  HMI_data.SetLiveMove = false;
   #if BOTH(INDIVIDUAL_AXIS_HOMING_SUBMENU, MESH_BED_LEVELING)
     HMI_data.z_after_homing = DEF_Z_AFTER_HOMING;
   #endif
@@ -1714,7 +1716,7 @@ void DWIN_CopySettingsFrom(const char * const buff) {
   DWINUI::SetColors(HMI_data.Text_Color, HMI_data.Background_Color, HMI_data.StatusBg_Color);
   TERN_(PREVENT_COLD_EXTRUSION, ApplyExtMinT());
   feedrate_percentage = 100;
-  TERN_(BAUD_RATE_GCODE, if (HMI_data.Baud115K) SetBaud115K(); else SetBaud250K());
+  TERN_(BAUD_RATE_GCODE, if (HMI_data.Baud250K) SetBaud250K(); else SetBaud115K());
   #if BOTH(LED_CONTROL_MENU, HAS_COLOR_LEDS)
     leds.set_color(
       (HMI_data.LED_Color >> 16) & 0xFF,
@@ -2056,9 +2058,25 @@ void ApplyMoveE() {
     planner.buffer_line(current_position, MMM_TO_MMS(FEEDRATE_E));
   }
 }
-void SetMoveX() { HMI_value.axis = X_AXIS; SetPFloatOnClick(X_MIN_POS, X_MAX_POS, UNITFDIGITS, planner.synchronize, LiveMove); }
-void SetMoveY() { HMI_value.axis = Y_AXIS; SetPFloatOnClick(Y_MIN_POS, Y_MAX_POS, UNITFDIGITS, planner.synchronize, LiveMove); }
-void SetMoveZ() { HMI_value.axis = Z_AXIS; SetPFloatOnClick(Z_MIN_POS, Z_MAX_POS, UNITFDIGITS, planner.synchronize, LiveMove); }
+
+void SetMoveX() { 
+  if (!HMI_data.SetLiveMove) {
+  HMI_value.axis = X_AXIS; SetPFloatOnClick(X_MIN_POS, X_MAX_POS, UNITFDIGITS, LiveMove, planner.synchronize); }
+  else {
+  HMI_value.axis = X_AXIS; SetPFloatOnClick(X_MIN_POS, X_MAX_POS, UNITFDIGITS, planner.synchronize, LiveMove); }
+}
+void SetMoveY() { 
+  if (!HMI_data.SetLiveMove) {
+  HMI_value.axis = Y_AXIS; SetPFloatOnClick(Y_MIN_POS, Y_MAX_POS, UNITFDIGITS, LiveMove, planner.synchronize); }
+  else { 
+  HMI_value.axis = Y_AXIS; SetPFloatOnClick(Y_MIN_POS, Y_MAX_POS, UNITFDIGITS, planner.synchronize, LiveMove); }
+}
+void SetMoveZ() { 
+  if (!HMI_data.SetLiveMove) {
+  HMI_value.axis = Z_AXIS; SetPFloatOnClick(Z_MIN_POS, Z_MAX_POS, UNITFDIGITS, LiveMove, planner.synchronize); }
+  else { 
+  HMI_value.axis = Z_AXIS; SetPFloatOnClick(Z_MIN_POS, Z_MAX_POS, UNITFDIGITS, planner.synchronize, LiveMove); }
+}
 
 #if HAS_HOTEND
   void SetMoveE() {
@@ -2066,7 +2084,7 @@ void SetMoveZ() { HMI_value.axis = Z_AXIS; SetPFloatOnClick(Z_MIN_POS, Z_MAX_POS
       if (thermalManager.tooColdToExtrude(0))
         return DWIN_Popup_Confirm(ICON_TempTooLow, GET_TEXT_F(MSG_HOTEND_TOO_COLD), GET_TEXT_F(MSG_PLEASE_PREHEAT));
     #endif
-    SetPFloatOnClick(last_E - (EXTRUDE_MAXLENGTH), last_E + (EXTRUDE_MAXLENGTH), UNITFDIGITS, ApplyMoveE);
+    SetPFloatOnClick(last_E - (EXTRUDE_MAXLENGTH), last_E + (EXTRUDE_MAXLENGTH), UNITFDIGITS, ApplyMoveE); 
   }
 #endif
 
@@ -2097,9 +2115,9 @@ void SetPID(celsius_t t, heater_id_t h) {
 
 #if ENABLED(BAUD_RATE_GCODE)
   void SetBaudRate() {
-    HMI_data.Baud115K = !HMI_data.Baud115K;
-    if (HMI_data.Baud115K) SetBaud115K(); else SetBaud250K();
-    Draw_Chkb_Line(CurrentMenu->line(), HMI_data.Baud115K);
+    HMI_data.Baud250K = !HMI_data.Baud250K;
+    if (HMI_data.Baud250K) SetBaud250K(); else SetBaud115K();
+    Draw_Chkb_Line(CurrentMenu->line(), HMI_data.Baud250K);
     DWIN_UpdateLCD();
   }
   void SetBaud115K() { queue.inject(F("M575 P0 B115200")); }
@@ -2150,10 +2168,18 @@ void SetPID(celsius_t t, heater_id_t h) {
   #endif
 #endif
 
-#if ENABLED(SOUND_MENU_ITEM)
+#if ENABLED(SOUND_MENU_ITEM) //changed
   void SetEnableSound() {
     ui.sound_on = !ui.sound_on;
     Draw_Chkb_Line(CurrentMenu->line(), ui.sound_on);
+    DWIN_UpdateLCD();
+  }
+#endif
+
+#if ENABLED(SOUND_MENU_ITEM) //changed
+  void SetEnableTick() {
+    ui.no_tick = !ui.no_tick;
+    Draw_Chkb_Line(CurrentMenu->line(), ui.no_tick);
     DWIN_UpdateLCD();
   }
 #endif
@@ -2287,6 +2313,7 @@ void DWIN_ApplyColor(const int8_t element, const bool ldef /* = false*/) {
     case 17: HMI_data.Barfill_Color    = ldef ? Def_Barfill_Color    : color; break;
     case 18: HMI_data.Indicator_Color  = ldef ? Def_Indicator_Color  : color; break;
     case 19: HMI_data.Coordinate_Color = ldef ? Def_Coordinate_Color : color; break;
+    case 20: HMI_data.Button_Color     = ldef ? Def_Button_Color     : color; break;
     default: break;
   }
 }
@@ -2485,6 +2512,12 @@ void TramC () { Tram(4); }
   void SetManualTramming() {
     HMI_data.FullManualTramming = !HMI_data.FullManualTramming;
     Draw_Chkb_Line(CurrentMenu->line(), HMI_data.FullManualTramming);
+    DWIN_UpdateLCD();
+  }
+
+  void SetLiveMove() {
+    HMI_data.SetLiveMove = !HMI_data.SetLiveMove;
+    Draw_Chkb_Line(CurrentMenu->line(), HMI_data.SetLiveMove);
     DWIN_UpdateLCD();
   }
 
@@ -2790,7 +2823,7 @@ void Draw_Control_Menu() {
 
 void Draw_AdvancedSettings_Menu() {
   checkkey = Menu;
-  if (SET_MENU(AdvancedSettings, MSG_ADVANCED_SETTINGS, 22)) {
+  if (SET_MENU(AdvancedSettings, MSG_ADVANCED_SETTINGS, 23)) {
     BACK_ITEM(Goto_Main_Menu);
     #if ENABLED(EEPROM_SETTINGS)
       MENU_ITEM(ICON_WriteEEPROM, MSG_STORE_EEPROM, onDrawMenuItem, WriteEeprom);
@@ -2834,14 +2867,19 @@ void Draw_AdvancedSettings_Menu() {
       MENU_ITEM(ICON_Host, MSG_HOST_SHUTDOWN, onDrawMenuItem, HostShutDown);
     #endif
     #if ENABLED(SOUND_MENU_ITEM)
-      EDIT_ITEM(ICON_Sound, MSG_SOUND_ENABLE, onDrawChkbMenu, SetEnableSound, &ui.sound_on);
+      EDIT_ITEM(ICON_Sound, MSG_SOUND_ENABLE, onDrawChkbMenu, SetEnableSound, &ui.sound_on); //changed
+    #endif
+      #if ENABLED(SOUND_MENU_ITEM)
+      EDIT_ITEM(ICON_Sound, MSG_TICK, onDrawChkbMenu, SetEnableTick, &ui.no_tick); //changed
     #endif
     #if ENABLED(POWER_LOSS_RECOVERY)
       EDIT_ITEM(ICON_Pwrlossr, MSG_OUTAGE_RECOVERY, onDrawChkbMenu, SetPwrLossr, &recovery.enabled);
     #endif
+    #if HAS_SD_EXTENDER
     EDIT_ITEM(ICON_File, MSG_MEDIA_UPDATE, onDrawChkbMenu, SetMediaAutoMount, &HMI_data.MediaAutoMount);
+    #endif
     #if ENABLED(BAUD_RATE_GCODE)
-      EDIT_ITEM_F(ICON_SetBaudRate, "115K baud", onDrawChkbMenu, SetBaudRate, &HMI_data.Baud115K);
+      EDIT_ITEM_F(ICON_SetBaudRate, "250K baud", onDrawChkbMenu, SetBaudRate, &HMI_data.Baud250K);
     #endif
     #if HAS_LCD_BRIGHTNESS
       EDIT_ITEM(ICON_Brightness, MSG_BRIGHTNESS, onDrawPInt8Menu, SetBrightness, &ui.brightness);
@@ -2855,7 +2893,7 @@ void Draw_AdvancedSettings_Menu() {
 
 void Draw_Move_Menu() {
   checkkey = Menu;
-  if (SET_MENU(MoveMenu, MSG_MOVE_AXIS, 5)) {
+  if (SET_MENU(MoveMenu, MSG_MOVE_AXIS, 6)) {
     BACK_ITEM(Draw_Prepare_Menu);
     EDIT_ITEM(ICON_MoveX, MSG_MOVE_X, onDrawPFloatMenu, SetMoveX, &current_position.x);
     EDIT_ITEM(ICON_MoveY, MSG_MOVE_Y, onDrawPFloatMenu, SetMoveY, &current_position.y);
@@ -2863,6 +2901,7 @@ void Draw_Move_Menu() {
     #if HAS_HOTEND
       EDIT_ITEM(ICON_Extruder, MSG_MOVE_E, onDrawPFloatMenu, SetMoveE, &current_position.e);
     #endif
+    EDIT_ITEM_F(ICON_UBLActive, "Live Adjustment", onDrawChkbMenu, SetLiveMove, &HMI_data.SetLiveMove);
   }
   UpdateMenu(MoveMenu);
   if (!all_axes_trusted()) LCD_MESSAGE_F("WARNING: current position is unknown, home axes");
@@ -2972,7 +3011,7 @@ void Draw_FilSet_Menu() {
 
 void Draw_SelectColors_Menu() {
   checkkey = Menu;
-  if (SET_MENU(SelectColorMenu, MSG_COLORS_SELECT, 20)) {
+  if (SET_MENU(SelectColorMenu, MSG_COLORS_SELECT, 21)) {
     BACK_ITEM(Draw_AdvancedSettings_Menu);
     MENU_ITEM(ICON_StockConfiguration, MSG_RESTORE_DEFAULTS, onDrawMenuItem, RestoreDefaultsColors);
     EDIT_ITEM_F(0, "Screen Background", onDrawSelColorItem, SelColor, &HMI_data.Background_Color);
@@ -2993,6 +3032,7 @@ void Draw_SelectColors_Menu() {
     EDIT_ITEM_F(0, "Bar Fill", onDrawSelColorItem, SelColor, &HMI_data.Barfill_Color);
     EDIT_ITEM_F(0, "Indicator value", onDrawSelColorItem, SelColor, &HMI_data.Indicator_Color);
     EDIT_ITEM_F(0, "Coordinate value", onDrawSelColorItem, SelColor, &HMI_data.Coordinate_Color);
+    EDIT_ITEM_F(0, "Button", onDrawSelColorItem, SelColor, &HMI_data.Button_Color);
   }
   UpdateMenu(SelectColorMenu);
 }

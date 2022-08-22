@@ -117,6 +117,7 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
 
 #if ENABLED(SOUND_MENU_ITEM)
   bool MarlinUI::sound_on = ENABLED(SOUND_ON_DEFAULT);
+  bool MarlinUI::no_tick = ENABLED(SOUND_ON_DEFAULT); //changed added
 #endif
 
 #if ENABLED(PCA9632_BUZZER)

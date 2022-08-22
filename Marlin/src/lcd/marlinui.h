@@ -221,6 +221,7 @@ public:
 
   #if ENABLED(SOUND_MENU_ITEM)
     static bool sound_on; // Initialized by settings.load()
+    static bool no_tick; //changed added
   #else
     static constexpr bool sound_on = true;
   #endif

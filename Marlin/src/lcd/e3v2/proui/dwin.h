@@ -105,6 +105,7 @@ typedef struct {
   uint16_t Barfill_Color = Def_Barfill_Color;
   uint16_t Indicator_Color = Def_Indicator_Color;
   uint16_t Coordinate_Color = Def_Coordinate_Color;
+  uint16_t Button_Color = Def_Button_Color;
   // Temperatures
   #if HAS_HOTEND && ENABLED(PIDTEMP)
     int16_t HotendPidT = DEF_HOTENDPIDT;
@@ -118,10 +119,13 @@ typedef struct {
   #if ENABLED(PREVENT_COLD_EXTRUSION)
     int16_t ExtMinT = EXTRUDE_MINTEMP;
   #endif
+  #if BOTH(HAS_HEATED_BED, PREHEAT_BEFORE_LEVELING)
   int16_t BedLevT = LEVELING_BED_TEMP;
-  TERN_(BAUD_RATE_GCODE, bool Baud115K = (BAUDRATE == 115200));
+  #endif
+  TERN_(BAUD_RATE_GCODE, bool Baud250K = (BAUDRATE == 250000));
   bool FullManualTramming = false;
   bool MediaAutoMount = ENABLED(HAS_SD_EXTENDER);
+  bool SetLiveMove = false;
   #if BOTH(INDIVIDUAL_AXIS_HOMING_SUBMENU, MESH_BED_LEVELING)
     uint8_t z_after_homing = DEF_Z_AFTER_HOMING;
   #endif
@@ -337,6 +341,7 @@ void Draw_Motion_Menu();
   void Draw_ManualMesh_Menu();
 #endif
 void Draw_Temperature_Menu();
+void Draw_PID_Menu();
 void Draw_MaxSpeed_Menu();
 void Draw_MaxAccel_Menu();
 #if HAS_CLASSIC_JERK

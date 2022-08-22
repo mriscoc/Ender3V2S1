@@ -40,15 +40,15 @@
   #define HAS_ZOFFSET_ITEM 1
 #endif
 
-#define Def_Background_Color  RGB( 1, 12,  8)
-#define Def_Cursor_color      RGB(20, 49, 31)
-#define Def_TitleBg_color     RGB( 0, 23, 16)
+#define Def_Background_Color  Color_Bg_Black //
+#define Def_Cursor_color      Color_Cyan //
+#define Def_TitleBg_color     Color_Voxelab_Red //
 #define Def_TitleTxt_color    Color_White
 #define Def_Text_Color        Color_White
 #define Def_Selected_Color    Select_Color
-#define Def_SplitLine_Color   RGB( 0, 23, 16)
+#define Def_SplitLine_Color   Color_White //
 #define Def_Highlight_Color   Color_White
-#define Def_StatusBg_Color    RGB( 0, 23, 16)
+#define Def_StatusBg_Color    Color_Bg_Black //
 #define Def_StatusTxt_Color   Color_Yellow
 #define Def_PopupBg_color     Color_Bg_Window
 #define Def_PopupTxt_Color    Popup_Text_Color
@@ -56,9 +56,10 @@
 #define Def_AlertTxt_Color    Color_Yellow
 #define Def_PercentTxt_Color  Percent_Color
 #define Def_Barfill_Color     BarFill_Color
-#define Def_Indicator_Color   Color_White
-#define Def_Coordinate_Color  Color_White
-#define Def_Button_Color      RGB( 0, 23, 16)
+#define Def_Indicator_Color   Color_Cyan //
+#define Def_Coordinate_Color  Color_Brown //
+#define Def_Button_Color      Color_Voxelab_Red //
+
 #if BOTH(LED_CONTROL_MENU, HAS_COLOR_LEDS)
   #define Def_Leds_Color      0xFFFFFFFF
 #endif

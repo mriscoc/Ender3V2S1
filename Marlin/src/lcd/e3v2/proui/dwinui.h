@@ -1,12 +1,13 @@
 /**
- * DWIN Enhanced implementation for PRO UI
- * Author: Miguel A. Risco-Castillo (MRISCOC)
- * Version: 3.19.1
- * Date: 2022/08/18
+ * Marlin 3D Printer Firmware
+ * Copyright (c) 2021 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ *
+ * Based on Sprinter and grbl.
+ * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 3 of the License, or
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -14,7 +15,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
@@ -157,10 +158,10 @@
 #define BTN_Purge             92
 
 // Extended and default UI Colors
-#define Color_Black           0
-#define Color_Green           RGB(0,63,0)
+#define Color_Black           0x0000 //changed 0
+#define Color_Green           0x07E0 //RGB(0,63,0)
 #define Color_Aqua            RGB(0,63,31)
-#define Color_Blue            RGB(0,0,31)
+#define Color_Blue            0x015F //RGB(0,0,31)
 #define Color_Light_White     0xBDD7
 #define Color_Light_Green     0x3460
 #define Color_Cyan            0x07FF
@@ -169,8 +170,8 @@
 #define Color_Magenta         0xF81F
 #define Color_Light_Magenta   0x9813
 #define Color_Light_Red       0x8800
-#define Color_Orange          0xFA20
-#define Color_Light_Orange    0xFBC0
+#define Color_Orange          0xFB00 //0xFA20
+#define Color_Light_Orange    0xFC80 //0xFBC0
 #define Color_Light_Yellow    0x8BE0
 #define Color_Brown           0xCC27
 #define Color_Light_Brown     0x6204

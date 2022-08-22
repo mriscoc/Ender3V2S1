@@ -544,6 +544,7 @@ typedef struct SettingsDataStruct {
   //
   #if ENABLED(SOUND_MENU_ITEM)
     bool sound_on;
+    bool no_tick;
   #endif
 
   //
@@ -1595,6 +1596,7 @@ void MarlinSettings::postprocess() {
     //
     #if ENABLED(SOUND_MENU_ITEM)
       EEPROM_WRITE(ui.sound_on);
+      EEPROM_WRITE(ui.no_tick);
     #endif
 
     //
@@ -2571,6 +2573,8 @@ void MarlinSettings::postprocess() {
       #if ENABLED(SOUND_MENU_ITEM)
         _FIELD_TEST(sound_on);
         EEPROM_READ(ui.sound_on);
+        _FIELD_TEST(no_tick);
+        EEPROM_READ(ui.no_tick);
       #endif
 
       //
@@ -2996,6 +3000,7 @@ void MarlinSettings::reset() {
   //
   #if ENABLED(SOUND_MENU_ITEM)
     ui.sound_on = ENABLED(SOUND_ON_DEFAULT);
+    ui.no_tick = ENABLED(SOUND_ON_DEFAULT); //changed added
   #endif
 
   //
