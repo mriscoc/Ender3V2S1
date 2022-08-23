@@ -656,11 +656,11 @@ namespace Language_en {
   LSTR MSG_COLORS_BLUE                    = _UxGT("Blue");
   LSTR MSG_COLORS_WHITE                   = _UxGT("White");
   LSTR MSG_UI_LANGUAGE                    = _UxGT("UI Language");
-  LSTR MSG_SOUND_ENABLE                   = _UxGT("Enable sound");
+  LSTR MSG_SOUND_ENABLE                   = _UxGT("Enable Sound");
   LSTR MSG_LOCKSCREEN                     = _UxGT("Lock Screen");
   LSTR MSG_LOCKSCREEN_LOCKED              = _UxGT("Printer is Locked,");
   LSTR MSG_LOCKSCREEN_UNLOCK              = _UxGT("Scroll to unlock.");
-  LSTR MSG_PLEASE_WAIT_REBOOT             = _UxGT("Please wait until reboot.");
+  LSTR MSG_PLEASE_WAIT_REBOOT             = _UxGT("Starting... Please wait.");
 
   #if LCD_WIDTH >= 20 || HAS_DWIN_E3V2
     LSTR MSG_MEDIA_NOT_INSERTED           = _UxGT("No media inserted.");

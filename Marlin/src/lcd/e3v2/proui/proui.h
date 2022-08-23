@@ -41,7 +41,7 @@ constexpr int16_t DEF_Y_MAX_POS = Y_MAX_POS;
 constexpr int16_t DEF_Z_MAX_POS = Z_MAX_POS;
 TERN_(HAS_EXTRUDERS, constexpr bool DEF_INVERT_E0_DIR = INVERT_E0_DIR);
 
-#define DEF_NOZZLE_PARK_POINT {240, 220, 20}
+#define DEF_NOZZLE_PARK_POINT {0, 220, 40}
 
 #if HAS_MESH
 

@@ -338,5 +338,14 @@ _iconNames = {
     88 : 'ICON_Confirm_C',
     89 : 'ICON_Confirm_E',
     90 : 'ICON_Info_0',
-    91 : 'ICON_Info_1'
+    91 : 'ICON_Info_1',
+    # Additional Icons
+    200 : "ICON_Box",
+    201 : "ICON_Checkbox",          
+    202 : "ICON_Fade",              
+    203 : "ICON_Mesh",              
+    204 : "ICON_Tilt",              
+    205 : "ICON_Brightness"        
+
+
     }

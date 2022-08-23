@@ -227,11 +227,12 @@ void ParkHead();
 #if ENABLED(HOST_SHUTDOWN_MENU_ITEM) && defined(SHUTDOWN_ACTION)
   void HostShutDown();
 #endif
-#if !HAS_PROBE
+#if !HAS_BED_PROBE
   void HomeZandDisable();
 #endif
 
 // Other
+void SetLiveMove();
 void Goto_PrintProcess();
 void Goto_Main_Menu();
 void Goto_Info_Menu();
@@ -309,6 +310,7 @@ inline void DWIN_Gcode(const int16_t codenum) { TERN_(HAS_CGCODE, custom_gcode(c
 // Menu drawing functions
 void Draw_Print_File_Menu();
 void Draw_Control_Menu();
+void Draw_Advanced_Menu();
 void Draw_AdvancedSettings_Menu();
 void Draw_Prepare_Menu();
 void Draw_Move_Menu();
