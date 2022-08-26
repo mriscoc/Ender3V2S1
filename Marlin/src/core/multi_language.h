@@ -47,7 +47,7 @@ typedef const char Language_Str[];
 // compiler can optimize away the conditionals.
 #define LCD_LANGUAGE_1 LCD_LANGUAGE
 #ifndef LCD_LANGUAGE_2
-  #define LCD_LANGUAGE_2 LCD_LANGUAGE
+  #define LCD_LANGUAGE_2 LCD_LANGUAGE_1
 #endif
 #ifndef LCD_LANGUAGE_3
   #define LCD_LANGUAGE_3 LCD_LANGUAGE_2

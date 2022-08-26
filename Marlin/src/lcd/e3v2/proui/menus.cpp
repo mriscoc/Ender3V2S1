@@ -51,7 +51,7 @@ void Draw_Title(TitleClass* title) {
 
   #else
   DWIN_Draw_String(false, DWIN_FONT_HEAD, HMI_data.TitleTxt_color, HMI_data.TitleBg_color, 14, (TITLE_HEIGHT - DWINUI::fontHeight(DWIN_FONT_HEAD)) / 2 - 1, title->caption);
-#endif
+  #endif
 
 //changed
 }

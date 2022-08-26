@@ -544,9 +544,12 @@ typedef struct SettingsDataStruct {
   //
   #if ENABLED(SOUND_MENU_ITEM)
     bool sound_on;
-    bool no_tick;
+    bool no_tick; //encoder beep
   #endif
 
+  //BED_SCREW_INSET
+  float screw_pos;
+ 
   //
   // Fan tachometer check
   //
@@ -641,12 +644,8 @@ void MarlinSettings::postprocess() {
   // Moved as last update due to interference with Neopixel init
   TERN_(HAS_LCD_CONTRAST, ui.refresh_contrast());
   TERN_(HAS_LCD_BRIGHTNESS, ui.refresh_brightness());
+  TERN_(LCD_BACKLIGHT_TIMEOUT, ui.refresh_backlight_timeout();); //added
 
-  #if LCD_BACKLIGHT_TIMEOUT
-    ui.refresh_backlight_timeout();
-  #elif HAS_DISPLAY_SLEEP
-    ui.refresh_screen_timeout();
-  #endif
 }
 
 #if BOTH(PRINTCOUNTER, EEPROM_SETTINGS)
@@ -1549,6 +1548,9 @@ void MarlinSettings::postprocess() {
       EEPROM_WRITE(dwin_data);
     }
     #endif
+
+    //BED_SCREW_INSET
+    EEPROM_WRITE(ui.screw_pos);
 
     //
     // Case Light Brightness
@@ -2528,6 +2530,9 @@ void MarlinSettings::postprocess() {
         if (!validating) DWIN_CopySettingsFrom(dwin_data);
       }
       #endif
+      //BED_SCREW_INSET
+      _FIELD_TEST(screw_pos);
+      EEPROM_READ(ui.screw_pos);
 
       //
       // Case Light Brightness
@@ -2985,6 +2990,10 @@ void MarlinSettings::reset() {
     #endif
   #endif
 
+
+  //BED_SCREW_INSET
+  ui.screw_pos = BED_SCREW_INSET; 
+  
   //
   // Case Light Brightness
   //
@@ -3000,7 +3009,7 @@ void MarlinSettings::reset() {
   //
   #if ENABLED(SOUND_MENU_ITEM)
     ui.sound_on = ENABLED(SOUND_ON_DEFAULT);
-    ui.no_tick = ENABLED(SOUND_ON_DEFAULT); //changed added
+    ui.no_tick = ENABLED(SOUND_ON_DEFAULT); //added encoder beep bool
   #endif
 
   //

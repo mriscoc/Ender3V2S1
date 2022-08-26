@@ -65,6 +65,8 @@ MarlinUI ui;
 
 constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
 
+float MarlinUI::screw_pos = BED_SCREW_INSET; 
+
 #if HAS_STATUS_MESSAGE
   #if ENABLED(STATUS_MESSAGE_SCROLLING) && EITHER(HAS_WIRED_LCD, DWIN_LCD_PROUI)
     uint8_t MarlinUI::status_scroll_offset; // = 0
@@ -174,13 +176,15 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
 #endif
 
 #if LCD_BACKLIGHT_TIMEOUT
-
+  const millis_t ms = millis();
   uint16_t MarlinUI::lcd_backlight_timeout; // Initialized by settings.load()
   millis_t MarlinUI::backlight_off_ms = 0;
-  void MarlinUI::refresh_backlight_timeout() {
+  void MarlinUI::refresh_backlight_timeout() { //reset backlight function
     backlight_off_ms = lcd_backlight_timeout ? millis() + lcd_backlight_timeout * 1000UL : 0;
-    WRITE(LCD_BACKLIGHT_PIN, HIGH);
-  }
+    #if PINS_EXIST
+      WRITE(LCD_BACKLIGHT_PIN, HIGH);
+    #endif
+  }   
 
 #elif HAS_DISPLAY_SLEEP
 
@@ -192,6 +196,9 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
   }
 
 #endif
+
+
+
 
 void MarlinUI::init() {
 
@@ -1465,8 +1472,8 @@ void MarlinUI::init() {
 
     else if (!no_welcome) msg = GET_TEXT_F(WELCOME_MSG);
 
-    else if (ENABLED(DWIN_LCD_PROUI))
-        msg = F("");
+    else if (ENABLED(DWIN_LCD_PROUI)) msg = F("");
+    
     else
       return;
 

@@ -329,7 +329,7 @@ namespace Language_en {
   LSTR MSG_NOZZLE_N                       = _UxGT("Nozzle ~");
   LSTR MSG_NOZZLE_PARKED                  = _UxGT("Nozzle Parked");
   LSTR MSG_NOZZLE_STANDBY                 = _UxGT("Nozzle Standby");
-  LSTR MSG_NOOZLE_CLEAN                   = _UxGT("Clean and press continue");
+  LSTR MSG_NOZZLE_CLEAN                   = _UxGT("Clean and press continue");
   LSTR MSG_BED                            = _UxGT("Bed");
   LSTR MSG_CHAMBER                        = _UxGT("Enclosure");
   LSTR MSG_COOLER                         = _UxGT("Laser Coolant");
@@ -442,7 +442,7 @@ namespace Language_en {
   LSTR MSG_ERR_EEPROM_VERSION             = _UxGT("EEPROM Version Error");
   LSTR MSG_SETTINGS_STORED                = _UxGT("Settings Stored");
   LSTR MSG_MEDIA_UPDATE                   = MEDIA_TYPE_EN _UxGT(" Update");
-  LSTR MSG_RESET_PRINTER                  = _UxGT("Reboot Printer");
+  LSTR MSG_RESET_PRINTER                  = _UxGT("Restart Printer");
   LSTR MSG_REFRESH                        = LCD_STR_REFRESH _UxGT("Refresh");
   LSTR MSG_INFO_SCREEN                    = _UxGT("Info Screen");
   LSTR MSG_INFO_MACHINENAME               = _UxGT("Machine Name");
@@ -486,7 +486,7 @@ namespace Language_en {
   LSTR MSG_PRINTING_OBJECT                = _UxGT("Printing Object");
   LSTR MSG_CANCEL_OBJECT                  = _UxGT("Cancel Object");
   LSTR MSG_CANCEL_OBJECT_N                = _UxGT("Cancel Object =");
-  LSTR MSG_OUTAGE_RECOVERY                = _UxGT("Power Outage");
+  LSTR MSG_OUTAGE_RECOVERY                = _UxGT("Power-loss Recovery");
   LSTR MSG_CONTINUE_PRINT_JOB             = _UxGT("Continue Print Job");
   LSTR MSG_MEDIA_MENU                     = _UxGT("Print from ") MEDIA_TYPE_EN;
   LSTR MSG_NO_MEDIA                       = _UxGT("No ") MEDIA_TYPE_EN;
@@ -579,7 +579,7 @@ namespace Language_en {
   LSTR MSG_ZPROBE_OFFSETS                 = _UxGT("Probe Offsets");
   LSTR MSG_ZPROBE_XOFFSET                 = _UxGT("Probe X Offset");
   LSTR MSG_ZPROBE_YOFFSET                 = _UxGT("Probe Y Offset");
-  LSTR MSG_ZPROBE_ZOFFSET                 = _UxGT("Probe Z Offset");
+  LSTR MSG_ZPROBE_ZOFFSET                 = _UxGT("Z-Offset");
   LSTR MSG_ZPROBE_MARGIN                  = _UxGT("Probe Margin");
   LSTR MSG_ZPROBE_MULTIPLE                = _UxGT("Multiple Probing");
   LSTR MSG_Z_FEED_RATE                    = _UxGT("Z Feed Rate");
@@ -826,7 +826,7 @@ namespace Language_en {
   LSTR MSG_XATC_DONE                      = _UxGT("X-Twist Wizard Done!");
   LSTR MSG_XATC_UPDATE_Z_OFFSET           = _UxGT("Update Probe Z-Offset to ");
 
-  LSTR MSG_TICK                          = _UxGT("Encoder Tick");
+  LSTR MSG_TICK                           = _UxGT("Encoder Tick");
 
   LSTR MSG_TOP_LEFT                       = _UxGT("Top Left");
   LSTR MSG_BOTTOM_LEFT                    = _UxGT("Bottom Left");

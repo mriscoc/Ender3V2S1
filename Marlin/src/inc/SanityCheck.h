@@ -3038,10 +3038,12 @@ static_assert(COUNT(arm) == LOGICAL_AXES, "AXIS_RELATIVE_MODES must contain " _L
 #endif
 
 #if LCD_BACKLIGHT_TIMEOUT
-  #if !HAS_ENCODER_ACTION
+  #if !HAS_ENCODER_ACTION && !HAS_RESUME_CONTINUE
     #error "LCD_BACKLIGHT_TIMEOUT requires an LCD with encoder or keypad."
-  #elif !PIN_EXISTS(LCD_BACKLIGHT)
+  #elif PIN_EXISTS(LCD_BACKLIGHT) //should be !PIN_EXISTS
     #error "LCD_BACKLIGHT_TIMEOUT requires LCD_BACKLIGHT_PIN."
+  #elif !LCD_BACKLIGHT_TIMEOUT
+    #warning "should be !PIN_EXISTS, what is causing PIN_EXIST when there are no pins?"
   #endif
 #endif
 

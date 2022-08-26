@@ -194,6 +194,8 @@ public:
     TERN_(HAS_MARLINUI_MENU, currentScreen = status_screen);
   }
 
+  static float screw_pos; //changed added
+
   static void init();
 
   #if HAS_DISPLAY || HAS_DWIN_E3V2
@@ -270,7 +272,7 @@ public:
   #endif
 
   #if LCD_BACKLIGHT_TIMEOUT
-    #define LCD_BKL_TIMEOUT_MIN 1u
+    #define LCD_BKL_TIMEOUT_MIN 1u // = 1
     #define LCD_BKL_TIMEOUT_MAX UINT16_MAX // Slightly more than 18 hours
     static uint16_t lcd_backlight_timeout;
     static millis_t backlight_off_ms;

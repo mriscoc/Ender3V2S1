@@ -123,6 +123,7 @@ typedef struct {
   int16_t BedLevT = LEVELING_BED_TEMP;
   #endif
   TERN_(BAUD_RATE_GCODE, bool Baud250K = (BAUDRATE == 250000));
+  bool CalcAvg = false;
   bool FullManualTramming = false;
   bool MediaAutoMount = ENABLED(HAS_SD_EXTENDER);
   bool SetLiveMove = false;
@@ -149,6 +150,7 @@ typedef struct {
 } HMI_value_t;
 
 typedef struct {
+  uint8_t language;
   bool percent_flag:1;  // percent was override by M73
   bool remain_flag:1;   // remain was override by M73
   bool pause_flag:1;    // printing is paused
