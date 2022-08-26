@@ -1312,7 +1312,7 @@
 #if ENABLED(ENCODER_RATE_MULTIPLIER)
   #define ENCODER_5X_STEPS_PER_SEC    30  // Ender Configs
   #define ENCODER_10X_STEPS_PER_SEC   80  // (steps/s) Encoder rate for 10x speed  // Ender Configs
-  #define ENCODER_100X_STEPS_PER_SEC  150  // (steps/s) Encoder rate for 100x speed  // Ender Configs
+  #define ENCODER_100X_STEPS_PER_SEC  130  // (steps/s) Encoder rate for 100x speed  // Ender Configs
 #endif
 
 // Play a beep when the feedrate is changed from the Status Screen
