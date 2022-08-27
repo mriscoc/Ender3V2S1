@@ -3009,7 +3009,7 @@ void MarlinSettings::reset() {
   //
   #if ENABLED(SOUND_MENU_ITEM)
     ui.sound_on = ENABLED(SOUND_ON_DEFAULT);
-    ui.no_tick = ENABLED(SOUND_ON_DEFAULT); //added encoder beep bool
+    ui.no_tick = ENABLED(TICK_ON_DEFAULT); //added encoder beep bool
   #endif
 
   //

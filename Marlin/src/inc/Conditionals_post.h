@@ -3594,6 +3594,7 @@
 #else
   #undef SOUND_MENU_ITEM   // No buzzer menu item without a buzzer
   #undef SOUND_ON_DEFAULT
+  #undef TICK_ON_DEFAULT
 #endif
 
 /**

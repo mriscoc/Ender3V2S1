@@ -119,7 +119,7 @@ float MarlinUI::screw_pos = BED_SCREW_INSET;
 
 #if ENABLED(SOUND_MENU_ITEM)
   bool MarlinUI::sound_on = ENABLED(SOUND_ON_DEFAULT);
-  bool MarlinUI::no_tick = ENABLED(SOUND_ON_DEFAULT); //changed added
+  bool MarlinUI::no_tick = ENABLED(TICK_ON_DEFAULT); //changed added
 #endif
 
 #if ENABLED(PCA9632_BUZZER)
