@@ -123,7 +123,7 @@ typedef struct {
   int16_t BedLevT = LEVELING_BED_TEMP;
   #endif
   TERN_(BAUD_RATE_GCODE, bool Baud250K = (BAUDRATE == 250000));
-  bool CalcAvg = false;
+  bool CalcAvg = true;
   bool FullManualTramming = false;
   bool MediaAutoMount = ENABLED(HAS_SD_EXTENDER);
   bool SetLiveMove = false;

@@ -2944,263 +2944,6 @@ void Draw_Control_Menu() {
   UpdateMenu(ControlMenu);
 }
 
-#ifdef AUTO_BED_LEVELING_UBL
-void Draw_AdvancedSettings_Menu() {
-  checkkey = Menu;
-  if (SET_MENU(AdvancedSettings, MSG_UBL_LEVELING, 4)) {
-    BACK_ITEM(Goto_Main_Menu);
-    #if ENABLED(EEPROM_SETTINGS)
-      MENU_ITEM(ICON_WriteEEPROM, MSG_STORE_EEPROM, onDrawMenuItem, WriteEeprom);
-    #endif
-    #if HAS_MESH
-      MENU_ITEM(ICON_ProbeSet, MSG_MESH_LEVELING, onDrawSubMenu, Draw_MeshSet_Menu);
-    #endif
-    #if HAS_BED_PROBE
-      MENU_ITEM(ICON_ProbeSet, MSG_ZPROBE_SETTINGS, onDrawSubMenu, Draw_ProbeSet_Menu);
-    #endif
-  }
-  ui.reset_status(true);
-  UpdateMenu(AdvancedSettings);
-}
-
-#elif defined(AUTO_BED_LEVELING_BILINEAR)
-void Draw_AdvancedSettings_Menu() {
-  checkkey = Menu;
-  if (SET_MENU(AdvancedSettings, MSG_BILINEAR_LEVELING, 19)) {
-    BACK_ITEM(Goto_Main_Menu);
-    #if ENABLED(EEPROM_SETTINGS)
-      MENU_ITEM(ICON_WriteEEPROM, MSG_STORE_EEPROM, onDrawMenuItem, WriteEeprom);
-    #endif
-    #if HAS_MESH
-      MENU_ITEM(ICON_ProbeSet, MSG_MESH_LEVELING, onDrawSubMenu, Draw_MeshSet_Menu);
-    #endif
-    #if HAS_BED_PROBE
-      MENU_ITEM(ICON_ProbeSet, MSG_ZPROBE_SETTINGS, onDrawSubMenu, Draw_ProbeSet_Menu);
-    #endif
-      MENU_ITEM(ICON_FilSet, MSG_FILAMENT_SET, onDrawSubMenu, Draw_FilSet_Menu);
-    #if ProUIex
-      MENU_ITEM(ICON_PhySet, MSG_PHY_SET, onDrawSubMenu, Draw_PhySet_Menu);
-    #endif
-    #if HAS_HOME_OFFSET
-      MENU_ITEM(ICON_HomeOffset, MSG_SET_HOME_OFFSETS, onDrawSubMenu, Draw_HomeOffset_Menu);
-    #endif
-    #if HAS_TOOLBAR
-      MENU_ITEM(ICON_TBSetup, MSG_TOOLBAR_SETUP, onDrawSubMenu, Draw_TBSetup_Menu);
-    #endif
-    #if HAS_ESDIAG
-      MENU_ITEM_F(ICON_ESDiag, "End-stops diag.", onDrawSubMenu, Draw_EndStopDiag);
-    #endif
-    #if ENABLED(PRINTCOUNTER)
-      MENU_ITEM(ICON_PrintStats, MSG_INFO_STATS_MENU, onDrawSubMenu, Goto_PrintStats);
-      MENU_ITEM(ICON_PrintStatsReset, MSG_INFO_PRINT_COUNT_RESET, onDrawSubMenu, PrintStats.Reset);
-    #endif
-    #if HAS_LOCKSCREEN
-      MENU_ITEM(ICON_Lock, MSG_LOCKSCREEN, onDrawMenuItem, DWIN_LockScreen);
-    #endif
-    #if ENABLED(HOST_SHUTDOWN_MENU_ITEM) && defined(SHUTDOWN_ACTION)
-      MENU_ITEM(ICON_Host, MSG_HOST_SHUTDOWN, onDrawMenuItem, HostShutDown);
-    #endif
-    #if ENABLED(SOUND_MENU_ITEM)
-      EDIT_ITEM(ICON_Sound, MSG_SOUND_ENABLE, onDrawChkbMenu, SetEnableSound, &ui.sound_on); //changed
-    #endif
-      #if ENABLED(SOUND_MENU_ITEM)
-      EDIT_ITEM(ICON_Sound, MSG_TICK, onDrawChkbMenu, SetEnableTick, &ui.no_tick); //changed
-    #endif
-    #if ENABLED(POWER_LOSS_RECOVERY)
-      EDIT_ITEM(ICON_Pwrlossr, MSG_OUTAGE_RECOVERY, onDrawChkbMenu, SetPwrLossr, &recovery.enabled);
-    #endif
-    #if HAS_SD_EXTENDER
-    EDIT_ITEM(ICON_File, MSG_MEDIA_UPDATE, onDrawChkbMenu, SetMediaAutoMount, &HMI_data.MediaAutoMount);
-    #endif
-    #if ENABLED(BAUD_RATE_GCODE)
-      EDIT_ITEM_F(ICON_SetBaudRate, "250K baud", onDrawChkbMenu, SetBaudRate, &HMI_data.Baud250K);
-    #endif
-    #if HAS_LCD_BRIGHTNESS
-      EDIT_ITEM(ICON_Brightness, MSG_BRIGHTNESS, onDrawPInt8Menu, SetBrightness, &ui.brightness);
-      MENU_ITEM(ICON_Brightness, MSG_BRIGHTNESS_OFF, onDrawMenuItem, TurnOffBacklight);
-    #endif
-      MENU_ITEM(ICON_Scolor, MSG_COLORS_SELECT, onDrawSubMenu, Draw_SelectColors_Menu);
-  }
-  ui.reset_status(true);
-  UpdateMenu(AdvancedSettings);
-}
-
-#elif defined(MESH_BED_LEVELING)
-void Draw_AdvancedSettings_Menu() {
-  checkkey = Menu;
-  if (SET_MENU(AdvancedSettings, MSG_MESH_LEVELING, 19)) {
-    BACK_ITEM(Goto_Main_Menu);
-    #if ENABLED(EEPROM_SETTINGS)
-      MENU_ITEM(ICON_WriteEEPROM, MSG_STORE_EEPROM, onDrawMenuItem, WriteEeprom);
-    #endif
-    #if HAS_MESH
-      MENU_ITEM(ICON_ProbeSet, MSG_MESH_LEVELING, onDrawSubMenu, Draw_MeshSet_Menu);
-    #endif
-    #if HAS_BED_PROBE
-      MENU_ITEM(ICON_ProbeSet, MSG_ZPROBE_SETTINGS, onDrawSubMenu, Draw_ProbeSet_Menu);
-    #endif
-      MENU_ITEM(ICON_FilSet, MSG_FILAMENT_SET, onDrawSubMenu, Draw_FilSet_Menu);
-    #if ProUIex
-      MENU_ITEM(ICON_PhySet, MSG_PHY_SET, onDrawSubMenu, Draw_PhySet_Menu);
-    #endif
-    #if HAS_HOME_OFFSET
-      MENU_ITEM(ICON_HomeOffset, MSG_SET_HOME_OFFSETS, onDrawSubMenu, Draw_HomeOffset_Menu);
-    #endif
-    #if HAS_TOOLBAR
-      MENU_ITEM(ICON_TBSetup, MSG_TOOLBAR_SETUP, onDrawSubMenu, Draw_TBSetup_Menu);
-    #endif
-    #if HAS_ESDIAG
-      MENU_ITEM_F(ICON_ESDiag, "End-stops diag.", onDrawSubMenu, Draw_EndStopDiag);
-    #endif
-    #if ENABLED(PRINTCOUNTER)
-      MENU_ITEM(ICON_PrintStats, MSG_INFO_STATS_MENU, onDrawSubMenu, Goto_PrintStats);
-      MENU_ITEM(ICON_PrintStatsReset, MSG_INFO_PRINT_COUNT_RESET, onDrawSubMenu, PrintStats.Reset);
-    #endif
-    #if HAS_LOCKSCREEN
-      MENU_ITEM(ICON_Lock, MSG_LOCKSCREEN, onDrawMenuItem, DWIN_LockScreen);
-    #endif
-    #if ENABLED(HOST_SHUTDOWN_MENU_ITEM) && defined(SHUTDOWN_ACTION)
-      MENU_ITEM(ICON_Host, MSG_HOST_SHUTDOWN, onDrawMenuItem, HostShutDown);
-    #endif
-    #if ENABLED(SOUND_MENU_ITEM)
-      EDIT_ITEM(ICON_Sound, MSG_SOUND_ENABLE, onDrawChkbMenu, SetEnableSound, &ui.sound_on); //changed
-    #endif
-      #if ENABLED(SOUND_MENU_ITEM)
-      EDIT_ITEM(ICON_Sound, MSG_TICK, onDrawChkbMenu, SetEnableTick, &ui.no_tick); //changed
-    #endif
-    #if ENABLED(POWER_LOSS_RECOVERY)
-      EDIT_ITEM(ICON_Pwrlossr, MSG_OUTAGE_RECOVERY, onDrawChkbMenu, SetPwrLossr, &recovery.enabled);
-    #endif
-    #if HAS_SD_EXTENDER
-    EDIT_ITEM(ICON_File, MSG_MEDIA_UPDATE, onDrawChkbMenu, SetMediaAutoMount, &HMI_data.MediaAutoMount);
-    #endif
-    #if ENABLED(BAUD_RATE_GCODE)
-      EDIT_ITEM_F(ICON_SetBaudRate, "250K baud", onDrawChkbMenu, SetBaudRate, &HMI_data.Baud250K);
-    #endif
-    #if HAS_LCD_BRIGHTNESS
-      EDIT_ITEM(ICON_Brightness, MSG_BRIGHTNESS, onDrawPInt8Menu, SetBrightness, &ui.brightness);
-      MENU_ITEM(ICON_Brightness, MSG_BRIGHTNESS_OFF, onDrawMenuItem, TurnOffBacklight);
-    #endif
-      MENU_ITEM(ICON_Scolor, MSG_COLORS_SELECT, onDrawSubMenu, Draw_SelectColors_Menu);
-  }
-  ui.reset_status(true);
-  UpdateMenu(AdvancedSettings);
-}
-
-#else
-void Draw_AdvancedSettings_Menu() {
-  checkkey = Menu;
-  if (SET_MENU(AdvancedSettings, MSG_ADVANCED_SETTINGS, 19)) { //2
-    BACK_ITEM(Goto_Main_Menu);
-    #if ENABLED(EEPROM_SETTINGS)
-      MENU_ITEM(ICON_WriteEEPROM, MSG_STORE_EEPROM, onDrawMenuItem, WriteEeprom);
-      MENU_ITEM(ICON_ReadEEPROM, MSG_LOAD_EEPROM, onDrawMenuItem, ReadEeprom);
-      MENU_ITEM(ICON_ResumeEEPROM, MSG_RESTORE_DEFAULTS, onDrawMenuItem, ResetEeprom);
-    #endif
-    #if HAS_MESH
-      MENU_ITEM(ICON_ProbeSet, MSG_MESH_LEVELING, onDrawSubMenu, Draw_MeshSet_Menu);
-    #endif
-    #if HAS_BED_PROBE
-      MENU_ITEM(ICON_ProbeSet, MSG_ZPROBE_SETTINGS, onDrawSubMenu, Draw_ProbeSet_Menu);
-    #endif
-      MENU_ITEM(ICON_FilSet, MSG_FILAMENT_SET, onDrawSubMenu, Draw_FilSet_Menu);
-    #if ProUIex
-      MENU_ITEM(ICON_PhySet, MSG_PHY_SET, onDrawSubMenu, Draw_PhySet_Menu);
-    #endif
-    #if HAS_HOME_OFFSET
-      MENU_ITEM(ICON_HomeOffset, MSG_SET_HOME_OFFSETS, onDrawSubMenu, Draw_HomeOffset_Menu);
-    #endif
-    #if HAS_TOOLBAR
-      MENU_ITEM(ICON_TBSetup, MSG_TOOLBAR_SETUP, onDrawSubMenu, Draw_TBSetup_Menu);
-    #endif
-    #if HAS_ESDIAG
-      MENU_ITEM_F(ICON_ESDiag, "End-stops diag.", onDrawSubMenu, Draw_EndStopDiag);
-    #endif
-    #if ENABLED(PRINTCOUNTER)
-      MENU_ITEM(ICON_PrintStats, MSG_INFO_STATS_MENU, onDrawSubMenu, Goto_PrintStats);
-      MENU_ITEM(ICON_PrintStatsReset, MSG_INFO_PRINT_COUNT_RESET, onDrawSubMenu, PrintStats.Reset);
-    #endif
-    #if HAS_LOCKSCREEN
-      MENU_ITEM(ICON_Lock, MSG_LOCKSCREEN, onDrawMenuItem, DWIN_LockScreen);
-    #endif
-    #if ENABLED(HOST_SHUTDOWN_MENU_ITEM) && defined(SHUTDOWN_ACTION)
-      MENU_ITEM(ICON_Host, MSG_HOST_SHUTDOWN, onDrawMenuItem, HostShutDown);
-    #endif
-    #if ENABLED(SOUND_MENU_ITEM)
-      EDIT_ITEM(ICON_Sound, MSG_SOUND_ENABLE, onDrawChkbMenu, SetEnableSound, &ui.sound_on); //changed
-    #endif
-      #if ENABLED(SOUND_MENU_ITEM)
-      EDIT_ITEM(ICON_Sound, MSG_TICK, onDrawChkbMenu, SetEnableTick, &ui.no_tick); //changed
-    #endif
-    #if ENABLED(POWER_LOSS_RECOVERY)
-      EDIT_ITEM(ICON_Pwrlossr, MSG_OUTAGE_RECOVERY, onDrawChkbMenu, SetPwrLossr, &recovery.enabled);
-    #endif
-    #if HAS_SD_EXTENDER
-    EDIT_ITEM(ICON_File, MSG_MEDIA_UPDATE, onDrawChkbMenu, SetMediaAutoMount, &HMI_data.MediaAutoMount);
-    #endif
-    #if ENABLED(BAUD_RATE_GCODE)
-      EDIT_ITEM_F(ICON_SetBaudRate, "250K baud", onDrawChkbMenu, SetBaudRate, &HMI_data.Baud250K);
-    #endif
-    #if HAS_LCD_BRIGHTNESS
-      EDIT_ITEM(ICON_Brightness, MSG_BRIGHTNESS, onDrawPInt8Menu, SetBrightness, &ui.brightness);
-      MENU_ITEM(ICON_Brightness, MSG_BRIGHTNESS_OFF, onDrawMenuItem, TurnOffBacklight);
-    #endif
-      MENU_ITEM(ICON_Scolor, MSG_COLORS_SELECT, onDrawSubMenu, Draw_SelectColors_Menu);
-  }
-  ui.reset_status(true);
-  UpdateMenu(AdvancedSettings);
-}
-#endif
-
-#if HAS_BED_PROBE || MESH_BED_LEVELING
-void Draw_Advanced_Menu() {
-  checkkey = Menu;
-  if (SET_MENU(AdvancedMenu, MSG_ADVANCED_SETTINGS, 20)) {//-3
-    BACK_ITEM(Draw_Control_Menu);
-    #if HAS_LCD_BRIGHTNESS
-      EDIT_ITEM(ICON_Brightness, MSG_BRIGHTNESS, onDrawPInt8Menu, SetBrightness, &ui.brightness);
-    #endif
-    #if LCD_BACKLIGHT_TIMEOUT
-      EDIT_ITEM(ICON_Box, MSG_LCD_TIMEOUT_SEC, onDrawPIntMenu, SetTimer, &ui.lcd_backlight_timeout); //added
-    #endif
-      EDIT_ITEM_F(ICON_ProbeMargin, "Screw Inset to Nozzle", onDrawPFloatMenu, SetRetractSpeed, &ui.screw_pos); //changed
-    #if ENABLED(POWER_LOSS_RECOVERY)
-      EDIT_ITEM(ICON_Pwrlossr, MSG_OUTAGE_RECOVERY, onDrawChkbMenu, SetPwrLossr, &recovery.enabled);
-    #endif
-    #if ENABLED(SOUND_MENU_ITEM)
-      EDIT_ITEM(ICON_Sound, MSG_TICK, onDrawChkbMenu, SetEnableTick, &ui.no_tick); //changed
-      EDIT_ITEM(ICON_Sound, MSG_SOUND_ENABLE, onDrawChkbMenu, SetEnableSound, &ui.sound_on); //changed
-    #endif
-    #if ENABLED(BAUD_RATE_GCODE)
-      EDIT_ITEM_F(ICON_SetBaudRate, "250K baud", onDrawChkbMenu, SetBaudRate, &HMI_data.Baud250K);
-    #endif
-    #if HAS_TOOLBAR
-      MENU_ITEM(ICON_TBSetup, MSG_TOOLBAR_SETUP, onDrawSubMenu, Draw_TBSetup_Menu);
-    #endif
-      MENU_ITEM(ICON_FilSet, MSG_FILAMENT_SET, onDrawSubMenu, Draw_FilSet_Menu);
-    #if HAS_ESDIAG
-      MENU_ITEM_F(ICON_ESDiag, "End-stops diag.", onDrawSubMenu, Draw_EndStopDiag);
-    #endif
-    #if ENABLED(PRINTCOUNTER)
-      MENU_ITEM(ICON_PrintStats, MSG_INFO_STATS_MENU, onDrawSubMenu, Goto_PrintStats);
-      MENU_ITEM(ICON_PrintStatsReset, MSG_INFO_PRINT_COUNT_RESET, onDrawSubMenu, PrintStats.Reset);
-    #endif
-    #if ENABLED(HOST_SHUTDOWN_MENU_ITEM) && defined(SHUTDOWN_ACTION)
-      MENU_ITEM(ICON_Host, MSG_HOST_SHUTDOWN, onDrawMenuItem, HostShutDown);
-    #endif
-    #if HAS_SD_EXTENDER
-      EDIT_ITEM(ICON_File, MSG_MEDIA_UPDATE, onDrawChkbMenu, SetMediaAutoMount, &HMI_data.MediaAutoMount);
-    #endif
-    #if ENABLED(EEPROM_SETTINGS)
-      MENU_ITEM(ICON_ReadEEPROM, MSG_LOAD_EEPROM, onDrawMenuItem, ReadEeprom);
-      MENU_ITEM(ICON_ResumeEEPROM, MSG_RESTORE_DEFAULTS, onDrawMenuItem, ResetEeprom);
-    #endif
-  }
-  ui.reset_status(true);
-  UpdateMenu(AdvancedMenu);
-}
-#endif
-
 void Draw_Move_Menu() {
   checkkey = Menu;
   if (SET_MENU(MoveMenu, MSG_MOVE_AXIS, 6)) {
@@ -3894,7 +3637,7 @@ void Draw_Steps_Menu() {
 #if HAS_MESH
   void Draw_MeshSet_Menu() {
     checkkey = Menu;
-    if (SET_MENU(MeshMenu, MSG_MESH_LEVELING, 15)) {
+    if (SET_MENU(MeshMenu, MSG_MESH_LEVELING, 7)) {
       BACK_ITEM(Draw_AdvancedSettings_Menu);
       #if ProUIex
         MENU_ITEM(ICON_MeshPoints, MSG_MESH_POINTS, onDrawMeshPoints, SetMeshPoints);
@@ -3905,24 +3648,13 @@ void Draw_Steps_Menu() {
       #endif
       EDIT_ITEM(ICON_SetZOffset, MSG_Z_FADE_HEIGHT, onDrawPFloatMenu, SetMeshFadeHeight, &planner.z_fade_height);
       EDIT_ITEM(ICON_UBLActive, MSG_ACTIVATE_MESH, onDrawChkbMenu, SetMeshActive, &planner.leveling_active);
-      #if HAS_BED_PROBE
-        MENU_ITEM(ICON_Level, MSG_AUTO_MESH, onDrawMenuItem, AutoLev);
-      #endif
       #if ENABLED(AUTO_BED_LEVELING_UBL)
-        EDIT_ITEM(ICON_UBLActive, MSG_UBL_STORAGE_SLOT, onDrawUBLSlot, SetUBLSlot, &bedlevel.storage_slot);
-        MENU_ITEM(ICON_UBLActive, MSG_UBL_SAVE_MESH, onDrawMenuItem, UBLSaveMesh);
-        MENU_ITEM(ICON_UBLActive, MSG_UBL_LOAD_MESH, onDrawMenuItem, UBLLoadMesh);
         EDIT_ITEM(ICON_UBLActive, MSG_UBL_TILTING_GRID, onDrawPInt8Menu, SetUBLTiltGrid, &BedLevelTools.tilt_grid);
-        MENU_ITEM(ICON_UBLActive, MSG_UBL_TILT_MESH, onDrawMenuItem, UBLTiltMesh);
-        MENU_ITEM(ICON_UBLActive, MSG_UBL_SMART_FILLIN, onDrawMenuItem, UBLSmartFillMesh);
       #endif
-      #if ENABLED(MESH_EDIT_MENU)
-        MENU_ITEM(ICON_UBLActive, MSG_EDIT_MESH, onDrawSubMenu, Draw_EditMesh_Menu);
-      #endif
-      MENU_ITEM(ICON_MeshViewer, MSG_MESH_VIEW, onDrawSubMenu, DWIN_MeshViewer);
     }
     UpdateMenu(MeshMenu);
   }
+  #endif
 
   #if ENABLED(MESH_EDIT_MENU)
     void Draw_EditMesh_Menu() {
@@ -3957,8 +3689,6 @@ void Draw_Steps_Menu() {
       UpdateMenu(MeshInsetMenu);
     }  
   #endif
-
-#endif  // HAS_MESH
 
 
 //=============================================================================
@@ -4015,5 +3745,272 @@ void Draw_Steps_Menu() {
     Draw_Main_Area();
   }
 #endif
+
+#ifdef AUTO_BED_LEVELING_UBL
+void Draw_AdvancedSettings_Menu() {
+  checkkey = Menu;
+  if (SET_MENU(AdvancedSettings, MSG_UBL_LEVELING, 4)) {
+    BACK_ITEM(Goto_Main_Menu);
+    #if ENABLED(EEPROM_SETTINGS)
+      MENU_ITEM(ICON_WriteEEPROM, MSG_STORE_EEPROM, onDrawMenuItem, WriteEeprom);
+    #endif
+    #if HAS_MESH
+      MENU_ITEM(ICON_ProbeSet, MSG_MESH_LEVELING, onDrawSubMenu, Draw_MeshSet_Menu);
+      #if HAS_BED_PROBE
+        MENU_ITEM(ICON_ProbeSet, MSG_ZPROBE_SETTINGS, onDrawSubMenu, Draw_ProbeSet_Menu);
+        MENU_ITEM(ICON_Level, MSG_AUTO_MESH, onDrawMenuItem, AutoLev);
+      #if ENABLED(MESH_EDIT_MENU)
+        MENU_ITEM(ICON_UBLActive, MSG_EDIT_MESH, onDrawSubMenu, Draw_EditMesh_Menu);
+      #endif
+        MENU_ITEM(ICON_MeshViewer, MSG_MESH_VIEW, onDrawSubMenu, DWIN_MeshViewer);   
+      #endif
+      #if ENABLED(AUTO_BED_LEVELING_UBL)  
+        EDIT_ITEM(ICON_UBLActive, MSG_UBL_STORAGE_SLOT, onDrawUBLSlot, SetUBLSlot, &bedlevel.storage_slot);
+        MENU_ITEM(ICON_UBLActive, MSG_UBL_SAVE_MESH, onDrawMenuItem, UBLSaveMesh);
+        MENU_ITEM(ICON_UBLActive, MSG_UBL_LOAD_MESH, onDrawMenuItem, UBLLoadMesh);
+        MENU_ITEM(ICON_UBLActive, MSG_UBL_TILT_MESH, onDrawMenuItem, UBLTiltMesh);
+        MENU_ITEM(ICON_UBLActive, MSG_UBL_SMART_FILLIN, onDrawMenuItem, UBLSmartFillMesh);
+      #endif
+    #endif 
+  }
+  ui.reset_status(true);
+  UpdateMenu(AdvancedSettings);
+}
+
+#elif defined(AUTO_BED_LEVELING_BILINEAR)
+void Draw_AdvancedSettings_Menu() {
+  checkkey = Menu;
+  if (SET_MENU(AdvancedSettings, MSG_BILINEAR_LEVELING, 19)) {
+    BACK_ITEM(Goto_Main_Menu);
+    #if ENABLED(EEPROM_SETTINGS)
+      MENU_ITEM(ICON_WriteEEPROM, MSG_STORE_EEPROM, onDrawMenuItem, WriteEeprom);
+    #endif
+    #if HAS_MESH
+      MENU_ITEM(ICON_ProbeSet, MSG_MESH_LEVELING, onDrawSubMenu, Draw_MeshSet_Menu);
+    #endif
+    #if HAS_BED_PROBE
+      MENU_ITEM(ICON_ProbeSet, MSG_ZPROBE_SETTINGS, onDrawSubMenu, Draw_ProbeSet_Menu);
+    #endif
+      MENU_ITEM(ICON_FilSet, MSG_FILAMENT_SET, onDrawSubMenu, Draw_FilSet_Menu);
+    #if ProUIex
+      MENU_ITEM(ICON_PhySet, MSG_PHY_SET, onDrawSubMenu, Draw_PhySet_Menu);
+    #endif
+    #if HAS_HOME_OFFSET
+      MENU_ITEM(ICON_HomeOffset, MSG_SET_HOME_OFFSETS, onDrawSubMenu, Draw_HomeOffset_Menu);
+    #endif
+    #if HAS_TOOLBAR
+      MENU_ITEM(ICON_TBSetup, MSG_TOOLBAR_SETUP, onDrawSubMenu, Draw_TBSetup_Menu);
+    #endif
+    #if HAS_ESDIAG
+      MENU_ITEM_F(ICON_ESDiag, "End-stops diag.", onDrawSubMenu, Draw_EndStopDiag);
+    #endif
+    #if ENABLED(PRINTCOUNTER)
+      MENU_ITEM(ICON_PrintStats, MSG_INFO_STATS_MENU, onDrawSubMenu, Goto_PrintStats);
+      MENU_ITEM(ICON_PrintStatsReset, MSG_INFO_PRINT_COUNT_RESET, onDrawSubMenu, PrintStats.Reset);
+    #endif
+    #if HAS_LOCKSCREEN
+      MENU_ITEM(ICON_Lock, MSG_LOCKSCREEN, onDrawMenuItem, DWIN_LockScreen);
+    #endif
+    #if ENABLED(HOST_SHUTDOWN_MENU_ITEM) && defined(SHUTDOWN_ACTION)
+      MENU_ITEM(ICON_Host, MSG_HOST_SHUTDOWN, onDrawMenuItem, HostShutDown);
+    #endif
+    #if ENABLED(SOUND_MENU_ITEM)
+      EDIT_ITEM(ICON_Sound, MSG_SOUND_ENABLE, onDrawChkbMenu, SetEnableSound, &ui.sound_on); //changed
+    #endif
+      #if ENABLED(SOUND_MENU_ITEM)
+      EDIT_ITEM(ICON_Sound, MSG_TICK, onDrawChkbMenu, SetEnableTick, &ui.no_tick); //changed
+    #endif
+    #if ENABLED(POWER_LOSS_RECOVERY)
+      EDIT_ITEM(ICON_Pwrlossr, MSG_OUTAGE_RECOVERY, onDrawChkbMenu, SetPwrLossr, &recovery.enabled);
+    #endif
+    #if HAS_SD_EXTENDER
+    EDIT_ITEM(ICON_File, MSG_MEDIA_UPDATE, onDrawChkbMenu, SetMediaAutoMount, &HMI_data.MediaAutoMount);
+    #endif
+    #if ENABLED(BAUD_RATE_GCODE)
+      EDIT_ITEM_F(ICON_SetBaudRate, "250K baud", onDrawChkbMenu, SetBaudRate, &HMI_data.Baud250K);
+    #endif
+    #if HAS_LCD_BRIGHTNESS
+      EDIT_ITEM(ICON_Brightness, MSG_BRIGHTNESS, onDrawPInt8Menu, SetBrightness, &ui.brightness);
+      MENU_ITEM(ICON_Brightness, MSG_BRIGHTNESS_OFF, onDrawMenuItem, TurnOffBacklight);
+    #endif
+      MENU_ITEM(ICON_Scolor, MSG_COLORS_SELECT, onDrawSubMenu, Draw_SelectColors_Menu);
+  }
+  ui.reset_status(true);
+  UpdateMenu(AdvancedSettings);
+}
+
+#elif defined(MESH_BED_LEVELING)
+void Draw_AdvancedSettings_Menu() {
+  checkkey = Menu;
+  if (SET_MENU(AdvancedSettings, MSG_MESH_LEVELING, 19)) {
+    BACK_ITEM(Goto_Main_Menu);
+    #if ENABLED(EEPROM_SETTINGS)
+      MENU_ITEM(ICON_WriteEEPROM, MSG_STORE_EEPROM, onDrawMenuItem, WriteEeprom);
+    #endif
+    #if HAS_MESH
+      MENU_ITEM(ICON_ProbeSet, MSG_MESH_LEVELING, onDrawSubMenu, Draw_MeshSet_Menu);
+    #endif
+    #if HAS_BED_PROBE
+      MENU_ITEM(ICON_ProbeSet, MSG_ZPROBE_SETTINGS, onDrawSubMenu, Draw_ProbeSet_Menu);
+    #endif
+      MENU_ITEM(ICON_FilSet, MSG_FILAMENT_SET, onDrawSubMenu, Draw_FilSet_Menu);
+    #if ProUIex
+      MENU_ITEM(ICON_PhySet, MSG_PHY_SET, onDrawSubMenu, Draw_PhySet_Menu);
+    #endif
+    #if HAS_HOME_OFFSET
+      MENU_ITEM(ICON_HomeOffset, MSG_SET_HOME_OFFSETS, onDrawSubMenu, Draw_HomeOffset_Menu);
+    #endif
+    #if HAS_TOOLBAR
+      MENU_ITEM(ICON_TBSetup, MSG_TOOLBAR_SETUP, onDrawSubMenu, Draw_TBSetup_Menu);
+    #endif
+    #if HAS_ESDIAG
+      MENU_ITEM_F(ICON_ESDiag, "End-stops diag.", onDrawSubMenu, Draw_EndStopDiag);
+    #endif
+    #if ENABLED(PRINTCOUNTER)
+      MENU_ITEM(ICON_PrintStats, MSG_INFO_STATS_MENU, onDrawSubMenu, Goto_PrintStats);
+      MENU_ITEM(ICON_PrintStatsReset, MSG_INFO_PRINT_COUNT_RESET, onDrawSubMenu, PrintStats.Reset);
+    #endif
+    #if HAS_LOCKSCREEN
+      MENU_ITEM(ICON_Lock, MSG_LOCKSCREEN, onDrawMenuItem, DWIN_LockScreen);
+    #endif
+    #if ENABLED(HOST_SHUTDOWN_MENU_ITEM) && defined(SHUTDOWN_ACTION)
+      MENU_ITEM(ICON_Host, MSG_HOST_SHUTDOWN, onDrawMenuItem, HostShutDown);
+    #endif
+    #if ENABLED(SOUND_MENU_ITEM)
+      EDIT_ITEM(ICON_Sound, MSG_SOUND_ENABLE, onDrawChkbMenu, SetEnableSound, &ui.sound_on); //changed
+    #endif
+      #if ENABLED(SOUND_MENU_ITEM)
+      EDIT_ITEM(ICON_Sound, MSG_TICK, onDrawChkbMenu, SetEnableTick, &ui.no_tick); //changed
+    #endif
+    #if ENABLED(POWER_LOSS_RECOVERY)
+      EDIT_ITEM(ICON_Pwrlossr, MSG_OUTAGE_RECOVERY, onDrawChkbMenu, SetPwrLossr, &recovery.enabled);
+    #endif
+    #if HAS_SD_EXTENDER
+    EDIT_ITEM(ICON_File, MSG_MEDIA_UPDATE, onDrawChkbMenu, SetMediaAutoMount, &HMI_data.MediaAutoMount);
+    #endif
+    #if ENABLED(BAUD_RATE_GCODE)
+      EDIT_ITEM_F(ICON_SetBaudRate, "250K baud", onDrawChkbMenu, SetBaudRate, &HMI_data.Baud250K);
+    #endif
+    #if HAS_LCD_BRIGHTNESS
+      EDIT_ITEM(ICON_Brightness, MSG_BRIGHTNESS, onDrawPInt8Menu, SetBrightness, &ui.brightness);
+      MENU_ITEM(ICON_Brightness, MSG_BRIGHTNESS_OFF, onDrawMenuItem, TurnOffBacklight);
+    #endif
+      MENU_ITEM(ICON_Scolor, MSG_COLORS_SELECT, onDrawSubMenu, Draw_SelectColors_Menu);
+  }
+  ui.reset_status(true);
+  UpdateMenu(AdvancedSettings);
+}
+
+#else
+void Draw_AdvancedSettings_Menu() {
+  checkkey = Menu;
+  if (SET_MENU(AdvancedSettings, MSG_ADVANCED_SETTINGS, 19)) { //2
+    BACK_ITEM(Goto_Main_Menu);
+    #if ENABLED(EEPROM_SETTINGS)
+      MENU_ITEM(ICON_WriteEEPROM, MSG_STORE_EEPROM, onDrawMenuItem, WriteEeprom);
+      MENU_ITEM(ICON_ReadEEPROM, MSG_LOAD_EEPROM, onDrawMenuItem, ReadEeprom);
+      MENU_ITEM(ICON_ResumeEEPROM, MSG_RESTORE_DEFAULTS, onDrawMenuItem, ResetEeprom);
+    #endif
+    #if HAS_MESH
+      MENU_ITEM(ICON_ProbeSet, MSG_MESH_LEVELING, onDrawSubMenu, Draw_MeshSet_Menu);
+    #endif
+    #if HAS_BED_PROBE
+      MENU_ITEM(ICON_ProbeSet, MSG_ZPROBE_SETTINGS, onDrawSubMenu, Draw_ProbeSet_Menu);
+    #endif
+      MENU_ITEM(ICON_FilSet, MSG_FILAMENT_SET, onDrawSubMenu, Draw_FilSet_Menu);
+    #if ProUIex
+      MENU_ITEM(ICON_PhySet, MSG_PHY_SET, onDrawSubMenu, Draw_PhySet_Menu);
+    #endif
+    #if HAS_HOME_OFFSET
+      MENU_ITEM(ICON_HomeOffset, MSG_SET_HOME_OFFSETS, onDrawSubMenu, Draw_HomeOffset_Menu);
+    #endif
+    #if HAS_TOOLBAR
+      MENU_ITEM(ICON_TBSetup, MSG_TOOLBAR_SETUP, onDrawSubMenu, Draw_TBSetup_Menu);
+    #endif
+    #if HAS_ESDIAG
+      MENU_ITEM_F(ICON_ESDiag, "End-stops diag.", onDrawSubMenu, Draw_EndStopDiag);
+    #endif
+    #if ENABLED(PRINTCOUNTER)
+      MENU_ITEM(ICON_PrintStats, MSG_INFO_STATS_MENU, onDrawSubMenu, Goto_PrintStats);
+      MENU_ITEM(ICON_PrintStatsReset, MSG_INFO_PRINT_COUNT_RESET, onDrawSubMenu, PrintStats.Reset);
+    #endif
+    #if HAS_LOCKSCREEN
+      MENU_ITEM(ICON_Lock, MSG_LOCKSCREEN, onDrawMenuItem, DWIN_LockScreen);
+    #endif
+    #if ENABLED(HOST_SHUTDOWN_MENU_ITEM) && defined(SHUTDOWN_ACTION)
+      MENU_ITEM(ICON_Host, MSG_HOST_SHUTDOWN, onDrawMenuItem, HostShutDown);
+    #endif
+    #if ENABLED(SOUND_MENU_ITEM)
+      EDIT_ITEM(ICON_Sound, MSG_SOUND_ENABLE, onDrawChkbMenu, SetEnableSound, &ui.sound_on); //changed
+    #endif
+      #if ENABLED(SOUND_MENU_ITEM)
+      EDIT_ITEM(ICON_Sound, MSG_TICK, onDrawChkbMenu, SetEnableTick, &ui.no_tick); //changed
+    #endif
+    #if ENABLED(POWER_LOSS_RECOVERY)
+      EDIT_ITEM(ICON_Pwrlossr, MSG_OUTAGE_RECOVERY, onDrawChkbMenu, SetPwrLossr, &recovery.enabled);
+    #endif
+    #if HAS_SD_EXTENDER
+    EDIT_ITEM(ICON_File, MSG_MEDIA_UPDATE, onDrawChkbMenu, SetMediaAutoMount, &HMI_data.MediaAutoMount);
+    #endif
+    #if ENABLED(BAUD_RATE_GCODE)
+      EDIT_ITEM_F(ICON_SetBaudRate, "250K baud", onDrawChkbMenu, SetBaudRate, &HMI_data.Baud250K);
+    #endif
+    #if HAS_LCD_BRIGHTNESS
+      EDIT_ITEM(ICON_Brightness, MSG_BRIGHTNESS, onDrawPInt8Menu, SetBrightness, &ui.brightness);
+      MENU_ITEM(ICON_Brightness, MSG_BRIGHTNESS_OFF, onDrawMenuItem, TurnOffBacklight);
+    #endif
+      MENU_ITEM(ICON_Scolor, MSG_COLORS_SELECT, onDrawSubMenu, Draw_SelectColors_Menu);
+  }
+  ui.reset_status(true);
+  UpdateMenu(AdvancedSettings);
+}
+#endif
+
+void Draw_Advanced_Menu() {
+  checkkey = Menu;
+  if (SET_MENU(AdvancedMenu, MSG_ADVANCED_SETTINGS, 20)) {//-3
+    BACK_ITEM(Draw_Control_Menu);
+    #if HAS_LCD_BRIGHTNESS
+      EDIT_ITEM(ICON_Brightness, MSG_BRIGHTNESS, onDrawPInt8Menu, SetBrightness, &ui.brightness);
+    #endif
+    #if LCD_BACKLIGHT_TIMEOUT
+      EDIT_ITEM(ICON_Box, MSG_LCD_TIMEOUT_SEC, onDrawPIntMenu, SetTimer, &ui.lcd_backlight_timeout); //added
+    #endif
+      EDIT_ITEM_F(ICON_ProbeMargin, "Screw Inset to Nozzle", onDrawPFloatMenu, SetRetractSpeed, &ui.screw_pos); //changed
+    #if ENABLED(POWER_LOSS_RECOVERY)
+      EDIT_ITEM(ICON_Pwrlossr, MSG_OUTAGE_RECOVERY, onDrawChkbMenu, SetPwrLossr, &recovery.enabled);
+    #endif
+    #if ENABLED(SOUND_MENU_ITEM)
+      EDIT_ITEM(ICON_Sound, MSG_TICK, onDrawChkbMenu, SetEnableTick, &ui.no_tick); //changed
+      EDIT_ITEM(ICON_Sound, MSG_SOUND_ENABLE, onDrawChkbMenu, SetEnableSound, &ui.sound_on); //changed
+    #endif
+    #if ENABLED(BAUD_RATE_GCODE)
+      EDIT_ITEM_F(ICON_SetBaudRate, "250K baud", onDrawChkbMenu, SetBaudRate, &HMI_data.Baud250K);
+    #endif
+    #if HAS_TOOLBAR
+      MENU_ITEM(ICON_TBSetup, MSG_TOOLBAR_SETUP, onDrawSubMenu, Draw_TBSetup_Menu);
+    #endif
+      MENU_ITEM(ICON_FilSet, MSG_FILAMENT_SET, onDrawSubMenu, Draw_FilSet_Menu);
+    #if HAS_ESDIAG
+      MENU_ITEM_F(ICON_ESDiag, "End-stops diag.", onDrawSubMenu, Draw_EndStopDiag);
+    #endif
+    #if ENABLED(PRINTCOUNTER)
+      MENU_ITEM(ICON_PrintStats, MSG_INFO_STATS_MENU, onDrawSubMenu, Goto_PrintStats);
+      MENU_ITEM(ICON_PrintStatsReset, MSG_INFO_PRINT_COUNT_RESET, onDrawSubMenu, PrintStats.Reset);
+    #endif
+    #if ENABLED(HOST_SHUTDOWN_MENU_ITEM) && defined(SHUTDOWN_ACTION)
+      MENU_ITEM(ICON_Host, MSG_HOST_SHUTDOWN, onDrawMenuItem, HostShutDown);
+    #endif
+    #if HAS_SD_EXTENDER
+      EDIT_ITEM(ICON_File, MSG_MEDIA_UPDATE, onDrawChkbMenu, SetMediaAutoMount, &HMI_data.MediaAutoMount);
+    #endif
+    #if ENABLED(EEPROM_SETTINGS)
+      MENU_ITEM(ICON_ReadEEPROM, MSG_LOAD_EEPROM, onDrawMenuItem, ReadEeprom);
+      MENU_ITEM(ICON_ResumeEEPROM, MSG_RESTORE_DEFAULTS, onDrawMenuItem, ResetEeprom);
+    #endif
+  }
+  ui.reset_status(true);
+  UpdateMenu(AdvancedMenu);
+}
 
 #endif // DWIN_LCD_PROUI
