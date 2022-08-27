@@ -3749,7 +3749,7 @@ void Draw_Steps_Menu() {
 #ifdef AUTO_BED_LEVELING_UBL
 void Draw_AdvancedSettings_Menu() {
   checkkey = Menu;
-  if (SET_MENU(AdvancedSettings, MSG_UBL_LEVELING, 4)) {
+  if (SET_MENU(AdvancedSettings, MSG_UBL_LEVELING, 12)) {
     BACK_ITEM(Goto_Main_Menu);
     #if ENABLED(EEPROM_SETTINGS)
       MENU_ITEM(ICON_WriteEEPROM, MSG_STORE_EEPROM, onDrawMenuItem, WriteEeprom);
