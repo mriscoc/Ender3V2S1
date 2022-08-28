@@ -6,6 +6,8 @@
 
 ## Universal RET6/RCT6 Ender 3 V2/S1 Edition
 
+I will be working on more upgrades and features and tweaks along the way. Enjoy using this fork of Marlin as I intend it to be the best and easy to use, or as convenient as possible. So far I really enjoy the new settings and toolbar for the main menu. I like the variety of parameters of options that can be changed without having to reflash the firmware. 
+
 The Precompiled binary files of this firmware can work with STM32 (STM32F103RET6) and it's clones G32 (GD32F103RET6), N32 (Nation), and possibly H32. They can be downloaded from:
 [Latest Release](https://github.com/classicrocker883/MriscocProUI/releases/latest)
 
@@ -16,6 +18,7 @@ The Precompiled binary files of this firmware can work with STM32 (STM32F103RET6
 <BR/>
 
 ## Donations
+Please consider making a donation, as large or as small and as often as you'd like.
 Thank you for your support, I receive donations through [Paypal](https://www.paypal.com/paypalme/andrewleduc)   
 
 [<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif">](https://www.paypal.com/donate/?business=PFNSKQX9WQQ8W&no_recurring=0&currency_code=USD)   
