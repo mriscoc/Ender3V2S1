@@ -1767,7 +1767,7 @@ void DWIN_SetDataDefaults() {
     #endif
     TERN_(HAS_EXTRUDERS, PRO_data.Invert_E0 = DEF_INVERT_E0_DIR);
     #if ENABLED(NOZZLE_PARK_FEATURE)
-      PRO_data.Park_point = xyz_int_t DEF_NOZZLE_PARK_POINT;
+      PRO_data.Park_point = DEF_NOZZLE_PARK_POINT;
     #endif
     #if HAS_FILAMENT_SENSOR
       PRO_data.Runout_active_state = FIL_RUNOUT_STATE;
