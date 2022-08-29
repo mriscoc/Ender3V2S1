@@ -23,7 +23,7 @@
 
 #if ENABLED(DWIN_LCD_PROUI)
 
-
+#include "../../language/language_en.h"
 #include "dwin.h"
 #include "dwinui.h"
 #include "menus.h"
@@ -785,21 +785,26 @@ void update_variable() {
     DWINUI::Draw_Signed_Float(DWIN_FONT_STAT, HMI_data.Indicator_Color,  HMI_data.Background_Color, 2, 2, 204, 417, _offset);
   }
 
-  _draw_xyz_position(true);
-
-  #if !HAS_LEVELING
+ #if HAS_MESH
     static bool _leveling_active = false;
     if (_leveling_active != planner.leveling_active) {
       _leveling_active = planner.leveling_active;
-      if (!_leveling_active) {
-        DWIN_Draw_Rectangle(1, HMI_data.Background_Color, 186, 415, 205, 436);
+      DWIN_Draw_Box(1, HMI_data.Background_Color, 186, 416, 20, 20);
+      if (_leveling_active)
+        DWINUI::Draw_Icon(ICON_SetZOffset, 186, 416);
+      else
         DWINUI::Draw_Icon(ICON_Zoffset, 187, 416);
-      }
-    }
+            }
   #else
     DWINUI::Draw_Icon(ICON_Zoffset, 187, 416);
   #endif
-}
+
+  _draw_xyz_position(false);
+
+
+    }
+  
+
 
 /**
  * Memory card and file management
@@ -1032,7 +1037,7 @@ void DWIN_Draw_Dashboard() {
   DWINUI::Draw_Icon(ICON_MaxSpeedX,  10, 454);
   DWINUI::Draw_Icon(ICON_MaxSpeedY,  95, 454);
   DWINUI::Draw_Icon(ICON_MaxSpeedZ, 180, 454);
-  _draw_xyz_position(false);
+  _draw_xyz_position(true);
 
 DWIN_Draw_Rectangle(1, HMI_data.SplitLine_Color, 0, 478, DWIN_WIDTH, 479); //changed added 2nd line
 
@@ -2986,12 +2991,12 @@ void Draw_Move_Menu() {
       EDIT_ITEM(ICON_ProbeOffsetZ, MSG_ZPROBE_ZOFFSET, onDrawPFloat2Menu, SetProbeOffsetZ, &probe.offset.z);
       #if ProUIex
         EDIT_ITEM(ICON_ProbeZSpeed, MSG_Z_FEED_RATE, onDrawPIntMenu, SetProbeZSpeed, &PRO_data.zprobefeedslow);
-        EDIT_ITEM(ICON_ProbeMultiple, MSG_ZPROBE_MULTIPLE, onDrawPInt8Menu, SetProbeMultiple, &PRO_data.multiple_probing);
+        EDIT_ITEM(ICON_Homing, MSG_ZPROBE_MULTIPLE, onDrawPInt8Menu, SetProbeMultiple, &PRO_data.multiple_probing);
       #endif
       #if ENABLED(BLTOUCH)
         MENU_ITEM(ICON_ProbeStow, MSG_MANUAL_STOW, onDrawMenuItem, ProbeStow);
         MENU_ITEM(ICON_ProbeDeploy, MSG_MANUAL_DEPLOY, onDrawMenuItem, ProbeDeploy);
-        MENU_ITEM(ICON_BltouchReset, MSG_BLTOUCH_RESET, onDrawMenuItem, bltouch._reset);
+        MENU_ITEM(ICON_Info, MSG_BLTOUCH_RESET, onDrawMenuItem, bltouch._reset);
         #ifdef BLTOUCH_HS_MODE
           EDIT_ITEM(ICON_HSMode, MSG_ENABLE_HS_MODE, onDrawChkbMenu, SetHSMode, &bltouch.high_speed_mode);
         #endif
@@ -3457,7 +3462,7 @@ void Draw_Steps_Menu() {
    // DWINUI::Draw_CenteredString(218, F("For Best Results:"));
    // DWINUI::Draw_CenteredString(251, F("Make Nozzle Touch Bed"));
 
-      MENU_ITEM_F(ICON_Info, "For Best Results:\n", onDrawMenuItem);
+      MENU_ITEM_F(ICON_Language, "For Best Results:\n", onDrawMenuItem);
       MENU_ITEM_F(ICON_HotendTemp, "Make Nozzle Touch Bed", onDrawMenuItem);
     }
     UpdateMenu(ZOffsetWizMenu);
@@ -3640,16 +3645,16 @@ void Draw_Steps_Menu() {
     if (SET_MENU(MeshMenu, MSG_MESH_LEVELING, 7)) {
       BACK_ITEM(Draw_AdvancedSettings_Menu);
       #if ProUIex
-        MENU_ITEM(ICON_MeshPoints, MSG_MESH_POINTS, onDrawMeshPoints, SetMeshPoints);
+        MENU_ITEM(ICON_UBLActive, MSG_MESH_POINTS, onDrawMeshPoints, SetMeshPoints);
         MENU_ITEM(ICON_ProbeMargin, MSG_MESH_INSET, onDrawSubMenu, Draw_MeshInset_Menu);
       #endif
       #if BOTH(HAS_HEATED_BED, PREHEAT_BEFORE_LEVELING)
         EDIT_ITEM(ICON_Temperature, MSG_UBL_SET_TEMP_BED, onDrawPIntMenu, SetBedLevT, &HMI_data.BedLevT);
       #endif
-      EDIT_ITEM(ICON_SetZOffset, MSG_Z_FADE_HEIGHT, onDrawPFloatMenu, SetMeshFadeHeight, &planner.z_fade_height);
-      EDIT_ITEM(ICON_UBLActive, MSG_ACTIVATE_MESH, onDrawChkbMenu, SetMeshActive, &planner.leveling_active);
+      EDIT_ITEM(ICON_Fade, MSG_Z_FADE_HEIGHT, onDrawPFloatMenu, SetMeshFadeHeight, &planner.z_fade_height);
+      EDIT_ITEM(ICON_Version, MSG_ACTIVATE_MESH, onDrawChkbMenu, SetMeshActive, &planner.leveling_active);
       #if ENABLED(AUTO_BED_LEVELING_UBL)
-        EDIT_ITEM(ICON_UBLActive, MSG_UBL_TILTING_GRID, onDrawPInt8Menu, SetUBLTiltGrid, &BedLevelTools.tilt_grid);
+        EDIT_ITEM(ICON_Version, MSG_UBL_TILTING_GRID, onDrawPInt8Menu, SetUBLTiltGrid, &BedLevelTools.tilt_grid);
       #endif
     }
     UpdateMenu(MeshMenu);
@@ -3663,7 +3668,7 @@ void Draw_Steps_Menu() {
       checkkey = Menu;
       if (SET_MENU(EditMeshMenu, MSG_EDIT_MESH, 6)) {
         BedLevelTools.mesh_x = BedLevelTools.mesh_y = 0;
-        BACK_ITEM(Draw_MeshSet_Menu);
+        BACK_ITEM(Draw_AdvancedSettings_Menu);
         EDIT_ITEM(ICON_UBLActive, MSG_PROBE_WIZARD_MOVING, onDrawChkbMenu, SetAutoMovToMesh, &AutoMovToMesh);
         EDIT_ITEM(ICON_UBLActive, MSG_MESH_X, onDrawPInt8Menu, SetEditMeshX, &BedLevelTools.mesh_x);
         EDIT_ITEM(ICON_UBLActive, MSG_MESH_Y, onDrawPInt8Menu, SetEditMeshY, &BedLevelTools.mesh_y);
@@ -3683,8 +3688,8 @@ void Draw_Steps_Menu() {
         EDIT_ITEM(ICON_ProbeMargin, MSG_MESH_MAX_X, onDrawPFloatMenu, SetMeshInset, &PRO_data.mesh_max_x);
         EDIT_ITEM(ICON_ProbeMargin, MSG_MESH_MIN_Y, onDrawPFloatMenu, SetMeshInset, &PRO_data.mesh_min_y);
         EDIT_ITEM(ICON_ProbeMargin, MSG_MESH_MAX_Y, onDrawPFloatMenu, SetMeshInset, &PRO_data.mesh_max_y);
-        MENU_ITEM(ICON_ProbeMargin, MSG_MESH_AMAX, onDrawMenuItem, MaxMeshArea);
-        MENU_ITEM(ICON_ProbeMargin, MSG_MESH_CENTER, onDrawMenuItem, CenterMeshArea);
+        MENU_ITEM(ICON_Axis, MSG_MESH_AMAX, onDrawMenuItem, MaxMeshArea);
+        MENU_ITEM(ICON_SetHome, MSG_MESH_CENTER, onDrawMenuItem, CenterMeshArea);
       }
       UpdateMenu(MeshInsetMenu);
     }  
@@ -3755,7 +3760,7 @@ void Draw_AdvancedSettings_Menu() {
       MENU_ITEM(ICON_WriteEEPROM, MSG_STORE_EEPROM, onDrawMenuItem, WriteEeprom);
     #endif
     #if HAS_MESH
-      MENU_ITEM(ICON_ProbeSet, MSG_MESH_LEVELING, onDrawSubMenu, Draw_MeshSet_Menu);
+      MENU_ITEM(ICON_PrintSize, MSG_MESH_LEVELING, onDrawSubMenu, Draw_MeshSet_Menu);
       #if HAS_BED_PROBE
         MENU_ITEM(ICON_ProbeSet, MSG_ZPROBE_SETTINGS, onDrawSubMenu, Draw_ProbeSet_Menu);
         MENU_ITEM(ICON_Level, MSG_AUTO_MESH, onDrawMenuItem, AutoLev);
