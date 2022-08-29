@@ -50,7 +50,7 @@ BedLevelToolsClass BedLevelTools;
 bool BedLevelToolsClass::goto_mesh_value = false;
 uint8_t BedLevelToolsClass::mesh_x = 0;
 uint8_t BedLevelToolsClass::mesh_y = 0;
-uint8_t BedLevelToolsClass::tilt_grid = 1;
+uint8_t BedLevelToolsClass::tilt_grid = 2;
 
 bool drawing_mesh = false;
 char cmd[MAX_CMD_SIZE+16], str_1[16], str_2[16], str_3[16];
@@ -159,7 +159,9 @@ void BedLevelToolsClass::MoveToZ() {
   BedLevelTools.manual_move(BedLevelTools.mesh_x, BedLevelTools.mesh_y, true);
 }
 void BedLevelToolsClass::ProbeXY() {
-  sprintf_P(cmd, PSTR("G0Z5\nG30X%sY%s"),
+  const uint16_t Clear = Z_CLEARANCE_DEPLOY_PROBE;
+  sprintf_P(cmd, PSTR("G0Z%i\nG30X%sY%s"),
+    Clear,
     dtostrf(bedlevel.get_mesh_x(BedLevelTools.mesh_x), 1, 2, str_1),
     dtostrf(bedlevel.get_mesh_y(BedLevelTools.mesh_y), 1, 2, str_2)
   );
