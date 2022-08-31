@@ -547,6 +547,10 @@ typedef struct SettingsDataStruct {
     bool no_tick; //encoder beep
   #endif
 
+  #if ENABLED(USE_UBL_VIEWER)
+    bool view_mesh;
+  #endif
+
   //BED_SCREW_INSET
   float screw_pos;
  
@@ -644,7 +648,7 @@ void MarlinSettings::postprocess() {
   // Moved as last update due to interference with Neopixel init
   TERN_(HAS_LCD_CONTRAST, ui.refresh_contrast());
   TERN_(HAS_LCD_BRIGHTNESS, ui.refresh_brightness());
-  TERN_(LCD_BACKLIGHT_TIMEOUT, ui.refresh_backlight_timeout();); //added
+  TERN_(LCD_BACKLIGHT_TIMEOUT, ui.refresh_backlight_timeout()); //added
 
 }
 
@@ -1601,6 +1605,9 @@ void MarlinSettings::postprocess() {
       EEPROM_WRITE(ui.no_tick);
     #endif
 
+    #if ENABLED(USE_UBL_VIEWER)
+      EEPROM_WRITE(BedLevelTools.view_mesh);
+    #endif
     //
     // Fan tachometer check
     //
@@ -2582,6 +2589,10 @@ void MarlinSettings::postprocess() {
         EEPROM_READ(ui.no_tick);
       #endif
 
+      #if ENABLED(USE_UBL_VIEWER)
+        _FIELD_TEST(view_mesh);
+        EEPROM_READ(BedLevelTools.view_mesh);
+      #endif
       //
       // Fan tachometer check
       //
@@ -3010,6 +3021,10 @@ void MarlinSettings::reset() {
   #if ENABLED(SOUND_MENU_ITEM)
     ui.sound_on = ENABLED(SOUND_ON_DEFAULT);
     ui.no_tick = ENABLED(TICK_ON_DEFAULT); //added encoder beep bool
+  #endif
+
+  #if ENABLED(USE_UBL_VIEWER)
+    BedLevelTools.view_mesh = ENABLED(USE_UBL_VIEWER); //added mesh viewer option
   #endif
 
   //

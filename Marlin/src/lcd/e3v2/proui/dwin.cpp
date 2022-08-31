@@ -2279,6 +2279,14 @@ void SetPID(celsius_t t, heater_id_t h) {
   }
 #endif
 
+#if ENABLED(USE_UBL_VIEWER) //changed
+  void SetViewMesh() {
+    BedLevelTools.view_mesh = !BedLevelTools.view_mesh;
+    Draw_Chkb_Line(CurrentMenu->line(), BedLevelTools.view_mesh);
+    DWIN_UpdateLCD();
+  }
+#endif
+
 #if HAS_HOME_OFFSET
   void ApplyHomeOffset() { set_home_offset(HMI_value.axis, MenuData.Value / MINUNITMULT); }
   void SetHomeOffsetX() { HMI_value.axis = X_AXIS; SetPFloatOnClick(-50, 50, UNITFDIGITS, ApplyHomeOffset); }
@@ -3754,21 +3762,25 @@ void Draw_Steps_Menu() {
 #ifdef AUTO_BED_LEVELING_UBL
 void Draw_AdvancedSettings_Menu() {
   checkkey = Menu;
-  if (SET_MENU(AdvancedSettings, MSG_UBL_LEVELING, 12)) {
+  if (SET_MENU(AdvancedSettings, MSG_UBL_LEVELING, 13)) {
     BACK_ITEM(Goto_Main_Menu);
     #if ENABLED(EEPROM_SETTINGS)
       MENU_ITEM(ICON_WriteEEPROM, MSG_STORE_EEPROM, onDrawMenuItem, WriteEeprom);
     #endif
     #if HAS_MESH
-      MENU_ITEM(ICON_PrintSize, MSG_MESH_LEVELING, onDrawSubMenu, Draw_MeshSet_Menu);
       #if HAS_BED_PROBE
         MENU_ITEM(ICON_ProbeSet, MSG_ZPROBE_SETTINGS, onDrawSubMenu, Draw_ProbeSet_Menu);
         MENU_ITEM(ICON_Level, MSG_AUTO_MESH, onDrawMenuItem, AutoLev);
+      #endif
+        MENU_ITEM(ICON_MeshViewer, MSG_MESH_VIEW, onDrawSubMenu, DWIN_MeshViewer);  
+      #if ENABLED(USE_UBL_VIEWER)
+        EDIT_ITEM_F(ICON_PrintSize, "Change Mesh Viewer", onDrawChkbMenu, SetViewMesh, &BedLevelTools.view_mesh); 
+      #endif
       #if ENABLED(MESH_EDIT_MENU)
         MENU_ITEM(ICON_UBLActive, MSG_EDIT_MESH, onDrawSubMenu, Draw_EditMesh_Menu);
       #endif
-        MENU_ITEM(ICON_MeshViewer, MSG_MESH_VIEW, onDrawSubMenu, DWIN_MeshViewer);   
-      #endif
+      MENU_ITEM(ICON_PrintSize, MSG_MESH_LEVELING, onDrawSubMenu, Draw_MeshSet_Menu);
+
       #if ENABLED(AUTO_BED_LEVELING_UBL)  
         EDIT_ITEM(ICON_UBLActive, MSG_UBL_STORAGE_SLOT, onDrawUBLSlot, SetUBLSlot, &bedlevel.storage_slot);
         MENU_ITEM(ICON_UBLActive, MSG_UBL_SAVE_MESH, onDrawMenuItem, UBLSaveMesh);

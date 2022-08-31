@@ -104,9 +104,12 @@ void MeshViewerClass::DrawMesh(bed_mesh_t zval, const uint8_t sizex, const uint8
 void MeshViewerClass::Draw(bool withsave /*= false*/) {
   Title.ShowCaption(GET_TEXT_F(MSG_MESH_VIEWER));
   #if ENABLED(USE_UBL_VIEWER)
+  if(BedLevelTools.view_mesh) {
     DWINUI::ClearMainArea();
     BedLevelTools.viewer_print_value = true;
-    BedLevelTools.Draw_Bed_Mesh(-1, 1, 8, 10 + TITLE_HEIGHT);
+    BedLevelTools.Draw_Bed_Mesh(-1, 1, 8, 10 + TITLE_HEIGHT);}
+    else
+      DrawMesh(bedlevel.z_values, GRID_MAX_POINTS_X, GRID_MAX_POINTS_Y);
   #else
     DrawMesh(bedlevel.z_values, GRID_MAX_POINTS_X, GRID_MAX_POINTS_Y);
   #endif
@@ -119,7 +122,14 @@ void MeshViewerClass::Draw(bool withsave /*= false*/) {
     DWINUI::Draw_Button(BTN_Continue, 86, 305);
 
   #if ENABLED(USE_UBL_VIEWER)
-    BedLevelTools.Set_Mesh_Viewer_Status();
+    if(BedLevelTools.view_mesh) {
+      BedLevelTools.Set_Mesh_Viewer_Status();}
+    else {
+    char str_1[6], str_2[6] = "";
+    ui.status_printf(0, F("Mesh minZ: %s, maxZ: %s"),
+      dtostrf(min, 1, 2, str_1),
+      dtostrf(max, 1, 2, str_2)
+    );}
   #else
     char str_1[6], str_2[6] = "";
     ui.status_printf(0, F("Mesh minZ: %s, maxZ: %s"),

@@ -25,7 +25,7 @@
 
 #include "../../../inc/MarlinConfigPre.h"
 
-//#define USE_UBL_VIEWER 1
+#define USE_UBL_VIEWER 1
 
 #define UBL_Z_OFFSET_MIN -3.0
 #define UBL_Z_OFFSET_MAX  3.0
@@ -35,6 +35,7 @@ public:
   #if ENABLED(USE_UBL_VIEWER)
     static bool viewer_asymmetric_range;
     static bool viewer_print_value;
+    static bool view_mesh;
   #endif
   static bool goto_mesh_value;
   static uint8_t mesh_x;
