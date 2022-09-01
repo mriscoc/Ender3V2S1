@@ -504,11 +504,11 @@ namespace Language_en {
   LSTR MSG_KILLED                         = _UxGT("KILLED. ");
   LSTR MSG_STOPPED                        = _UxGT("STOPPED. ");
   LSTR MSG_FWRETRACT                      = _UxGT("Firmware Retract");
-  LSTR MSG_CONTROL_RETRACT                = _UxGT("Retract mm");
+  LSTR MSG_CONTROL_RETRACT                = _UxGT("Retract Distance");
   LSTR MSG_CONTROL_RETRACT_SWAP           = _UxGT("Swap Re.mm");
   LSTR MSG_CONTROL_RETRACTF               = _UxGT("Retract V");
-  LSTR MSG_CONTROL_RETRACT_ZHOP           = _UxGT("Hop mm");
-  LSTR MSG_CONTROL_RETRACT_RECOVER        = _UxGT("Unretr. Extra");
+  LSTR MSG_CONTROL_RETRACT_ZHOP           = _UxGT("Z Hop");
+  LSTR MSG_CONTROL_RETRACT_RECOVER        = _UxGT("Recover Extra");
   LSTR MSG_CONTROL_RETRACT_RECOVER_SWAP   = _UxGT("S Unretr. mm");
   LSTR MSG_CONTROL_RETRACT_RECOVERF       = _UxGT("Unretract V");
   LSTR MSG_CONTROL_RETRACT_RECOVER_SWAPF  = _UxGT("S UnRet V");
@@ -584,7 +584,7 @@ namespace Language_en {
   LSTR MSG_ZPROBE_MULTIPLE                = _UxGT("Multiple Probing");
   LSTR MSG_Z_FEED_RATE                    = _UxGT("Z Feed Rate");
   LSTR MSG_ENABLE_HS_MODE                 = _UxGT("Enable HS mode");
-  LSTR MSG_MOVE_NOZZLE_TO_BED             = _UxGT("Move Nozzle to Bed");
+  LSTR MSG_MOVE_NOZZLE_TO_BED             = _UxGT("Center Nozzle on Bed");
   LSTR MSG_BABYSTEP_X                     = _UxGT("Babystep X");
   LSTR MSG_BABYSTEP_Y                     = _UxGT("Babystep Y");
   LSTR MSG_BABYSTEP_Z                     = _UxGT("Babystep Z");
@@ -818,13 +818,13 @@ namespace Language_en {
   LSTR MSG_REHEATING                      = _UxGT("Reheating...");
   LSTR MSG_REHEATDONE                     = _UxGT("Reheat Done");
 
-  LSTR MSG_PROBE_WIZARD                   = _UxGT("Z Probe Wizard");
-  LSTR MSG_PROBE_WIZARD_PROBING           = _UxGT("Probing Z Reference");
-  LSTR MSG_PROBE_WIZARD_MOVING            = _UxGT("Moving to Probing Pos");
+  LSTR MSG_PROBE_WIZARD                   = _UxGT("Z-Offset Wizard");
+  LSTR MSG_PROBE_WIZARD_PROBING           = _UxGT("Probe Z Value");
+  LSTR MSG_PROBE_WIZARD_MOVING            = _UxGT("Move to Position");
 
   LSTR MSG_XATC                           = _UxGT("X-Twist Wizard");
   LSTR MSG_XATC_DONE                      = _UxGT("X-Twist Wizard Done!");
-  LSTR MSG_XATC_UPDATE_Z_OFFSET           = _UxGT("Update Probe Z-Offset to ");
+  LSTR MSG_XATC_UPDATE_Z_OFFSET           = _UxGT("Update Z-Offset");
 
   LSTR MSG_TICK                           = _UxGT("Encoder Tick");
 
