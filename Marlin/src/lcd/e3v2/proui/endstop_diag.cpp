@@ -62,6 +62,7 @@ void ESDiagClass::Draw() {
   DWINUI::ClearMainArea();
   Draw_Popup_Bkgd();
   DWINUI::Draw_Button(BTN_Continue, 86, 250);
+  Draw_Select_Box(86, 250);
   DWINUI::cursor.y = 80;
   #define ES_LABEL(S) draw_es_label(F(STR_##S))
   #if HAS_X_MIN

@@ -43,6 +43,12 @@ void Draw_Select_Highlight(const bool sel, const uint16_t ypos) {
   DWIN_Draw_Rectangle(0, c2, 144, ypos - 2, 247, ypos + 39);
 }
 
+void Draw_Select_Box(const uint16_t xpos, const uint16_t ypos) {
+  const uint16_t c1 = HMI_data.Highlight_Color;
+  DWIN_Draw_Rectangle(0, c1, xpos - 1, ypos - 1, xpos + 100, ypos + 38);
+  DWIN_Draw_Rectangle(0, c1, xpos - 2, ypos - 2, xpos + 101, ypos + 39);
+}
+
 void DWIN_Popup_Continue(const uint8_t icon, FSTR_P const fmsg1, FSTR_P const fmsg2) {
   HMI_SaveProcessID(WaitResponse);
   DWIN_Draw_Popup(icon, fmsg1, fmsg2, BTN_Continue);  // Button Continue

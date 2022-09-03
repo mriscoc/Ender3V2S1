@@ -45,6 +45,7 @@ void PrintStatsClass::Draw() {
   DWINUI::ClearMainArea();
   Draw_Popup_Bkgd();
   DWINUI::Draw_Button(BTN_Continue, 86, 250);
+  Draw_Select_Box(86, 250);
   printStatistics ps = print_job_timer.getStats();
 
   sprintf_P(buf, PSTR(S_FMT ": %i"), GET_TEXT(MSG_INFO_PRINT_COUNT), ps.totalPrints);

@@ -118,9 +118,10 @@ void MeshViewerClass::Draw(bool withsave /*= false*/) {
     DWINUI::Draw_Button(BTN_Continue, 146, 305);
     Draw_Select_Highlight(HMI_flag.select_flag, 305);
   }
-  else
-    DWINUI::Draw_Button(BTN_Continue, 86, 305);
-
+    else {
+      DWINUI::Draw_Button(BTN_Continue, 86, 305);
+      Draw_Select_Box(86, 305);
+    }
   #if ENABLED(USE_UBL_VIEWER)
     if(BedLevelTools.view_mesh) {
       BedLevelTools.Set_Mesh_Viewer_Status();}

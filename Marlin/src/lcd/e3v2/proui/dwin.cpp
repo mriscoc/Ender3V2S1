@@ -560,6 +560,7 @@ void Draw_PrintDone() {
   if (sdprint && TERN0(HAS_GCODE_PREVIEW, Preview_Valid())) {
     DWIN_ICON_Show(0, 0, 1, 21, 100, 0x00);
     DWINUI::Draw_Button(BTN_Continue, 86, 300);
+    Draw_Select_Box(86, 300);
   } 
   else {
     Draw_Print_ProgressBar();
@@ -569,6 +570,7 @@ void Draw_PrintDone() {
     Draw_Print_ProgressElapsed();
     Draw_Print_ProgressRemain();
     DWINUI::Draw_Button(BTN_Continue, 86, 273);
+    Draw_Select_Box(86, 273);
   }
 }
 
@@ -2620,6 +2622,7 @@ void TramC () { Tram(4); }
       DWINUI::Draw_CenteredString(Color_Green, 180, plabel);
     }
     DWINUI::Draw_Button(BTN_Continue, 86, 305);
+    Draw_Select_Box(86, 305);
     checkkey = Menu;
     HMI_SaveProcessID(WaitResponse);
   }
