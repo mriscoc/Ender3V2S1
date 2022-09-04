@@ -181,7 +181,7 @@ float MarlinUI::screw_pos = BED_SCREW_INSET;
   millis_t MarlinUI::backlight_off_ms = 0;
   void MarlinUI::refresh_backlight_timeout() { //reset backlight function
     backlight_off_ms = lcd_backlight_timeout ? millis() + lcd_backlight_timeout * 1000UL : 0;
-    #if PINS_EXIST
+    #if PIN_EXISTS(LCD_BACKLIGHT)
       WRITE(LCD_BACKLIGHT_PIN, HIGH);
     #endif
   }   
@@ -1177,8 +1177,13 @@ void MarlinUI::init() {
 
       #if LCD_BACKLIGHT_TIMEOUT
         if (backlight_off_ms && ELAPSED(ms, backlight_off_ms)) {
+          #if PIN_EXISTS(LCD_BACKLIGHT)
           WRITE(LCD_BACKLIGHT_PIN, LOW); // Backlight off
           backlight_off_ms = 0;
+          #else
+          // Backlight off (add function to turn off backlight for LCD-12864)
+          backlight_off_ms = 0;
+          #endif
         }
       #elif HAS_DISPLAY_SLEEP
         if (screen_timeout_millis && ELAPSED(ms, screen_timeout_millis))

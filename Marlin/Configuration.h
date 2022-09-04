@@ -2849,8 +2849,10 @@
 // This is RAMPS-compatible using a single 10-pin connector.
 // (For CR-10 owners who want to replace the Melzi Creality board but retain the display)
 //
-//#define CR10_STOCKDISPLAY
-
+//#define CR10_STOCKDISPLAY    //For DWIN LCD Ender 3 V2 / Voxelab Aquila line --> 3170
+#if CR10_STOCKDISPLAY 
+  #define RET6_12864_LCD
+#endif
 //
 // Ender-2 OEM display, a variant of the MKS_MINI_12864
 //
@@ -3162,9 +3164,12 @@
 //
 // Ender-3 v2 OEM display. A DWIN display with Rotary Encoder.
 //
+// LCD-12864 Ender 3 / CR-10_STOCKDISPLAY line --> 2852
+
 //#define DWIN_CREALITY_LCD           // Creality UI
 #define DWIN_LCD_PROUI              // Pro UI by MRiscoC
-// Professional firmware features:
+
+// Professional firmware features:    // Undefine all except SD Extender
 #define ProUIex 1
 #define HAS_GCODE_PREVIEW 1
 #define HAS_TOOLBAR 1
@@ -3176,7 +3181,7 @@
 #define USE_STOCK_DWIN_SET
 //#define HAS_SD_EXTENDER 1  // Enable it to support SD card extender cables
 
-//#define DWIN_CREALITY_LCD_JYERSUI   // Jyers UI by Jacob Myers
+//#define DWIN_CREALITY_LCD_JYERSUI   // Jyers UI by Jacob Myers (not working) *** use DWIN_CREALITY_LCD instead ***
 //#define DWIN_MARLINUI_PORTRAIT      // MarlinUI (portrait orientation)
 //#define DWIN_MARLINUI_LANDSCAPE     // MarlinUI (landscape orientation)
 
