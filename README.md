@@ -1,10 +1,10 @@
-# Professional Firmware for the Creality Ender 3 V2/S1 Printers
+# Professional Firmware for the Voxelab Aquila and Creality Ender 3 Printers
 \
 ![GitHub contributors](https://img.shields.io/github/contributors/classicrocker883/MriscocProUI.svg)
 ![GitHub Release Date](https://img.shields.io/github/release-date/classicrocker883/MriscocProUI.svg)
 [![Build Status](https://github.com/classicrocker883/MriscocProUI/workflows/CI/badge.svg?branch=MriscocProUI)](https://github.com/classicrocker883/MriscocProUI/actions)
 
-## Universal RET6/RCT6 Ender 3 V2/S1 Edition
+## Universal RET6/RCT6 chips for G32, N32, (working on H32), Creality 4.2.7 and 4.2.2 boards
 
 I will be working on more upgrades and features and tweaks along the way. Enjoy using this fork of Marlin as I intend it to be the best and easy to use, or as convenient as possible. So far I really enjoy the new settings and toolbar for the main menu. I like the variety of parameters of options that can be changed without having to reflash the firmware. 
 
