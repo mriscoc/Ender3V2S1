@@ -4,7 +4,7 @@
 ![GitHub Release Date](https://img.shields.io/github/release-date/classicrocker883/MriscocProUI.svg)
 [![Build Status](https://github.com/classicrocker883/MriscocProUI/workflows/CI/badge.svg?branch=MriscocProUI)](https://github.com/classicrocker883/MriscocProUI/actions)
 
-## Universal RET6/RCT6 chips for G32, N32, (working on H32), Creality 4.2.7 and 4.2.2 boards
+## Universal RET6/RCT6 chips: G32, N32, (working on H32), Creality 4.2.7 and 4.2.2 boards
 
 I will be working on more upgrades and features and tweaks along the way. Enjoy using this fork of Marlin as I intend it to be the best. It is easy to use and convenient. So far I really enjoy the new settings and toolbar for the main menu. There is a variety of parameters and options that can be changed without having to reflash the firmware. 
 
