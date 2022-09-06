@@ -49,7 +49,7 @@
 /**
  * Defines a generic printer name to be output to the LCD after booting Marlin.
  */
-#define MACHINE_NAME "Voxelab Aquila"
+#define BOOT_MACHINE_NAME "Aquila"
 
 /**
  * The SOURCE_CODE_URL is the location where users will find the Marlin Source

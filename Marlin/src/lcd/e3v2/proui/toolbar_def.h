@@ -33,7 +33,7 @@ TBItem_t TBItemA[] = {
     {ICON_SetZOffset, GET_TEXT_F(MSG_PROBE_WIZARD), Draw_ZOffsetWiz_Menu},
     {ICON_Level, GET_TEXT_F(MSG_AUTO_MESH), AutoLev},
   #else
-    {ICON_MoveZ0, F("Home Z and disable"), HomeZandDisable},
+    {(ICON_MoveZ0 - 1), F("Home Z and disable"), HomeZandDisable},
   #endif
   {ICON_CloseMotor, GET_TEXT_F(MSG_DISABLE_STEPPERS), DisableMotors},
   {ICON_Cool, GET_TEXT_F(MSG_COOLDOWN), DoCoolDown},
