@@ -6,9 +6,9 @@
 
 ## Universal RET6/RCT6 chips for G32, N32, (working on H32), Creality 4.2.7 and 4.2.2 boards
 
-I will be working on more upgrades and features and tweaks along the way. Enjoy using this fork of Marlin as I intend it to be the best and easy to use, or as convenient as possible. So far I really enjoy the new settings and toolbar for the main menu. I like the variety of parameters of options that can be changed without having to reflash the firmware. 
+I will be working on more upgrades and features and tweaks along the way. Enjoy using this fork of Marlin as I intend it to be the best. It is easy to use and convenient. So far I really enjoy the new settings and toolbar for the main menu. There is a variety of parameters and options that can be changed without having to reflash the firmware. 
 
-The Precompiled binary files of this firmware can work with STM32 (STM32F103RET6) and it's clones G32 (GD32F103RET6), N32 (Nation), and possibly H32. They can be downloaded from:
+The Precompiled binary files of this firmware can work with STM32 (STM32F103RET6/RCT6) and it's clones G32 (GD32F103RET6), N32 (Nation), and possibly H32. They can be downloaded from:
 [Latest Release](https://github.com/classicrocker883/MriscocProUI/releases/latest)
 
 <img height=260 src="https://enfss.voxelab3dp.com/10001/picture/2021/09/b849845bd0ffa889f00a782aae76ccf3.jpg" align="left" />
