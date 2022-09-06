@@ -31,9 +31,10 @@ Thank you for your support, I receive donations through [Paypal](https://www.pay
   
 ## Community links
 * [Telegram](https://t.me/ender3v2s1firmware)
-* [Reddit](https://www.reddit.com/r/Ender3v2Firmware) 
-* [Ender 3V2 Facebook](https://www.facebook.com/groups/ender3v2firmware)
-* [Ender 3S1 Facebook](https://www.facebook.com/groups/ender3s1printer)
+* [Aquila Reddit](https://www.reddit.com/r/VoxelabAquila) 
+* [E3v2 Reddit](https://www.reddit.com/r/Ender3v2Firmware) 
+* [E3V2 Facebook](https://www.facebook.com/groups/ender3v2firmware)
+* [E3S1 Facebook](https://www.facebook.com/groups/ender3s1printer)
 
 <!--[](https://raw.githubusercontent.com/mriscoc/Ender3V2S1/Ender3V2S1-Released/screenshots/main.jpg)-->
 
