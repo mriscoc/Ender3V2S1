@@ -2927,6 +2927,9 @@ void Draw_Control_Menu() {
     #if HAS_HOME_OFFSET
       MENU_ITEM(ICON_HomeOffset, MSG_SET_HOME_OFFSETS, onDrawSubMenu, Draw_HomeOffset_Menu);
     #endif
+    #if ENABLED(NOZZLE_PARK_FEATURE)
+      MENU_ITEM(ICON_ParkPos, MSG_FILAMENT_PARK_ENABLED, onDrawSubMenu, Draw_ParkPos_Menu);
+    #endif
       MENU_ITEM(ICON_Scolor, MSG_COLORS_SELECT, onDrawSubMenu, Draw_SelectColors_Menu);
     #if HAS_TOOLBAR
       MENU_ITEM(ICON_TBSetup, MSG_TOOLBAR_SETUP, onDrawSubMenu, Draw_TBSetup_Menu);
@@ -2975,9 +2978,6 @@ void Draw_Move_Menu() {
       EDIT_ITEM(ICON_HomeOffsetX, MSG_HOME_OFFSET_X, onDrawPFloatMenu, SetHomeOffsetX, &home_offset[X_AXIS]);
       EDIT_ITEM(ICON_HomeOffsetY, MSG_HOME_OFFSET_Y, onDrawPFloatMenu, SetHomeOffsetY, &home_offset[Y_AXIS]);
       EDIT_ITEM(ICON_HomeOffsetZ, MSG_HOME_OFFSET_Z, onDrawPFloatMenu, SetHomeOffsetZ, &home_offset[Z_AXIS]);
-      #if ENABLED(NOZZLE_PARK_FEATURE)
-        MENU_ITEM(ICON_ParkPos, MSG_FILAMENT_PARK_ENABLED, onDrawSubMenu, Draw_ParkPos_Menu);
-      #endif
     }
     UpdateMenu(HomeOffMenu);
   }
@@ -3040,7 +3040,7 @@ void Draw_FilSet_Menu() {
     void Draw_ParkPos_Menu() {
       checkkey = Menu;
       if (SET_MENU(ParkPosMenu, MSG_FILAMENT_PARK_ENABLED, 4)) {
-        BACK_ITEM(Draw_HomeOffset_Menu);
+        BACK_ITEM(Draw_Control_Menu);
         EDIT_ITEM(ICON_ParkPosX, MSG_PARK_XPOSITION, onDrawPIntMenu, SetParkPosX, &PRO_data.Park_point.x);
         EDIT_ITEM(ICON_ParkPosY, MSG_PARK_YPOSITION, onDrawPIntMenu, SetParkPosY, &PRO_data.Park_point.y);
         EDIT_ITEM(ICON_ParkPosZ, MSG_PARK_ZRAISE, onDrawPIntMenu, SetParkZRaise, &PRO_data.Park_point.z);
@@ -3618,6 +3618,17 @@ void Draw_Steps_Menu() {
   void UBLLoadMesh() {
     if (bedlevel.storage_slot < 0) bedlevel.storage_slot = 0;
     settings.load_mesh(bedlevel.storage_slot);
+    #if ENABLED(DWIN_LCD_PROUI)
+      if (BedLevelTools.meshvalidate()) {
+        ui.status_printf(0, GET_TEXT_F(MSG_MESH_LOADED), bedlevel.storage_slot);
+        DONE_BUZZ(true);
+      }
+      else {
+        bedlevel.invalidate();
+        LCD_MESSAGE(MSG_UBL_MESH_INVALID);
+        DONE_BUZZ(false);
+      }
+    #endif
   }
 
 #endif  // AUTO_BED_LEVELING_UBL
@@ -3625,7 +3636,7 @@ void Draw_Steps_Menu() {
 #if HAS_MESH
   void Draw_MeshSet_Menu() {
     checkkey = Menu;
-    if (SET_MENU(MeshMenu, MSG_MESH_LEVELING, 8)) {
+    if (SET_MENU(MeshMenu, MSG_MESH_LEVELING, 7)) {
       BACK_ITEM(Draw_AdvancedSettings_Menu);
       #if ProUIex
         MENU_ITEM(ICON_UBLActive, MSG_MESH_POINTS, onDrawMeshPoints, SetMeshPoints);
@@ -3638,9 +3649,6 @@ void Draw_Steps_Menu() {
       EDIT_ITEM(ICON_Version, MSG_ACTIVATE_MESH, onDrawChkbMenu, SetMeshActive, &planner.leveling_active);
       #if ENABLED(AUTO_BED_LEVELING_UBL)
         EDIT_ITEM(ICON_ProbeMargin, MSG_UBL_TILTING_GRID, onDrawPInt8Menu, SetUBLTiltGrid, &BedLevelTools.tilt_grid);
-      #endif
-      #if ENABLED(EEPROM_SETTINGS)
-        MENU_ITEM(ICON_WriteEEPROM, MSG_STORE_EEPROM, onDrawMenuItem, WriteEeprom);
       #endif
     }
     UpdateMenu(MeshMenu);
@@ -3750,21 +3758,19 @@ void Draw_AdvancedSettings_Menu() {
         MENU_ITEM(ICON_ProbeSet, MSG_ZPROBE_SETTINGS, onDrawSubMenu, Draw_ProbeSet_Menu);
       #endif
         MENU_ITEM(ICON_PrintSize, MSG_MESH_LEVELING, onDrawSubMenu, Draw_MeshSet_Menu);
+        MENU_ITEM(ICON_Level, MSG_AUTO_MESH, onDrawMenuItem, AutoLev);
+        MENU_ITEM(ICON_ProbeMargin, MSG_UBL_TILT_MESH, onDrawMenuItem, UBLTiltMesh);
+      #if ENABLED(MESH_EDIT_MENU)
+        MENU_ITEM(ICON_UBLActive, MSG_EDIT_MESH, onDrawSubMenu, Draw_EditMesh_Menu);
+      #endif
         MENU_ITEM(ICON_MeshViewer, MSG_MESH_VIEW, onDrawSubMenu, DWIN_MeshViewer);  
       #if ENABLED(USE_UBL_VIEWER)
         EDIT_ITEM_F(ICON_PrintSize, "Change Mesh Viewer", onDrawChkbMenu, SetViewMesh, &BedLevelTools.view_mesh); 
       #endif
-      #if ENABLED(MESH_EDIT_MENU)
-        MENU_ITEM(ICON_UBLActive, MSG_EDIT_MESH, onDrawSubMenu, Draw_EditMesh_Menu);
-      #endif
-      #if ENABLED(AUTO_BED_LEVELING_UBL)
-        MENU_ITEM(ICON_Level, MSG_AUTO_MESH, onDrawMenuItem, AutoLev);
-        EDIT_ITEM(ICON_ResumeEEPROM, MSG_UBL_STORAGE_SLOT, onDrawUBLSlot, SetUBLSlot, &bedlevel.storage_slot);
-        MENU_ITEM(ICON_WriteEEPROM, MSG_UBL_SAVE_MESH, onDrawMenuItem, UBLSaveMesh);
-        MENU_ITEM(ICON_ReadEEPROM, MSG_UBL_LOAD_MESH, onDrawMenuItem, UBLLoadMesh);
-        MENU_ITEM(ICON_ProbeMargin, MSG_UBL_TILT_MESH, onDrawMenuItem, UBLTiltMesh);
-        MENU_ITEM(ICON_HSMode, MSG_UBL_SMART_FILLIN, onDrawMenuItem, UBLSmartFillMesh);
-      #endif
+      EDIT_ITEM(ICON_ResumeEEPROM, MSG_UBL_STORAGE_SLOT, onDrawUBLSlot, SetUBLSlot, &bedlevel.storage_slot);
+      MENU_ITEM(ICON_WriteEEPROM, MSG_UBL_SAVE_MESH, onDrawMenuItem, UBLSaveMesh);
+      MENU_ITEM(ICON_ReadEEPROM, MSG_UBL_LOAD_MESH, onDrawMenuItem, UBLLoadMesh);
+      MENU_ITEM(ICON_HSMode, MSG_UBL_SMART_FILLIN, onDrawMenuItem, UBLSmartFillMesh);
     #endif 
   }
   ui.reset_status(true);
@@ -3905,7 +3911,7 @@ void Draw_Advanced_Menu() {
     #if LCD_BACKLIGHT_TIMEOUT
       EDIT_ITEM(ICON_Box, MSG_LCD_TIMEOUT_SEC, onDrawPIntMenu, SetTimer, &ui.lcd_backlight_timeout); //added
     #endif
-      EDIT_ITEM_F(ICON_ProbeMargin, "Screw Inset to Nozzle", onDrawPFloatMenu, SetRetractSpeed, &ui.screw_pos); //changed
+      EDIT_ITEM_F(ICON_ProbeMargin, "Bed Screw Inset", onDrawPFloatMenu, SetRetractSpeed, &ui.screw_pos); //changed
     #if ENABLED(POWER_LOSS_RECOVERY)
       EDIT_ITEM(ICON_Pwrlossr, MSG_OUTAGE_RECOVERY, onDrawChkbMenu, SetPwrLossr, &recovery.enabled);
     #endif

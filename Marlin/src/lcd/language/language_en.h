@@ -584,7 +584,7 @@ namespace Language_en {
   LSTR MSG_ZPROBE_MULTIPLE                = _UxGT("Multiple Probing");
   LSTR MSG_Z_FEED_RATE                    = _UxGT("Z Feed Rate");
   LSTR MSG_ENABLE_HS_MODE                 = _UxGT("Enable HS mode");
-  LSTR MSG_MOVE_NOZZLE_TO_BED             = _UxGT("Center Nozzle on Bed");
+  LSTR MSG_MOVE_NOZZLE_TO_BED             = _UxGT("Center Nozzle");
   LSTR MSG_BABYSTEP_X                     = _UxGT("Babystep X");
   LSTR MSG_BABYSTEP_Y                     = _UxGT("Babystep Y");
   LSTR MSG_BABYSTEP_Z                     = _UxGT("Babystep Z");

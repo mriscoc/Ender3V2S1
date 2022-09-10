@@ -29,7 +29,7 @@
 TBItem_t TBItemA[] = {
   {ICON_Homing, GET_TEXT_F(MSG_AUTO_HOME), AutoHome},
   #if HAS_BED_PROBE
-    {(ICON_SetHome - 1), GET_TEXT_F(MSG_TRAMMING_WIZARD), Trammingwizard},
+    {(ICON_SetHome -1), GET_TEXT_F(MSG_TRAMMING_WIZARD), Trammingwizard}, // ICON_SetHome
     {ICON_SetZOffset, GET_TEXT_F(MSG_PROBE_WIZARD), Draw_ZOffsetWiz_Menu},
     {ICON_Level, GET_TEXT_F(MSG_AUTO_MESH), AutoLev},
   #else
