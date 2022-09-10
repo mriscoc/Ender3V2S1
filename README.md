@@ -1,14 +1,16 @@
-# Professional Firmware for the Creality Ender 3 V2/S1 Printers
+# Professional Firmware for the Voxelab Aquila and Creality Ender 3 Printers
 \
 ![GitHub contributors](https://img.shields.io/github/contributors/classicrocker883/MriscocProUI.svg)
 ![GitHub Release Date](https://img.shields.io/github/release-date/classicrocker883/MriscocProUI.svg)
 [![Build Status](https://github.com/classicrocker883/MriscocProUI/workflows/CI/badge.svg?branch=MriscocProUI)](https://github.com/classicrocker883/MriscocProUI/actions)
 
-## Universal RET6/RCT6 Ender 3 V2/S1 Edition
+## Universal RET6/RCT6 chips: G32, N32, (working on H32), Creality 4.2.7 and 4.2.2 boards
 
-I will be working on more upgrades and features and tweaks along the way. Enjoy using this fork of Marlin as I intend it to be the best and easy to use, or as convenient as possible. So far I really enjoy the new settings and toolbar for the main menu. I like the variety of parameters of options that can be changed without having to reflash the firmware. 
+I will be working on more upgrades and features and tweaks along the way. Enjoy using this fork of Marlin as I intend it to be the best. It is easy to use and convenient. So far I really enjoy the new settings and toolbar for the main menu. There is a variety of parameters and options that can be changed without having to reflash the firmware. 
 
-The Precompiled binary files of this firmware can work with STM32 (STM32F103RET6) and it's clones G32 (GD32F103RET6), N32 (Nation), and possibly H32. They can be downloaded from:
+[Linear Advance Information](https://github.com/MarlinFirmware/MarlinDocumentation/blob/master/_features/lin_advance.md)
+
+The Precompiled binary files of this firmware can work with STM32 (STM32F103RET6/RCT6) and it's clones G32 (GD32F103RET6), N32 (Nation), and possibly H32. They can be downloaded from:
 [Latest Release](https://github.com/classicrocker883/MriscocProUI/releases/latest)
 
 <img height=260 src="https://enfss.voxelab3dp.com/10001/picture/2021/09/b849845bd0ffa889f00a782aae76ccf3.jpg" align="left" />
@@ -31,9 +33,10 @@ Thank you for your support, I receive donations through [Paypal](https://www.pay
   
 ## Community links
 * [Telegram](https://t.me/ender3v2s1firmware)
-* [Reddit](https://www.reddit.com/r/Ender3v2Firmware) 
-* [Ender 3V2 Facebook](https://www.facebook.com/groups/ender3v2firmware)
-* [Ender 3S1 Facebook](https://www.facebook.com/groups/ender3s1printer)
+* [Aquila Reddit](https://www.reddit.com/r/VoxelabAquila) 
+* [E3V2 Reddit](https://www.reddit.com/r/Ender3v2Firmware) 
+* [E3V2 Facebook](https://www.facebook.com/groups/ender3v2firmware)
+* [E3S1 Facebook](https://www.facebook.com/groups/ender3s1printer)
 
 <!--[](https://raw.githubusercontent.com/mriscoc/Ender3V2S1/Ender3V2S1-Released/screenshots/main.jpg)-->
 
