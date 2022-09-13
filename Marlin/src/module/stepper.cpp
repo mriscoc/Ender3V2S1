@@ -110,7 +110,7 @@ Stepper stepper; // Singleton
 #endif
 
 #if HAS_MOTOR_CURRENT_SPI
-  #include <SPI.h>
+  #include "SPI.h"
 #endif
 
 #if ENABLED(MIXING_EXTRUDER)

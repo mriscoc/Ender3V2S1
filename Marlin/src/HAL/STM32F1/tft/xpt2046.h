@@ -24,7 +24,7 @@
 #include "../../../inc/MarlinConfig.h"
 
 #if ENABLED(TOUCH_BUTTONS_HW_SPI)
-  #include <SPI.h>
+  #include "SPI.h"
 #endif
 
 #ifndef TOUCH_MISO_PIN

@@ -21,6 +21,6 @@
  */
 #pragma once
 
-#include <SPI.h>
+#include "SPI.h"
 
 using MarlinSPI = SPIClass;

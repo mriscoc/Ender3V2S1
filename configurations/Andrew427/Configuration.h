@@ -3166,7 +3166,7 @@
 //
 // LCD-12864 Ender 3 / CR-10_STOCKDISPLAY line --> 2852
 
-//#define DWIN_CREALITY_LCD           // Creality UI
+//#define DWIN_CREALITY_LCD           // Creality UI (not working)
 #define DWIN_LCD_PROUI              // Pro UI by MRiscoC
 
 // Professional firmware features:    // Undefine all except SD Extender

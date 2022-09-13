@@ -36,7 +36,7 @@ e-mail   :  support@circuitsathome.com
 #if DISABLED(USE_UHS3_USB)
 #include <ISR_safe_memory.h>
 #include <Wire.h>
-#include <SPI.h>
+#include "SPI.h"
 #include <UHS_ByteBuffer.h>
 #endif
 #include "UHS_macros.h"

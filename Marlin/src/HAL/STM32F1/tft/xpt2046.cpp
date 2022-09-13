@@ -25,12 +25,12 @@
 #if HAS_TFT_XPT2046 || HAS_RES_TOUCH_BUTTONS
 
 #include "xpt2046.h"
-#include <SPI.h>
+#include "SPI.h"
 
 uint16_t delta(uint16_t a, uint16_t b) { return a > b ? a - b : b - a; }
 
 #if ENABLED(TOUCH_BUTTONS_HW_SPI)
-  #include <SPI.h>
+  #include "SPI.h"
 
   SPIClass XPT2046::SPIx(TOUCH_BUTTONS_HW_SPI_DEVICE);
 

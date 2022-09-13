@@ -25,7 +25,7 @@ e-mail   :  support@circuitsathome.com
 
 #ifdef LOAD_USB_HOST_SHIELD
 #include "UHS_max3421e.h"
-#include <SPI.h>
+#include "SPI.h"
 
 
 #ifndef SPI_HAS_TRANSACTION

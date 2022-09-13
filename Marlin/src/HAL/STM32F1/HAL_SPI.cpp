@@ -30,7 +30,7 @@
 #ifdef __STM32F1__
 
 #include "../../inc/MarlinConfig.h"
-#include <SPI.h>
+#include "SPI.h"
 
 // ------------------------
 // Public functions

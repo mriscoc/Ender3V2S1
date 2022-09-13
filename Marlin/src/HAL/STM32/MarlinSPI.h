@@ -22,7 +22,7 @@
 #pragma once
 
 #include "HAL.h"
-#include <SPI.h>
+#include "SPI.h"
 
 extern "C" {
   #include <utility/spi_com.h>

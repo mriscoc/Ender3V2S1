@@ -174,7 +174,7 @@
   #define USING_SPI4TEENSY3 0
 #endif
 #if ((defined(ARDUINO_SAM_DUE) && defined(__SAM3X8E__)) || defined(__ARDUINO_X86__) || ARDUINO >= 10600) && !USING_SPI4TEENSY3
-  #include <SPI.h> // Use the Arduino SPI library for the Arduino Due, Intel Galileo 1 & 2, Intel Edison or if the SPI library with transaction is available
+  #include "SPI.h" // Use the Arduino SPI library for the Arduino Due, Intel Galileo 1 & 2, Intel Edison or if the SPI library with transaction is available
 #endif
 #ifdef RBL_NRF51822
   #include <nrf_gpio.h>

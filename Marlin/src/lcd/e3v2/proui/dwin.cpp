@@ -2927,7 +2927,7 @@ void Draw_Control_Menu() {
     #if HAS_HOME_OFFSET
       MENU_ITEM(ICON_HomeOffset, MSG_SET_HOME_OFFSETS, onDrawSubMenu, Draw_HomeOffset_Menu);
     #endif
-    #if ENABLED(NOZZLE_PARK_FEATURE)
+    #if ENABLED(NOZZLE_PARK_FEATURE) && ProUIex
       MENU_ITEM(ICON_ParkPos, MSG_FILAMENT_PARK_ENABLED, onDrawSubMenu, Draw_ParkPos_Menu);
     #endif
       MENU_ITEM(ICON_Scolor, MSG_COLORS_SELECT, onDrawSubMenu, Draw_SelectColors_Menu);
