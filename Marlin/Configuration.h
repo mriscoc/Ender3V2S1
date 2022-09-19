@@ -1491,10 +1491,10 @@
 #define XY_PROBE_FEEDRATE (180*60)
 
 // Feedrate (mm/min) for the first approach when double-probing (MULTIPLE_PROBING == 2)
-#define Z_PROBE_FEEDRATE_FAST (6*60)
+#define Z_PROBE_FEEDRATE_FAST (8*60)
 
 // Feedrate (mm/min) for the "accurate" probe of each point
-#define Z_PROBE_FEEDRATE_SLOW (Z_PROBE_FEEDRATE_FAST * 0.41667)
+#define Z_PROBE_FEEDRATE_SLOW (Z_PROBE_FEEDRATE_FAST * 0.3125)
 
 /**
  * Probe Activation Switch
@@ -3170,7 +3170,7 @@
 #define DWIN_LCD_PROUI              // Pro UI by MRiscoC
 
 // Professional firmware features:    // Undefine all except SD Extender
-//#define ProUIex 1
+#define ProUIex 1
 #ifdef ProUIex
 #define HAS_GCODE_PREVIEW 1
 #define HAS_TOOLBAR 1
