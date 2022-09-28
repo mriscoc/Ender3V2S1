@@ -21,8 +21,6 @@
  */
 #pragma once
 
-#include "../../../inc/MarlinConfigPre.h"
-
 #include "../common/dwin_set.h"
 #include "../common/dwin_font.h"
 #include "../common/dwin_color.h"

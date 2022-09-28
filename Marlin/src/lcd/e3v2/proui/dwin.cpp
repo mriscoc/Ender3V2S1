@@ -72,7 +72,7 @@
   #include "../../../module/probe.h"
 #endif
 
-#ifdef BLTOUCH
+#if ENABLED(BLTOUCH)
   #include "../../../feature/bltouch.h"
 #endif
 
@@ -2967,7 +2967,7 @@ void Draw_Move_Menu() {
     EDIT_ITEM_F(ICON_Version, "Live Adjustment", onDrawChkbMenu, SetLiveMove, &HMI_data.SetLiveMove);
   }
   UpdateMenu(MoveMenu);
-  if (!all_axes_trusted()) LCD_MESSAGE_F("WARNING: current position is unknown, home axes");
+  if (!all_axes_trusted()) LCD_MESSAGE_F("WARNING: Current position is unknown, Home axes.");
 }
 
 #if HAS_HOME_OFFSET
@@ -3168,7 +3168,9 @@ void Draw_Tune_Menu() {
     #if HAS_FAN
       FanSpeedItem = EDIT_ITEM(ICON_FanSpeed, MSG_FAN_SPEED, onDrawPInt8Menu, SetFanSpeed, &thermalManager.fan_speed[0]);
     #endif
+    #if HAS_ZOFFSET_ITEM && EITHER(BABYSTEP_ZPROBE_OFFSET, JUST_BABYSTEP)
     EDIT_ITEM(ICON_Zoffset, MSG_ZPROBE_ZOFFSET, onDrawPFloat2Menu, SetZOffset, &BABY_Z_VAR);
+    #endif
     #if HAS_LOCKSCREEN
       MENU_ITEM(ICON_Lock, MSG_LOCKSCREEN, onDrawMenuItem, DWIN_LockScreen);
     #endif
@@ -3657,7 +3659,7 @@ void Draw_Steps_Menu() {
 
   #if ENABLED(MESH_EDIT_MENU)
     void Draw_EditMesh_Menu() {
-      if (!leveling_is_valid()) { LCD_MESSAGE(MSG_UBL_MESH_INVALID); return; }
+      if (!leveling_is_valid()) { LCD_MESSAGE(MSG_UBL_MESH_INVALID); }
       set_bed_leveling_enabled(false);
       checkkey = Menu;
       if (SET_MENU(EditMeshMenu, MSG_MESH_EDITOR, 6)) {

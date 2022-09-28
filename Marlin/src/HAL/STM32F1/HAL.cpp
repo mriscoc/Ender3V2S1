@@ -83,7 +83,7 @@
 // ------------------------
 
 #if defined(SERIAL_USB) && !HAS_SD_HOST_DRIVE
-
+#include <usb_serial.h>
   USBSerial SerialUSB;
   DefaultSerial1 MSerial0(true, SerialUSB);
 

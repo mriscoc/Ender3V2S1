@@ -26,11 +26,12 @@
  * Version: 3.18.1
  * Date: 2022/07/05
  */
+#include "../../../inc/MarlinConfigPre.h"
 
-#include "../../../inc/MarlinConfig.h"
 
 #if ENABLED(DWIN_LCD_PROUI)
 
+#include "../../../inc/MarlinConfig.h"
 #include "dwin_defines.h"
 #include "dwin_lcd.h"
 #include "dwinui.h"

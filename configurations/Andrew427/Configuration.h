@@ -1491,10 +1491,10 @@
 #define XY_PROBE_FEEDRATE (180*60)
 
 // Feedrate (mm/min) for the first approach when double-probing (MULTIPLE_PROBING == 2)
-#define Z_PROBE_FEEDRATE_FAST (6*60)
+#define Z_PROBE_FEEDRATE_FAST (8*60)
 
 // Feedrate (mm/min) for the "accurate" probe of each point
-#define Z_PROBE_FEEDRATE_SLOW (Z_PROBE_FEEDRATE_FAST * 0.41667)
+#define Z_PROBE_FEEDRATE_SLOW (Z_PROBE_FEEDRATE_FAST * 0.3125)
 
 /**
  * Probe Activation Switch
@@ -2011,7 +2011,7 @@
  * Add a bed leveling sub-menu for ABL or MBL.
  * Include a guided procedure if manual probing is enabled.
  */
-#define LCD_BED_LEVELING
+//#define LCD_BED_LEVELING
 
 #if ENABLED(LCD_BED_LEVELING)
   #define MESH_EDIT_Z_STEP  0.025 // (mm) Step size while manually probing Z axis.
@@ -2220,7 +2220,7 @@
 //#define PREHEAT_2_TEMP_CHAMBER 35
 #define PREHEAT_2_FAN_SPEED     0 // Value from 0 to 255
 
-#define PREHEAT_3_LABEL       "Preheat" //TPU
+#define PREHEAT_3_LABEL       "Warmup" //TPU
 #define PREHEAT_3_TEMP_HOTEND 200
 #define PREHEAT_3_TEMP_BED     50
 #define PREHEAT_3_FAN_SPEED     0
@@ -3171,6 +3171,7 @@
 
 // Professional firmware features:    // Undefine all except SD Extender
 #define ProUIex 1
+#ifdef ProUIex
 #define HAS_GCODE_PREVIEW 1
 #define HAS_TOOLBAR 1
 #define HAS_PIDPLOT 1
@@ -3180,6 +3181,7 @@
 #define MESH_EDIT_MENU
 #define USE_STOCK_DWIN_SET
 //#define HAS_SD_EXTENDER 1  // Enable it to support SD card extender cables
+#endif
 
 //#define DWIN_CREALITY_LCD_JYERSUI   // Jyers UI by Jacob Myers (not working) *** use DWIN_CREALITY_LCD instead ***
 //#define DWIN_MARLINUI_PORTRAIT      // MarlinUI (portrait orientation)

@@ -610,7 +610,7 @@
 #elif MB(PANDA_PI_V29)
   #include "stm32f1/pins_PANDA_PI_V29.h"        // STM32F103RCT6                          env:PANDA_PI_V29
 #elif MB(VOXELAB_AQUILA)
-  #include "stm32f1/pins_CREALITY_V4.h"         // STM32F1                                env:GD32F103RE_aquila env:GD32F103RC_aquila env:N32F103RE_aquila env:GD32F103RE_aquila_maple env:GD32F103RC_aquila_maple env:N32F103RE_aquila_maple
+  #include "stm32f1/pins_VOXELAB_A.h"         // STM32F1                                env:GD32F103RE_aquila env:GD32F103RC_aquila env:N32F103RE_aquila env:GD32F103RE_aquila_maple env:GD32F103RC_aquila_maple env:N32F103RE_aquila_maple
 
 //
 // ARM Cortex-M4F
