@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 Professional Firmware Documentation
+    url: https://github.com/mriscoc/Ender3V2S1/wiki
+    about: Lots of documentation about firmware settings and features.
+  - name: 📖 Marlin Documentation
+    url: https://marlinfw.org/
+    about: Lots of documentation on installing and using Marlin.
+  - name: 👤 Professional Firmware Facebook group
+    url: https://www.facebook.com/groups/513889302986197
+    about: Please ask and answer questions here.
+  - name: 💸 Want to donate?
+    url: https://www.paypal.com/paypalme/mriscoc
+    about: Your contribution to this project is always welcome!
