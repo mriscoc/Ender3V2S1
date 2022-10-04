@@ -544,8 +544,20 @@ typedef struct SettingsDataStruct {
   //
   #if ENABLED(SOUND_MENU_ITEM)
     bool sound_on;
+    bool no_tick; //encoder beep
   #endif
 
+  #if ENABLED(USE_UBL_VIEWER)
+    bool view_mesh;
+  #endif
+
+  //
+  //BED_SCREW_INSET
+  //
+  #ifdef BED_SCREW_INSET
+    float screw_pos;
+  #endif
+ 
   //
   // Fan tachometer check
   //
@@ -1531,6 +1543,13 @@ void MarlinSettings::postprocess() {
     #endif
 
     //
+    //BED_SCREW_INSET
+    //
+    #ifdef BED_SCREW_INSET
+      EEPROM_WRITE(ui.screw_pos);
+    #endif
+
+    //
     // Case Light Brightness
     //
     #if CASELIGHT_USES_BRIGHTNESS
@@ -1576,8 +1595,12 @@ void MarlinSettings::postprocess() {
     //
     #if ENABLED(SOUND_MENU_ITEM)
       EEPROM_WRITE(ui.sound_on);
+      EEPROM_WRITE(ui.no_tick);
     #endif
 
+    #if ENABLED(USE_UBL_VIEWER)
+      EEPROM_WRITE(BedLevelTools.view_mesh);
+    #endif
     //
     // Fan tachometer check
     //
@@ -2495,6 +2518,14 @@ void MarlinSettings::postprocess() {
       #endif
 
       //
+      //BED_SCREW_INSET
+      //
+      #ifdef BED_SCREW_INSET
+        _FIELD_TEST(screw_pos);
+        EEPROM_READ(ui.screw_pos);
+      #endif
+      
+      //
       // Case Light Brightness
       //
       #if CASELIGHT_USES_BRIGHTNESS
@@ -2538,8 +2569,14 @@ void MarlinSettings::postprocess() {
       #if ENABLED(SOUND_MENU_ITEM)
         _FIELD_TEST(sound_on);
         EEPROM_READ(ui.sound_on);
+        _FIELD_TEST(no_tick);
+        EEPROM_READ(ui.no_tick);
       #endif
 
+      #if ENABLED(USE_UBL_VIEWER)
+        _FIELD_TEST(view_mesh);
+        EEPROM_READ(BedLevelTools.view_mesh);
+      #endif
       //
       // Fan tachometer check
       //
@@ -2797,14 +2834,14 @@ void MarlinSettings::postprocess() {
 
         #if ENABLED(DWIN_LCD_PROUI)
           if (BedLevelTools.meshvalidate()) {
-            ui.status_printf(0, GET_TEXT_F(MSG_MESH_LOADED), slot);
-            DONE_BUZZ(true);
+            //ui.status_printf(0, GET_TEXT_F(MSG_MESH_LOADED), slot); //changed
+            //DONE_BUZZ(true);
           }
           else {
             status = true;
-            bedlevel.invalidate();
-            LCD_MESSAGE(MSG_UBL_MESH_INVALID);
-            DONE_BUZZ(false);
+            //bedlevel.invalidate();
+            //LCD_MESSAGE(MSG_UBL_MESH_INVALID);
+            //DONE_BUZZ(false);
           }
         #endif
 
@@ -2950,6 +2987,13 @@ void MarlinSettings::reset() {
   #endif
 
   //
+  //BED_SCREW_INSET
+  //
+  #ifdef BED_SCREW_INSET
+    ui.screw_pos = BED_SCREW_INSET; 
+  #endif
+  
+  //
   // Case Light Brightness
   //
   TERN_(CASELIGHT_USES_BRIGHTNESS, caselight.brightness = CASE_LIGHT_DEFAULT_BRIGHTNESS);
@@ -2964,6 +3008,11 @@ void MarlinSettings::reset() {
   //
   #if ENABLED(SOUND_MENU_ITEM)
     ui.sound_on = ENABLED(SOUND_ON_DEFAULT);
+    ui.no_tick = ENABLED(TICK_ON_DEFAULT); //added encoder beep bool
+  #endif
+
+  #if ENABLED(USE_UBL_VIEWER)
+    BedLevelTools.view_mesh = ENABLED(USE_UBL_VIEWER); //added mesh viewer option
   #endif
 
   //

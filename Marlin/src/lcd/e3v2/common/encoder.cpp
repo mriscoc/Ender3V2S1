@@ -50,7 +50,8 @@ ENCODER_Rate EncoderRate;
 
 // TODO: Replace with ui.quick_feedback
 void Encoder_tick() {
-  TERN_(HAS_BEEPER, if (ui.sound_on) buzzer.click(10));
+  TERN_(HAS_BEEPER, if (ui.no_tick) buzzer.click(10));
+   //changed
 }
 
 // Encoder initialization
@@ -83,7 +84,10 @@ EncoderState Encoder_ReceiveAnalyze() {
     static millis_t next_click_update_ms;
     if (ELAPSED(now, next_click_update_ms)) {
       next_click_update_ms = millis() + 300;
-      Encoder_tick();
+      Encoder_tick(); //play tick
+      #if LCD_BACKLIGHT_TIMEOUT_MINS
+        ui.refresh_backlight_timeout(); //reset timer on click
+      #endif
       #if PIN_EXISTS(LCD_LED)
         //LED_Action();
       #endif
@@ -120,12 +124,18 @@ EncoderState Encoder_ReceiveAnalyze() {
     if (temp_diff > 0) temp_diffState = TERN(REVERSE_ENCODER_DIRECTION, ENCODER_DIFF_CCW, ENCODER_DIFF_CW);
     else temp_diffState = TERN(REVERSE_ENCODER_DIRECTION, ENCODER_DIFF_CW, ENCODER_DIFF_CCW);
 
+    #if LCD_BACKLIGHT_TIMEOUT_MINS
+      if (temp_diffState > 0) {      
+        ui.refresh_backlight_timeout(); //reset timer after encoder +- (this can be changed -> added to an all in one if statement)
+      }
+    #endif
+
     #if ENABLED(ENCODER_RATE_MULTIPLIER)
 
       millis_t ms = millis();
       int32_t encoderMultiplier = 1;
 
-      // if must encoder rati multiplier
+      // if must encoder ratio multiplier
       if (EncoderRate.enabled) {
         const float abs_diff = ABS(temp_diff),
                     encoderMovementSteps = abs_diff / (ENCODER_PULSES_PER_STEP);
@@ -133,10 +143,10 @@ EncoderState Encoder_ReceiveAnalyze() {
           // Note that the rate is always calculated between two passes through the
           // loop and that the abs of the temp_diff value is tracked.
           const float encoderStepRate = encoderMovementSteps / float(ms - EncoderRate.lastEncoderTime) * 1000;
-               if (encoderStepRate >= ENCODER_100X_STEPS_PER_SEC) encoderMultiplier = 100;
-          else if (encoderStepRate >= ENCODER_10X_STEPS_PER_SEC)  encoderMultiplier = 10;
+               if (encoderStepRate >= ENCODER_100X_STEPS_PER_SEC) encoderMultiplier = 800;
+          else if (encoderStepRate >= ENCODER_10X_STEPS_PER_SEC)  encoderMultiplier = 100;
           #if ENCODER_5X_STEPS_PER_SEC
-            else if (encoderStepRate >= ENCODER_5X_STEPS_PER_SEC) encoderMultiplier = 5;
+            else if (encoderStepRate >= ENCODER_5X_STEPS_PER_SEC) encoderMultiplier = 20;
           #endif
         }
         EncoderRate.lastEncoderTime = ms;

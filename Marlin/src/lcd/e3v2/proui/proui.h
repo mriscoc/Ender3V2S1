@@ -80,7 +80,7 @@ constexpr int16_t DEF_Z_MAX_POS = Z_MAX_POS;
   constexpr int16_t DEF_PROBING_MARGIN = PROBING_MARGIN;
   #define MIN_PROBE_MARGIN 5
   #define MAX_PROBE_MARGIN 60
-  constexpr int16_t DEF_Z_PROBE_FEEDRATE_SLOW = (Z_PROBE_FEEDRATE_FAST / 2);
+  constexpr int16_t DEF_Z_PROBE_FEEDRATE_SLOW = Z_PROBE_FEEDRATE_SLOW;
   #ifndef MULTIPLE_PROBING
     #define MULTIPLE_PROBING 0
   #endif

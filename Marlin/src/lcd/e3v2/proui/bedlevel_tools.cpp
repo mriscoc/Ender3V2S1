@@ -46,11 +46,12 @@ BedLevelToolsClass BedLevelTools;
 #if ENABLED(USE_UBL_VIEWER)
   bool BedLevelToolsClass::viewer_asymmetric_range = false;
   bool BedLevelToolsClass::viewer_print_value = false;
+  bool BedLevelToolsClass::view_mesh = true;
 #endif
 bool BedLevelToolsClass::goto_mesh_value = false;
 uint8_t BedLevelToolsClass::mesh_x = 0;
 uint8_t BedLevelToolsClass::mesh_y = 0;
-uint8_t BedLevelToolsClass::tilt_grid = 1;
+uint8_t BedLevelToolsClass::tilt_grid = 2;
 
 bool drawing_mesh = false;
 char cmd[MAX_CMD_SIZE+16], str_1[16], str_2[16], str_3[16];

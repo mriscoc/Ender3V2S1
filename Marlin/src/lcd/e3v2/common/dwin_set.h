@@ -133,6 +133,14 @@
 #define ICON_Info_0             90
 #define ICON_Info_1             91
 
+//changed Additional Icons
+#define ICON_Box               200
+#define ICON_Checkbox          201
+#define ICON_Fade              202
+#define ICON_Mesh              203
+#define ICON_Tilt              204
+#define ICON_Brightness        205
+
 #define ICON_Folder       ICON_More
 #define ICON_AdvSet       ICON_Language
 #define ICON_HomeOffset   ICON_AdvSet

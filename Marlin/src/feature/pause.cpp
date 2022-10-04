@@ -42,7 +42,7 @@
   #include "../module/stepper.h"
 #endif
 
-#if ENABLED(AUTO_BED_LEVELING_UBL)
+#if ENABLED(AUTO_BED_LEVELING_UBL) || ENABLED(MESH_BED_LEVELING)
   #include "bedlevel/bedlevel.h"
 #endif
 

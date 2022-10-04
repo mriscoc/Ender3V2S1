@@ -51,9 +51,9 @@
 #define ICON_BedTramming       CI(1,ICON_SetHome)
 #define ICON_Binary            CI(1,ICON_Contact)
 #define ICON_BltouchReset      CI(1,ICON_StockConfiguration)
-#define ICON_Brightness        CI(1,ICON_Motion)
+//#define ICON_Brightness        CI(1,ICON_Motion)
 #define ICON_Cancel            CI(1,ICON_StockConfiguration)
-#define ICON_CustomPreheat     CI(1,ICON_SetEndTemp)
+#define ICON_CustomPreheat     CI(1,ICON_SetBedTemp)
 #define ICON_Error             CI(1,ICON_TempTooHigh)
 #define ICON_ESDiag            CI(1,ICON_Info)
 #define ICON_ExtrudeMinT       CI(1,ICON_HotendTemp)
@@ -81,9 +81,9 @@
 #define ICON_InvertE0          CI(1,ICON_StepE)
 #define ICON_JDmm              CI(1,ICON_MaxJerk)
 #define ICON_Tram              CI(1,ICON_SetEndTemp)
-#define ICON_Level             CI(1,ICON_HotendTemp)
+#define ICON_Level             CI(1,ICON_Mesh)
 #define ICON_Lock              CI(1,ICON_Cool)
-#define ICON_ManualMesh        CI(1,ICON_HotendTemp)
+#define ICON_ManualMesh        CI(1,ICON_Mesh)
 #define ICON_MaxPosX           CI(1,ICON_MoveX)
 #define ICON_MaxPosY           CI(1,ICON_MoveY)
 #define ICON_MaxPosZ           CI(1,ICON_MoveZ)
@@ -91,7 +91,7 @@
 #define ICON_MeshPoints        CI(1,ICON_SetEndTemp)
 #define ICON_MeshSave          CI(1,ICON_WriteEEPROM)
 #define ICON_MeshViewer        CI(1,ICON_HotendTemp)
-#define ICON_MoveZ0            CI(1,ICON_HotendTemp)
+#define ICON_MoveZ0            CI(1,ICON_SetEndTemp)
 #define ICON_Park              CI(1,ICON_Motion)
 #define ICON_ParkPos           CI(1,ICON_AdvSet)
 #define ICON_ParkPosX          CI(1,ICON_StepX)
@@ -125,7 +125,7 @@
 #define ICON_Runout            CI(1,ICON_MaxAccE)
 #define ICON_Scolor            CI(1,ICON_MaxSpeed)
 #define ICON_SetBaudRate       CI(1,ICON_Setspeed)
-#define ICON_SetCustomPreheat  CI(1,ICON_SetEndTemp)
+#define ICON_SetCustomPreheat  CI(1,ICON_SetBedTemp)
 #define ICON_SetPreheat1       CI(1,ICON_SetPLAPreheat)
 #define ICON_SetPreheat2       CI(1,ICON_SetABSPreheat)
 #define ICON_SetPreheat3       CI(1,ICON_SetCustomPreheat)
@@ -134,7 +134,7 @@
 #define ICON_SetPreheat6       CI(1,ICON_SetCustomPreheat)
 #define ICON_Sound             CI(1,ICON_Cool)
 #define ICON_TBSetup           CI(1,ICON_Contact)
-#define ICON_UBLActive         CI(1,ICON_HotendTemp)
+#define ICON_UBLActive         CI(1,ICON_Mesh)
 #define ICON_ZAfterHome        CI(1,ICON_SetEndTemp)
 
 //LED Lights
@@ -157,10 +157,10 @@
 #define BTN_Purge             92
 
 // Extended and default UI Colors
-#define Color_Black           0
-#define Color_Green           RGB(0,63,0)
+#define Color_Black           0x0000 //changed 0
+#define Color_Green           0x07E0 //RGB(0,63,0)
 #define Color_Aqua            RGB(0,63,31)
-#define Color_Blue            RGB(0,0,31)
+#define Color_Blue            0x015F //RGB(0,0,31)
 #define Color_Light_White     0xBDD7
 #define Color_Light_Green     0x3460
 #define Color_Cyan            0x07FF
@@ -169,8 +169,8 @@
 #define Color_Magenta         0xF81F
 #define Color_Light_Magenta   0x9813
 #define Color_Light_Red       0x8800
-#define Color_Orange          0xFA20
-#define Color_Light_Orange    0xFBC0
+#define Color_Orange          0xFB00 //0xFA20
+#define Color_Light_Orange    0xFC80 //0xFBC0
 #define Color_Light_Yellow    0x8BE0
 #define Color_Brown           0xCC27
 #define Color_Light_Brown     0x6204
