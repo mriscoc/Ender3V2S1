@@ -94,9 +94,9 @@
   #if HAS_TOOLBAR
     #define TBMaxOpt 5                    // Amount of shortcuts on screen
     #if HAS_BED_PROBE
-      #define DEF_TBOPT {0, 1, 2, 3, 4}   // Default shorcuts for ALB/UBL
+      #define DEF_TBOPT {9, 8, 0, 1, 4}   // Default shorcuts for ALB/UBL
     #else
-      #define DEF_TBOPT {0, 1, 4, 5, 6};  // Default shortcuts for MM
+      #define DEF_TBOPT {9, 8, 0, 1, 4};  // Default shortcuts for MM
     #endif
   #endif
 

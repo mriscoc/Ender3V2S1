@@ -3841,7 +3841,7 @@ void Draw_Advanced_Menu() {
       EDIT_ITEM(ICON_Brightness, MSG_BRIGHTNESS, onDrawPInt8Menu, SetBrightness, &ui.brightness);
     #endif
     #if LCD_BACKLIGHT_TIMEOUT_MINS
-      EDIT_ITEM(ICON_Box, MSG_LCD_TIMEOUT_SEC, onDrawPIntMenu, SetTimer, &ui.backlight_timeout_minutes); //added
+      EDIT_ITEM(ICON_Box, MSG_SCREEN_TIMEOUT, onDrawPIntMenu, SetTimer, &ui.backlight_timeout_minutes); //added
     #endif
     #if ENABLED(POWER_LOSS_RECOVERY)
       EDIT_ITEM(ICON_Pwrlossr, MSG_OUTAGE_RECOVERY, onDrawChkbMenu, SetPwrLossr, &recovery.enabled);

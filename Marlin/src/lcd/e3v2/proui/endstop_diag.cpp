@@ -71,12 +71,17 @@ void ESDiagClass::Draw() {
   #if HAS_Y_MIN
     ES_LABEL(Y_MIN);
   #endif
-  #if HAS_Z_MIN
-    ES_LABEL(Z_MIN);
-  #endif
+  #if !USES_Z_MIN_PROBE_PIN
+    #if HAS_Z_MIN
+      ES_LABEL(Z_MIN);
+    #endif
+  #endif 
   #if HAS_FILAMENT_SENSOR
     draw_es_label(F(STR_FILAMENT));
   #endif
+  //#if USES_Z_MIN_PROBE_PIN
+  //  draw_es_label(F(STR_Z_PROBE));
+  //#endif
   Update();
 }
 
@@ -89,12 +94,17 @@ void ESDiagClass::Update() {
   #if HAS_Y_MIN
     ES_REPORT(Y_MIN);
   #endif
-  #if HAS_Z_MIN
-    ES_REPORT(Z_MIN);
+  #if !USES_Z_MIN_PROBE_PIN
+    #if HAS_Z_MIN
+      ES_REPORT(Z_MIN);
+    #endif
   #endif
   #if HAS_FILAMENT_SENSOR
     draw_es_state(READ(FIL_RUNOUT1_PIN) != TERN(ProUIex, PRO_data.Runout_active_state, FIL_RUNOUT1_STATE));
   #endif
+  //#if USES_Z_MIN_PROBE_PIN
+  //  draw_es_state(READ(Z_MIN_PROBE_PIN) != Z_MIN_PROBE_ENDSTOP_INVERTING);
+  //#endif
   DWIN_UpdateLCD();
 }
 

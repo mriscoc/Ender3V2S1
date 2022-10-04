@@ -29,11 +29,11 @@
 TBItem_t TBItemA[] = {
   {ICON_Homing, GET_TEXT_F(MSG_AUTO_HOME), AutoHome},
   #if HAS_BED_PROBE
-    {ICON_SetHome, GET_TEXT_F(MSG_TRAMMING_WIZARD), Trammingwizard},
+    {(ICON_SetHome - 1), GET_TEXT_F(MSG_TRAMMING_WIZARD), Trammingwizard},
     {ICON_SetZOffset, GET_TEXT_F(MSG_PROBE_WIZARD), Draw_ZOffsetWiz_Menu},
     {ICON_Level, GET_TEXT_F(MSG_AUTO_MESH), AutoLev},
   #else
-    {ICON_MoveZ0, F("Home Z and disable"), HomeZandDisable},
+    {(ICON_MoveZ0 - 1), F("Home Z and disable"), HomeZandDisable},
   #endif
   {ICON_CloseMotor, GET_TEXT_F(MSG_DISABLE_STEPPERS), DisableMotors},
   {ICON_Cool, GET_TEXT_F(MSG_COOLDOWN), DoCoolDown},
@@ -41,7 +41,7 @@ TBItem_t TBItemA[] = {
     #define _TBPREHEAT(N) {ICON_Preheat##N, GET_TEXT_F(MSG_PREHEAT_##N), DoPreheat##N},
     REPEAT_1(PREHEAT_COUNT, _TBPREHEAT)
   #endif
-  {ICON_Brightness, GET_TEXT_F(MSG_BRIGHTNESS_OFF), TurnOffBacklight},
+  {ICON_Box, GET_TEXT_F(MSG_BRIGHTNESS_OFF), TurnOffBacklight},
   {ICON_Reboot, GET_TEXT_F(MSG_RESET_PRINTER), RebootPrinter},
   {ICON_WriteEEPROM, GET_TEXT_F(MSG_STORE_EEPROM), WriteEeprom}
 };
