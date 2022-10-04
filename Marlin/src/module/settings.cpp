@@ -551,9 +551,13 @@ typedef struct SettingsDataStruct {
     bool view_mesh;
   #endif
 
+  //
   //BED_SCREW_INSET
-  float screw_pos;
- 
+  //
+  #ifdef BED_SCREW_INSET
+    float screw_pos;
+  #endif
+
   //
   // Fan tachometer check
   //
@@ -1553,8 +1557,12 @@ void MarlinSettings::postprocess() {
     }
     #endif
 
+    //
     //BED_SCREW_INSET
-    EEPROM_WRITE(ui.screw_pos);
+    //
+    #ifdef BED_SCREW_INSET
+      EEPROM_WRITE(ui.screw_pos);
+    #endif
 
     //
     // Case Light Brightness
@@ -2537,10 +2545,15 @@ void MarlinSettings::postprocess() {
         if (!validating) DWIN_CopySettingsFrom(dwin_data);
       }
       #endif
-      //BED_SCREW_INSET
-      _FIELD_TEST(screw_pos);
-      EEPROM_READ(ui.screw_pos);
 
+      //
+      //BED_SCREW_INSET
+      //
+      #ifdef BED_SCREW_INSET
+        _FIELD_TEST(screw_pos);
+        EEPROM_READ(ui.screw_pos);
+      #endif
+      
       //
       // Case Light Brightness
       //
@@ -2998,9 +3011,12 @@ void MarlinSettings::reset() {
     #endif
   #endif
 
-
+  //
   //BED_SCREW_INSET
-  ui.screw_pos = BED_SCREW_INSET; 
+  //
+  #ifdef BED_SCREW_INSET
+    ui.screw_pos = BED_SCREW_INSET; 
+  #endif
   
   //
   // Case Light Brightness

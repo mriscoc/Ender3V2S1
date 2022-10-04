@@ -53,6 +53,7 @@ void Encoder_tick() {
   TERN_(HAS_BEEPER, if (ui.no_tick) buzzer.click(10));
    //changed
 }
+
 // Encoder initialization
 void Encoder_Configuration() {
   #if BUTTON_EXISTS(EN1)
@@ -156,7 +157,7 @@ EncoderState Encoder_ReceiveAnalyze() {
       constexpr int32_t encoderMultiplier = 1;
 
     #endif
-    
+
     // EncoderRate.encoderMoveValue += (temp_diff * encoderMultiplier) / (ENCODER_PULSES_PER_STEP);
     EncoderRate.encoderMoveValue = (temp_diff * encoderMultiplier) / (ENCODER_PULSES_PER_STEP);
     if (EncoderRate.encoderMoveValue < 0) EncoderRate.encoderMoveValue = -EncoderRate.encoderMoveValue;

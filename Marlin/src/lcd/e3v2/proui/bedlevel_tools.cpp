@@ -160,7 +160,7 @@ void BedLevelToolsClass::MoveToZ() {
   BedLevelTools.manual_move(BedLevelTools.mesh_x, BedLevelTools.mesh_y, true);
 }
 void BedLevelToolsClass::ProbeXY() {
-  const uint16_t Clear = Z_CLEARANCE_DEPLOY_PROBE; 
+  const uint16_t Clear = Z_CLEARANCE_DEPLOY_PROBE;
   sprintf_P(cmd, PSTR("G0Z%i\nG30X%sY%s"),
     Clear,
     dtostrf(bedlevel.get_mesh_x(BedLevelTools.mesh_x), 1, 2, str_1),
