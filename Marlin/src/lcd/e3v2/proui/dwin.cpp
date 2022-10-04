@@ -66,7 +66,7 @@
   #include "../../../module/probe.h"
 #endif
 
-#ifdef BLTOUCH
+#if ENABLED(BLTOUCH)
   #include "../../../feature/bltouch.h"
 #endif
 
@@ -562,6 +562,7 @@ void Draw_PrintDone() {
   if (TERN0(HAS_GCODE_PREVIEW, Preview_Valid())) {  // TODO: Revisar si se activa luego de ver un archivo en la SD y mandar a imprimir desde el host
     Preview_Show();
     DWINUI::Draw_Button(BTN_Continue, 86, 295);
+    Draw_Select_Box(86, 295);
   }
   else {
     Draw_Print_ProgressBar();
@@ -571,6 +572,7 @@ void Draw_PrintDone() {
     Draw_Print_ProgressElapsed();
     Draw_Print_ProgressRemain();
     DWINUI::Draw_Button(BTN_Continue, 86, 273);
+    Draw_Select_Box(86, 273);
   }
 }
 
@@ -585,7 +587,7 @@ void Goto_PrintDone() {
 
 void Draw_Main_Menu() {
   DWINUI::ClearMainArea();
-  Title.ShowCaption(GET_TEXT_F(MSG_MAIN));
+  Title.ShowCaption(MACHINE_NAME);
   DWINUI::Draw_Icon(ICON_LOGO, 71, 52);   // CREALITY logo
   ICON_Print();
   ICON_Prepare();
@@ -641,7 +643,7 @@ void _draw_ZOffsetIcon() {
       _leveling_active = planner.leveling_active;
       if (!_leveling_active) {
         DWIN_Draw_Rectangle(1, HMI_data.Background_Color, 186, 415, 205, 436);
-        DWINUI::Draw_Icon(ICON_Zoffset, 187, 416);
+        DWINUI::Draw_Icon(ICON_Zoffset, 186, 416);
       }
     }
   #else
@@ -650,9 +652,9 @@ void _draw_ZOffsetIcon() {
 }
 
 void _draw_xyz_position(const bool force) {
-  _update_axis_value(X_AXIS,  27, 459, force);
-  _update_axis_value(Y_AXIS, 112, 459, force);
-  _update_axis_value(Z_AXIS, 197, 459, force);
+  _update_axis_value(X_AXIS,  27, 457, force);
+  _update_axis_value(Y_AXIS, 112, 457, force);
+  _update_axis_value(Z_AXIS, 197, 457, force);
 }
 
 void update_variable() {
@@ -919,7 +921,7 @@ void DWIN_Draw_Dashboard() {
   DWIN_Draw_Rectangle(1, HMI_data.Background_Color, 0, STATUS_Y + 21, DWIN_WIDTH, DWIN_HEIGHT - 1);
 
   #if HAS_HOTEND
-    DWINUI::Draw_Icon(ICON_HotendTemp, 10, 383);
+    DWINUI::Draw_Icon(ICON_HotendTemp, 10, 384);
     DWINUI::Draw_Int(DWIN_FONT_STAT, HMI_data.Indicator_Color, HMI_data.Background_Color, 3, 28, 384, thermalManager.wholeDegHotend(0));
     DWINUI::Draw_String(DWIN_FONT_STAT, HMI_data.Indicator_Color, HMI_data.Background_Color, 25 + 3 * STAT_CHR_W + 5, 384, F("/"));
     DWINUI::Draw_Int(DWIN_FONT_STAT, HMI_data.Indicator_Color, HMI_data.Background_Color, 3, 25 + 4 * STAT_CHR_W + 6, 384, thermalManager.degTargetHotend(0));
@@ -930,33 +932,35 @@ void DWIN_Draw_Dashboard() {
   #endif
 
   #if HAS_HEATED_BED
-    DWINUI::Draw_Icon(ICON_BedTemp, 10, 416);
+    DWINUI::Draw_Icon(ICON_BedTemp, 10, 417);
     DWINUI::Draw_Int(DWIN_FONT_STAT, HMI_data.Indicator_Color, HMI_data.Background_Color, 3, 28, 417, thermalManager.wholeDegBed());
     DWINUI::Draw_String(DWIN_FONT_STAT, HMI_data.Indicator_Color, HMI_data.Background_Color, 25 + 3 * STAT_CHR_W + 5, 417, F("/"));
     DWINUI::Draw_Int(DWIN_FONT_STAT, HMI_data.Indicator_Color, HMI_data.Background_Color, 3, 25 + 4 * STAT_CHR_W + 6, 417, thermalManager.degTargetBed());
   #endif
 
-  DWINUI::Draw_Icon(ICON_Speed, 113, 383);
+  DWINUI::Draw_Icon(ICON_Speed, 113, 384);
   DWINUI::Draw_Int(DWIN_FONT_STAT, HMI_data.Indicator_Color, HMI_data.Background_Color, 3, 116 + 2 * STAT_CHR_W, 384, feedrate_percentage);
   DWINUI::Draw_String(DWIN_FONT_STAT, HMI_data.Indicator_Color, HMI_data.Background_Color, 116 + 5 * STAT_CHR_W + 2, 384, F("%"));
 
   #if HAS_FAN
-    DWINUI::Draw_Icon(ICON_FanSpeed, 187, 383);
+    DWINUI::Draw_Icon(ICON_FanSpeed, 188, 384);
     DWINUI::Draw_Int(DWIN_FONT_STAT, HMI_data.Indicator_Color, HMI_data.Background_Color, 3, 195 + 2 * STAT_CHR_W, 384, thermalManager.fan_speed[0]);
   #endif
 
   #if HAS_ZOFFSET_ITEM
-    DWINUI::Draw_Icon(planner.leveling_active ? ICON_SetZOffset : ICON_Zoffset, 187, 416);
+    DWINUI::Draw_Icon(planner.leveling_active ? ICON_SetZOffset : ICON_Zoffset, 188, 417);
   #endif
 
   DWINUI::Draw_Signed_Float(DWIN_FONT_STAT, HMI_data.Indicator_Color,  HMI_data.Background_Color, 2, 2, 204, 417, BABY_Z_VAR);
 
-  DWIN_Draw_Rectangle(1, HMI_data.SplitLine_Color, 0, 449, DWIN_WIDTH, 451);
+  DWIN_Draw_Rectangle(1, HMI_data.SplitLine_Color, 0, 449, DWIN_WIDTH, 450);
 
-  DWINUI::Draw_Icon(ICON_MaxSpeedX,  10, 456);
-  DWINUI::Draw_Icon(ICON_MaxSpeedY,  95, 456);
-  DWINUI::Draw_Icon(ICON_MaxSpeedZ, 180, 456);
+  DWINUI::Draw_Icon(ICON_MaxSpeedX,  10, 454);
+  DWINUI::Draw_Icon(ICON_MaxSpeedY,  95, 454);
+  DWINUI::Draw_Icon(ICON_MaxSpeedZ, 180, 454);
   _draw_xyz_position(true);
+
+DWIN_Draw_Rectangle(1, HMI_data.SplitLine_Color, 0, 478, DWIN_WIDTH, 479); //changed added 2nd line
 
 }
 
@@ -1151,12 +1155,15 @@ void HMI_WaitForUser() {
 // Draws boot screen
 void HMI_Init() {
   DWINUI::Draw_Box(1, Color_Black, {5, 220, DWIN_WIDTH-5, DWINUI::fontHeight()});
-  DWINUI::Draw_CenteredString(Color_White, 220, F("Professional Firmware "));
+  DWINUI::Draw_CenteredString(3, Color_White, 220, F(BOOT_MACHINE_NAME));
   for (uint16_t t = 15; t <= 257; t += 10) {
     DWINUI::Draw_Icon(ICON_Bar, 15, 260);
     DWIN_Draw_Rectangle(1, HMI_data.Background_Color, t, 260, 257, 280);
     DWIN_UpdateLCD();
     delay(50);
+    #if LCD_BACKLIGHT_TIMEOUT
+      ui.refresh_backlight_timeout();
+    #endif  
   }
 }
 #endif
@@ -1165,6 +1172,12 @@ void EachMomentUpdate() {
   static millis_t next_var_update_ms = 0, next_rts_update_ms = 0, next_status_update_ms = 0;
   const millis_t ms = millis();
 
+  #if LCD_BACKLIGHT_TIMEOUT
+    if (ui.backlight_off_ms && ELAPSED(ms, ui.backlight_off_ms)) {
+      TurnOffBacklight(); ; // Backlight off
+      ui.backlight_off_ms = 0;
+    }
+  #endif
   if (ELAPSED(ms, next_var_update_ms)) {
     next_var_update_ms = ms + DWIN_VAR_UPDATE_INTERVAL;
     blink = !blink;
@@ -1626,6 +1639,7 @@ void DWIN_SetColorDefaults() {
   HMI_data.Barfill_Color    = Def_Barfill_Color;
   HMI_data.Indicator_Color  = Def_Indicator_Color;
   HMI_data.Coordinate_Color = Def_Coordinate_Color;
+  HMI_data.Button_Color     = Def_Button_Color;
 }
 
 void DWIN_SetDataDefaults() {
@@ -1642,9 +1656,10 @@ void DWIN_SetDataDefaults() {
   #if BOTH(HAS_HEATED_BED, PREHEAT_BEFORE_LEVELING)
     HMI_data.BedLevT = LEVELING_BED_TEMP;
   #endif
-  TERN_(BAUD_RATE_GCODE, HMI_data.Baud115K = (BAUDRATE == 115200));
+  TERN_(BAUD_RATE_GCODE, HMI_data.Baud250K = (BAUDRATE == 250000));
   HMI_data.FullManualTramming = false;
   HMI_data.MediaAutoMount = ENABLED(HAS_SD_EXTENDER);
+  HMI_data.SetLiveMove = false;
   #if BOTH(INDIVIDUAL_AXIS_HOMING_SUBMENU, MESH_BED_LEVELING)
     HMI_data.z_after_homing = DEF_Z_AFTER_HOMING;
   #endif
@@ -1709,7 +1724,7 @@ void DWIN_CopySettingsFrom(const char * const buff) {
   DWINUI::SetColors(HMI_data.Text_Color, HMI_data.Background_Color, HMI_data.StatusBg_Color);
   TERN_(PREVENT_COLD_EXTRUSION, ApplyExtMinT());
   feedrate_percentage = 100;
-  TERN_(BAUD_RATE_GCODE, if (HMI_data.Baud115K) SetBaud115K(); else SetBaud250K());
+  TERN_(BAUD_RATE_GCODE, if (HMI_data.Baud250K) SetBaud250K(); else SetBaud115K());
   #if BOTH(LED_CONTROL_MENU, HAS_COLOR_LEDS)
     leds.set_color(
       (HMI_data.LED_Color >> 16) & 0xFF,
@@ -2058,9 +2073,31 @@ void ApplyMoveE() {
     planner.buffer_line(current_position, MMM_TO_MMS(FEEDRATE_E));
   }
 }
-void SetMoveX() { HMI_value.axis = X_AXIS; SetPFloatOnClick(X_MIN_POS, X_MAX_POS, UNITFDIGITS, planner.synchronize, LiveMove); }
-void SetMoveY() { HMI_value.axis = Y_AXIS; SetPFloatOnClick(Y_MIN_POS, Y_MAX_POS, UNITFDIGITS, planner.synchronize, LiveMove); }
-void SetMoveZ() { HMI_value.axis = Z_AXIS; SetPFloatOnClick(Z_MIN_POS, Z_MAX_POS, UNITFDIGITS, planner.synchronize, LiveMove); }
+
+void SetMoveX() {
+  if (!HMI_data.SetLiveMove) {
+  HMI_value.axis = X_AXIS; SetPFloatOnClick(X_MIN_POS, X_MAX_POS, UNITFDIGITS, LiveMove); 
+  }
+  else {
+  HMI_value.axis = X_AXIS; SetPFloatOnClick(X_MIN_POS, X_MAX_POS, UNITFDIGITS, planner.synchronize, LiveMove); 
+  }
+}
+void SetMoveY() {
+  if (!HMI_data.SetLiveMove) {
+  HMI_value.axis = Y_AXIS; SetPFloatOnClick(Y_MIN_POS, Y_MAX_POS, UNITFDIGITS, LiveMove); 
+  }
+  else { 
+  HMI_value.axis = Y_AXIS; SetPFloatOnClick(Y_MIN_POS, Y_MAX_POS, UNITFDIGITS, planner.synchronize, LiveMove); 
+  }
+}
+void SetMoveZ() {
+  if (!HMI_data.SetLiveMove) {
+  HMI_value.axis = Z_AXIS; SetPFloatOnClick(Z_MIN_POS, Z_MAX_POS, UNITFDIGITS, LiveMove, planner.synchronize);
+  }
+  else {
+  HMI_value.axis = Z_AXIS; SetPFloatOnClick(Z_MIN_POS, Z_MAX_POS, UNITFDIGITS, planner.synchronize, LiveMove); 
+  }
+}
 
 #if HAS_HOTEND
   void SetMoveE() {
@@ -2098,9 +2135,9 @@ void SetPID(celsius_t t, heater_id_t h) {
 
 #if ENABLED(BAUD_RATE_GCODE)
   void SetBaudRate() {
-    HMI_data.Baud115K = !HMI_data.Baud115K;
-    if (HMI_data.Baud115K) SetBaud115K(); else SetBaud250K();
-    Show_Chkb_Line(CurrentMenu->line(), HMI_data.Baud115K);
+    HMI_data.Baud250K = !HMI_data.Baud250K;
+    if (HMI_data.Baud250K) SetBaud250K(); else SetBaud115K();
+    Show_Chkb_Line(CurrentMenu->line(), HMI_data.Baud250K);
   }
   void SetBaud115K() { queue.inject(F("M575B115")); }
   void SetBaud250K() { queue.inject(F("M575B250")); }
@@ -2155,6 +2192,20 @@ void SetPID(celsius_t t, heater_id_t h) {
   }
 #endif
 
+#if ENABLED(SOUND_MENU_ITEM) //changed
+  void SetEnableTick() {
+    ui.no_tick = !ui.no_tick;
+    Show_Chkb_Line(CurrentMenu->line(), ui.no_tick);
+  }
+#endif
+
+#if ENABLED(USE_UBL_VIEWER) //changed
+  void SetViewMesh() {
+    BedLevelTools.view_mesh = !BedLevelTools.view_mesh;
+    Show_Chkb_Line(CurrentMenu->line(), BedLevelTools.view_mesh);
+  }
+#endif
+
 #if HAS_HOME_OFFSET
   void ApplyHomeOffset() { set_home_offset(HMI_value.axis, MenuData.Value / MINUNITMULT); }
   void SetHomeOffsetX() { HMI_value.axis = X_AXIS; SetPFloatOnClick(-50, 50, UNITFDIGITS, ApplyHomeOffset); }
@@ -2169,7 +2220,7 @@ void SetPID(celsius_t t, heater_id_t h) {
 
   #if ProUIex
     void SetProbeZSpeed()  { SetPIntOnClick(60, Z_PROBE_FEEDRATE_FAST); }
-    void ApplyProbeMultiple() { PRO_data.multiple_probing = (MenuData.Value > 1) ? MenuData.Value : 0; }
+    void ApplyProbeMultiple() { PRO_data.multiple_probing = (MenuData.Value > 0) ? MenuData.Value : 0; }
     void SetProbeMultiple()  { SetIntOnClick(0, 5, PRO_data.multiple_probing, ApplyProbeMultiple); }
   #endif
 
@@ -2188,6 +2239,13 @@ void SetPID(celsius_t t, heater_id_t h) {
   #endif
 
 #endif
+
+
+  #if LCD_BACKLIGHT_TIMEOUT
+  void SetTimer()   { SetPIntOnClick(LCD_BKL_TIMEOUT_MIN * 10, LCD_BKL_TIMEOUT_MAX);
+    DWIN_UpdateLCD();
+   }
+  #endif
 
 #if ProUIex && ENABLED(NOZZLE_PARK_FEATURE)
   void SetParkPosX()   { SetPIntOnClick(X_MIN_POS, X_MAX_POS); }
@@ -2282,6 +2340,7 @@ void DWIN_ApplyColor(const int8_t element, const bool ldef /* = false*/) {
     case 17: HMI_data.Barfill_Color    = ldef ? Def_Barfill_Color    : color; break;
     case 18: HMI_data.Indicator_Color  = ldef ? Def_Indicator_Color  : color; break;
     case 19: HMI_data.Coordinate_Color = ldef ? Def_Coordinate_Color : color; break;
+    case 20: HMI_data.Button_Color     = ldef ? Def_Button_Color     : color; break;
     default: break;
   }
 }
@@ -2338,14 +2397,15 @@ void SetFlow() { SetPIntOnClick(MIN_PRINT_FLOW, MAX_PRINT_FLOW, ApplyFlow); }
 TERN(HAS_BED_PROBE, float, void) Tram(uint8_t point) {
   char cmd[100] = "";
   #if HAS_BED_PROBE
+    float corner_pos = ui.screw_pos;
     static bool inLev = false;
     float xpos = 0, ypos = 0, zval = 0, margin = 0;
     char str_1[6] = "", str_2[6] = "", str_3[6] = "";
     if (inLev) return NAN;
-    margin = HMI_data.FullManualTramming ? 30 : PROBING_MARGIN;
+    margin = corner_pos;
   #else
     int16_t xpos = 0, ypos = 0;
-    int16_t margin = 30;
+    float margin = 25.4;
   #endif
 
   switch (point) {
