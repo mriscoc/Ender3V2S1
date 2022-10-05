@@ -38,7 +38,7 @@
  *
  * Advanced settings can be found in Configuration_adv.h
  */
-#define CONFIGURATION_H_VERSION 02010100
+#define CONFIGURATION_H_VERSION 02010200
 
 //===========================================================================
 //============================= Getting Started =============================
@@ -849,7 +849,7 @@
 #define THERMAL_PROTECTION_HOTENDS // Enable thermal protection for all extruders
 #define THERMAL_PROTECTION_BED     // Enable thermal protection for the heated bed
 //#define THERMAL_PROTECTION_CHAMBER // Enable thermal protection for the heated chamber
-#define THERMAL_PROTECTION_COOLER  // Enable thermal protection for the laser cooling
+//#define THERMAL_PROTECTION_COOLER  // Enable thermal protection for the laser cooling
 
 //===========================================================================
 //============================= Mechanical Settings =========================
@@ -3170,7 +3170,7 @@
 #define DWIN_LCD_PROUI              // Pro UI by MRiscoC
 
 // Professional firmware features:    // Undefine all except SD Extender
-//#define ProUIex 1
+#define ProUIex 1
 #ifdef ProUIex
 #define HAS_GCODE_PREVIEW 1
 #define HAS_TOOLBAR 1

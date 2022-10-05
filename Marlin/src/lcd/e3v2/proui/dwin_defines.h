@@ -80,7 +80,7 @@
 //=============================================================================
 
 #if ENABLED(HAS_GCODE_PREVIEW) && DISABLED(ProUIex)
-  #error "HAS_GCODE_PREVIEW requires ProUIex."
+  //#error "HAS_GCODE_PREVIEW requires ProUIex."
 #endif
 #if ENABLED(HAS_TOOLBAR) && DISABLED(ProUIex)
   #error "HAS_TOOLBAR requires ProUIex."

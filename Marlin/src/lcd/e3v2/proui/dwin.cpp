@@ -984,11 +984,6 @@ void Draw_Info_Menu() {
   DWINUI::Draw_CenteredString(145, GET_TEXT_F(MSG_INFO_SIZE));
   DWINUI::Draw_CenteredString(165, machine_size);
 
-  LOOP_L_N(i, 4 - 2 * ENABLED(ProUIex)) {
-    DWINUI::Draw_Icon(ICON_Step + i, ICOX, 90 + i * MLINE);
-    DWIN_Draw_HLine(HMI_data.SplitLine_Color, 16, MYPOS(i + 2), 240);
-  }
-
   #if ProUIex
     ProEx.Init();
   #else
@@ -997,6 +992,11 @@ void Draw_Info_Menu() {
     DWINUI::Draw_CenteredString(251, GET_TEXT_F(MSG_INFO_BUILD));
     DWINUI::Draw_CenteredString(271, F(DateTime));
   #endif
+
+    LOOP_L_N(i, (TERN(ProUIex, 4, 6)) - 2 * ENABLED(ProUIex)) {
+    DWINUI::Draw_Icon(ICON_Step + i, ICOX, 90 + i * MLINE);
+    DWIN_Draw_HLine(HMI_data.SplitLine_Color, 16, MYPOS(i + 2), 240);
+  }
 
 }
 
@@ -1158,7 +1158,6 @@ void HMI_WaitForUser() {
   }
 }
 
-#if DISABLED(ProUIex)
 // Draws boot screen
 void HMI_Init() {
   DWINUI::Draw_Box(1, Color_Black, {5, 220, DWIN_WIDTH-5, DWINUI::fontHeight()});
@@ -1168,12 +1167,8 @@ void HMI_Init() {
     DWIN_Draw_Rectangle(1, HMI_data.Background_Color, t, 260, 257, 280);
     DWIN_UpdateLCD();
     delay(50);
-    #if LCD_BACKLIGHT_TIMEOUT_MINS
-      ui.refresh_backlight_timeout();
-    #endif  
   }
 }
-#endif
 
 void EachMomentUpdate() {
   static millis_t next_var_update_ms = 0, next_rts_update_ms = 0, next_status_update_ms = 0;
@@ -1758,11 +1753,11 @@ void MarlinUI::init_lcd() {
 
 void DWIN_InitScreen() {
   TERN_(DEBUG_DWIN, SERIAL_ECHOLNPGM("DWIN_InitScreen"));
+  HMI_Init();
   #if ProUIex
+    DWIN_UpdateLCD();
     ProEx.Init();
     safe_delay(2000);
-  #else
-    HMI_Init();
   #endif
   DWINUI::init();
   DWINUI::SetColors(HMI_data.Text_Color, HMI_data.Background_Color, HMI_data.StatusBg_Color);
@@ -2820,7 +2815,7 @@ void Draw_Tramming_Menu() {
 
 void Draw_Control_Menu() {
   checkkey = Menu;
-  if (SET_MENU(ControlMenu, MSG_CONTROL, 14)) {
+  if (SET_MENU(ControlMenu, MSG_CONTROL, 15)) {
     BACK_ITEM(Goto_Main_Menu);
     #if ENABLED(EEPROM_SETTINGS)
       MENU_ITEM(ICON_WriteEEPROM, MSG_STORE_EEPROM, onDrawMenuItem, WriteEeprom);
@@ -3277,11 +3272,11 @@ void Draw_Steps_Menu() {
   checkkey = Menu;
   if (SET_MENU(StepsMenu, MSG_STEPS_PER_MM, 5)) {
     BACK_ITEM(Draw_Motion_Menu);
-    EDIT_ITEM(ICON_StepX, MSG_A_STEPS, onDrawPFloatMenu, SetStepsX, &planner.settings.axis_steps_per_mm[X_AXIS]);
-    EDIT_ITEM(ICON_StepY, MSG_B_STEPS, onDrawPFloatMenu, SetStepsY, &planner.settings.axis_steps_per_mm[Y_AXIS]);
-    EDIT_ITEM(ICON_StepZ, MSG_C_STEPS, onDrawPFloatMenu, SetStepsZ, &planner.settings.axis_steps_per_mm[Z_AXIS]);
+    EDIT_ITEM(ICON_StepX, MSG_A_STEPS, onDrawPFloat2Menu, SetStepsX, &planner.settings.axis_steps_per_mm[X_AXIS]);
+    EDIT_ITEM(ICON_StepY, MSG_B_STEPS, onDrawPFloat2Menu, SetStepsY, &planner.settings.axis_steps_per_mm[Y_AXIS]);
+    EDIT_ITEM(ICON_StepZ, MSG_C_STEPS, onDrawPFloat2Menu, SetStepsZ, &planner.settings.axis_steps_per_mm[Z_AXIS]);
     #if HAS_HOTEND
-      EDIT_ITEM(ICON_StepE, MSG_E_STEPS, onDrawPFloatMenu, SetStepsE, &planner.settings.axis_steps_per_mm[E_AXIS]);
+      EDIT_ITEM(ICON_StepE, MSG_E_STEPS, onDrawPFloat2Menu, SetStepsE, &planner.settings.axis_steps_per_mm[E_AXIS]);
     #endif
   }
   UpdateMenu(StepsMenu);

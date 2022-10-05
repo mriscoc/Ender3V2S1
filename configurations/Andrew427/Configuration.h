@@ -849,7 +849,7 @@
 #define THERMAL_PROTECTION_HOTENDS // Enable thermal protection for all extruders
 #define THERMAL_PROTECTION_BED     // Enable thermal protection for the heated bed
 //#define THERMAL_PROTECTION_CHAMBER // Enable thermal protection for the heated chamber
-#define THERMAL_PROTECTION_COOLER  // Enable thermal protection for the laser cooling
+//#define THERMAL_PROTECTION_COOLER  // Enable thermal protection for the laser cooling
 
 //===========================================================================
 //============================= Mechanical Settings =========================
@@ -3181,7 +3181,14 @@
 #define MESH_EDIT_MENU
 #define USE_STOCK_DWIN_SET
 //#define HAS_SD_EXTENDER 1  // Enable it to support SD card extender cables
+#elif ENABLED(DWIN_LCD_PROUI)
+#define HAS_GCODE_PREVIEW 1
+#define HAS_PIDPLOT 1
+#define HAS_ESDIAG 1
+#define HAS_LOCKSCREEN 1
+#define MESH_EDIT_MENU
 #endif
+
 //#define DWIN_CREALITY_LCD_JYERSUI   // Jyers UI by Jacob Myers (not working) *** use DWIN_CREALITY_LCD instead ***
 //#define DWIN_MARLINUI_PORTRAIT      // MarlinUI (portrait orientation)
 //#define DWIN_MARLINUI_LANDSCAPE     // MarlinUI (landscape orientation)
