@@ -38,6 +38,10 @@
   #include "../lcd/extui/ui_api.h"
 #endif
 
+#if ProUIex
+  #include "../lcd/e3v2/proui/proui.h"
+#endif
+
 //#define FILAMENT_RUNOUT_SENSOR_DEBUG
 #ifndef FILAMENT_RUNOUT_THRESHOLD
   #define FILAMENT_RUNOUT_THRESHOLD 5
@@ -47,9 +51,12 @@ void event_filament_runout(const uint8_t extruder);
 
 template<class RESPONSE_T, class SENSOR_T>
 class TFilamentMonitor;
-class FilamentSensorEncoder;
-class FilamentSensorSwitch;
-TERN_(ProUIex, class FilamentSensorDevice);
+#if ProUIex
+  class FilamentSensorDevice;
+#else
+  class FilamentSensorEncoder;
+  class FilamentSensorSwitch;
+#endif
 class RunoutResponseDelayed;
 class RunoutResponseDebounced;
 
@@ -183,10 +190,10 @@ class FilamentSensorBase {
       #define  INIT_RUNOUT_PIN(N) _INIT_RUNOUT_PIN(FIL_RUNOUT##N##_PIN, FIL_RUNOUT##N##_STATE, FIL_RUNOUT##N##_PULLUP, FIL_RUNOUT##N##_PULLDOWN)
       #if NUM_RUNOUT_SENSORS >= 1
         #if ProUIex
-          ProEx.SetRunoutState();
+          ProEx.SetRunoutState(FIL_RUNOUT1_PIN);
         #else
-          INIT_RUNOUT_PIN(1);
-        #endif  
+        INIT_RUNOUT_PIN(1);
+        #endif
       #endif
       #if NUM_RUNOUT_SENSORS >= 2
         INIT_RUNOUT_PIN(2);
@@ -258,8 +265,8 @@ class FilamentSensorBase {
   private:
     static uint8_t motion_detected;
     static void poll_motion_sensor();
-    static bool poll_runout_state(const uint8_t extruder);
   public:
+    static bool poll_runout_state(const uint8_t extruder);
     static void block_completed(const block_t * const b);
     static void run();
   };  

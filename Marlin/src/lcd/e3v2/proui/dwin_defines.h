@@ -58,7 +58,7 @@
 #define Def_Barfill_Color     BarFill_Color
 #define Def_Indicator_Color   Color_Cyan //
 #define Def_Coordinate_Color  Color_Brown //
-#define Def_Button_Color      Color_Voxelab_Red //
+#define Def_Bottom_Color      Color_Silver //
 
 #if BOTH(LED_CONTROL_MENU, HAS_COLOR_LEDS)
   #define Def_Leds_Color      0xFFFFFFFF

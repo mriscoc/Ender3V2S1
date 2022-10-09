@@ -39,9 +39,11 @@
 #define Color_Bg_Blue       0x1125  // Dark blue background color
 #define Color_Bg_Black      0x0841  // Black background color
 #define Color_IconBlue      0x45FA  // Lighter blue that matches icons/accents
+#define Color_Silver        0xC618
 #define Popup_Text_Color    0xD6BA  // Popup font background color
 #define Line_Color          Color_White //0x3A6A   Split line color
 #define Rectangle_Color     Color_Voxelab_Red //0xEE2F   Blue square cursor color
 #define Percent_Color       Color_White //0xFE29   Percentage color
 #define BarFill_Color       0x10E4  // Fill color of progress bar
 #define Select_Color        0x8430 //0x33BB   Selected color
+

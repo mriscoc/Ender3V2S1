@@ -88,6 +88,7 @@ enum processID : uint8_t {
   Homing,
   PidProcess,
   MPCProcess,
+  PlotProcess,
   NothingToDo
 };
 
@@ -133,7 +134,7 @@ typedef struct {
   uint16_t Barfill_Color = Def_Barfill_Color;
   uint16_t Indicator_Color = Def_Indicator_Color;
   uint16_t Coordinate_Color = Def_Coordinate_Color;
-  uint16_t Button_Color = Def_Button_Color;
+  uint16_t Bottom_Color = Def_Bottom_Color;
   // Temperatures
   #if HAS_HOTEND && ENABLED(PIDTEMP)
     int16_t HotendPidT = DEF_HOTENDPIDT;
@@ -279,6 +280,7 @@ void HMI_SaveProcessID(const uint8_t id);
 void HMI_SDCardUpdate();
 void EachMomentUpdate();
 void update_variable();
+//void update_variable2();
 void DWIN_InitScreen();
 void DWIN_HandleScreen();
 void DWIN_CheckStatusMessage();

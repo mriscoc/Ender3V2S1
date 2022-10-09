@@ -100,7 +100,11 @@ void ESDiagClass::Update() {
     #endif
   #endif
   #if HAS_FILAMENT_SENSOR
-    draw_es_state(READ(FIL_RUNOUT1_PIN) != TERN(ProUIex, PRO_data.Runout_active_state, FIL_RUNOUT1_STATE));
+    #if ProUIex
+      draw_es_state(!FilamentSensorDevice::poll_runout_state(0));
+    #else
+      draw_es_state(READ(FIL_RUNOUT1_PIN) != FIL_RUNOUT1_STATE);
+    #endif
   #endif
   //#if USES_Z_MIN_PROBE_PIN
   //  draw_es_state(READ(Z_MIN_PROBE_PIN) != Z_MIN_PROBE_ENDSTOP_INVERTING);

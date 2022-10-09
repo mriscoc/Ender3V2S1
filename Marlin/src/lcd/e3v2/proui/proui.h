@@ -1,8 +1,8 @@
 /**
  * Professional Firmware UI extensions
  * Author: Miguel A. Risco-Castillo
- * Version: 1.4.0
- * Date: 2022/09/29
+ * Version: 1.5.0
+ * Date: 2022/10/07
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -132,7 +132,7 @@ public:
   static bool LevelingDone();
 #endif
 #if HAS_FILAMENT_SENSOR
-  static void SetRunoutState();
+  static void SetRunoutState(uint32_t ulPin);
   static void DrawRunoutActive(bool selected);
   static void ApplyRunoutActive();
   static void C412();
