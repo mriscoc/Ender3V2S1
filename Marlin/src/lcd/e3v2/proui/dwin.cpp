@@ -149,8 +149,8 @@
 
 #define FEEDRATE_E      (60)
 
-#define DWIN_VAR_UPDATE_INTERVAL         512
-#define DWIN_UPDATE_INTERVAL             1024
+#define DWIN_VAR_UPDATE_INTERVAL         500
+#define DWIN_UPDATE_INTERVAL             1000
 #define DWIN_REMAIN_TIME_UPDATE_INTERVAL SEC_TO_MS(20)
 
 #define BABY_Z_VAR TERN(HAS_BED_PROBE, probe.offset.z, HMI_data.ManualZOffset)
@@ -1197,12 +1197,6 @@ void EachMomentUpdate() {
     }
   #endif
 
-  //if (ELAPSED(ms, next_var_update_ms)) {
-  //  next_var_update_ms = ms + DWIN_UPDATE_INTERVAL;
-  //  blink = !blink;
-  //  update_variable2();
- // }
-
   if (ELAPSED(ms, next_var_update_ms)) {
     next_var_update_ms = ms + DWIN_VAR_UPDATE_INTERVAL;
     blink = !blink;
@@ -1224,7 +1218,7 @@ void EachMomentUpdate() {
   #endif
 
   if (ELAPSED(ms, next_status_update_ms)) {
-    next_status_update_ms = ms + 500;
+    next_status_update_ms = ms + DWIN_VAR_UPDATE_INTERVAL;
     DWIN_DrawStatusMessage();
     #if ENABLED(SCROLL_LONG_FILENAMES)
       if (IsMenu(FileMenu)) FileMenuIdle();
@@ -1350,9 +1344,9 @@ void DWIN_HandleScreen() {
     case PrintDone:
     TERN_(HAS_ESDIAG, case ESDiagProcess:)
     case WaitResponse:    HMI_WaitForUser(); break;
+    case PlotProcess:     HMI_WaitForUser(); break;
     case Homing:
     case PidProcess:
-    case PlotProcess:     HMI_WaitForUser(); break;
     case NothingToDo:     break;
     default: break;
   }
@@ -1455,7 +1449,7 @@ void DWIN_LevelingDone() {
 #if HAS_PIDPLOT && ANY(HAS_PID_HEATING, MPCTEMP)
   celsius_t _maxtemp, _target;
   void DWIN_Draw_PID_MPC_Popup() {
-    frame_rect_t gfrm = {40, 180, DWIN_WIDTH - 80, 120};
+    frame_rect_t gfrm = {30, 150, DWIN_WIDTH - 60, 160};
     DWINUI::ClearMainArea();
     Draw_Popup_Bkgd();
     #if ENABLED(MPCTEMP)
@@ -1478,25 +1472,25 @@ void DWIN_LevelingDone() {
           return;
       }
     #else
-      DWINUI::Draw_CenteredString(HMI_data.PopupTxt_Color, 100, GET_TEXT_F(MSG_PID_AUTOTUNE));
-      DWINUI::Draw_String(HMI_data.PopupTxt_Color, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, F("PID target:    Celsius"));
+      DWINUI::Draw_CenteredString(2, HMI_data.PopupTxt_Color, 70, GET_TEXT_F(MSG_PID_AUTOTUNE));
+      DWINUI::Draw_String(HMI_data.PopupTxt_Color, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, F("PID target:     Celsius"));
       switch (HMI_value.pidresult) {
         case PIDTEMP_START:
           _maxtemp = thermalManager.hotend_maxtemp[0];
           _target = HMI_data.HotendPidT;
-          DWINUI::Draw_CenteredString(HMI_data.PopupTxt_Color, 120, F("for Nozzle is running."));
+          DWINUI::Draw_CenteredString(2, HMI_data.PopupTxt_Color, 92, F("for NOZZLE"));
           break;
         case PIDTEMPBED_START:
           _maxtemp = BED_MAXTEMP;
           _target = HMI_data.BedPidT;
-          DWINUI::Draw_CenteredString(HMI_data.PopupTxt_Color, 120, F("for BED is running."));
+          DWINUI::Draw_CenteredString(2, HMI_data.PopupTxt_Color, 92, F("for BED"));
           break;
         default:
           return;
       }
     #endif
     Plot.Draw(gfrm, _maxtemp, _target);
-    DWINUI::Draw_Int(HMI_data.PopupTxt_Color, 3, gfrm.x + 90, gfrm.y - DWINUI::fontHeight() - 4, _target);
+    DWINUI::Draw_Int(false, 2, HMI_data.StatusTxt_Color, HMI_data.PopupBg_color, 3, gfrm.x + 92, gfrm.y - DWINUI::fontHeight() - 6, _target);
   }
 #endif
 
@@ -1586,16 +1580,15 @@ void DWIN_LevelingDone() {
   void DWIN_Draw_Plot_Nozzle() {
     HMI_SaveProcessID(PlotProcess);
     htemp = 1;
-    frame_rect_t gfrm = {40, 180, DWIN_WIDTH - 80, 120};
+    frame_rect_t gfrm = {30, 135, DWIN_WIDTH - 60, 160};
     DWINUI::ClearMainArea();
     Draw_Popup_Bkgd();
-    DWINUI::Draw_CenteredString(HMI_data.PopupTxt_Color, 100, F("Nozzle Temperature"));
-    DWINUI::Draw_String(HMI_data.PopupTxt_Color, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, F("Target:    Celsius"));
+    DWINUI::Draw_CenteredString(3, HMI_data.PopupTxt_Color, 75, F("Nozzle Temperature"));
+    DWIN_Draw_String(false, 2, HMI_data.PopupTxt_Color, HMI_data.PopupBg_color, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, F("Target:     Celsius"));
     _maxtemp = thermalManager.hotend_maxtemp[0];
     _target = thermalManager.temp_hotend[0].target;
     Plot.Draw(gfrm, _maxtemp, _target);
-    DWINUI::Draw_Int(HMI_data.PopupTxt_Color, 3, gfrm.x + 60, gfrm.y - DWINUI::fontHeight() - 4, _target);
-    //HMI_SaveProcessID(WaitResponse);
+    DWINUI::Draw_Int(false, 2, HMI_data.StatusTxt_Color, HMI_data.PopupBg_color, 3, gfrm.x + 80, gfrm.y - DWINUI::fontHeight() - 4, _target);
     DWINUI::Draw_Button(BTN_Continue, 86, 305);
     Draw_Select_Box(86, 305);
     DWIN_UpdateLCD();
@@ -1606,16 +1599,15 @@ void DWIN_LevelingDone() {
   void DWIN_Draw_Plot_Bed() {
     HMI_SaveProcessID(PlotProcess);
     htemp = 0;
-    frame_rect_t gfrm = {40, 180, DWIN_WIDTH - 80, 120};
+    frame_rect_t gfrm = {30, 135, DWIN_WIDTH - 60, 160};
     DWINUI::ClearMainArea();
     Draw_Popup_Bkgd();
-    DWINUI::Draw_CenteredString(HMI_data.PopupTxt_Color, 100, F("Bed Temperature"));
-    DWINUI::Draw_String(HMI_data.PopupTxt_Color, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, F("Target:    Celsius"));
+    DWINUI::Draw_CenteredString(3, HMI_data.PopupTxt_Color, 75, F("Bed Temperature"));
+    DWIN_Draw_String(false, 2, HMI_data.PopupTxt_Color, HMI_data.PopupBg_color, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, F("Target:     Celsius"));
     _maxtemp = BED_MAXTEMP;
     _target = thermalManager.temp_bed.target;
     Plot.Draw(gfrm, _maxtemp, _target);
-    DWINUI::Draw_Int(HMI_data.PopupTxt_Color, 3, gfrm.x + 60, gfrm.y - DWINUI::fontHeight() - 4, _target);
-    //HMI_SaveProcessID(WaitResponse);
+    DWINUI::Draw_Int(false, 2, HMI_data.StatusTxt_Color, HMI_data.PopupBg_color, 3, gfrm.x + 80, gfrm.y - DWINUI::fontHeight() - 4, _target);
     DWINUI::Draw_Button(BTN_Continue, 86, 305);
     Draw_Select_Box(86, 305);
     DWIN_UpdateLCD();

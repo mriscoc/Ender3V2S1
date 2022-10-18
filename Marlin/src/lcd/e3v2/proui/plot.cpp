@@ -52,7 +52,7 @@ void PlotClass::Draw(const frame_rect_t frame, const float max, const float ref)
   y2 = frame.y + frame.h - 1;
   r = round((y2) - ref * scale);
   DWINUI::Draw_Box(1, Plot_Bg_Color, frame);
-  for (uint8_t i = 1; i < 4; i++) if (i * 50 < frame.w) DWIN_Draw_VLine(Line_Color, i * 50 + frame.x, frame.y, frame.h);
+  for (uint8_t i = 1; i < 4; i++) if (i * 60 < frame.w) DWIN_Draw_VLine(Line_Color, i * 60 + frame.x, frame.y, frame.h);
   DWINUI::Draw_Box(0, Color_White, DWINUI::ExtendFrame(frame, 1));
   DWIN_Draw_HLine(Color_Red, frame.x, r, frame.w);
 }
@@ -65,7 +65,7 @@ void PlotClass::Update(const float value) {
   }
   else {
     DWIN_Frame_AreaMove(1, 0, 1, Plot_Bg_Color, grphframe.x, grphframe.y, x2, y2);
-    if ((grphpoints % 50) == 0) DWIN_Draw_VLine(Line_Color, x2 - 1, grphframe.y + 1, grphframe.h - 2);
+    if ((grphpoints % 60) == 0) DWIN_Draw_VLine(Line_Color, x2 - 1, grphframe.y + 1, grphframe.h - 2);
     DWIN_Draw_Point(Color_Red, 1, 1, x2 - 1, r);
     DWIN_Draw_Point(Color_Yellow, 1, 1, x2 - 1, y);
   }
