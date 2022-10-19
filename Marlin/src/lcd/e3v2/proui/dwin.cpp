@@ -1572,11 +1572,9 @@ void DWIN_LevelingDone() {
   }
 #endif
 
-//Temperature (PID) Plot During Printing
+//Temperature (PID Tuning Graph) Plot During Printing
 
 #if HAS_PIDPLOT && HAS_TEMP_SENSOR
- // celsius_t _maxtemp, _target;
-
   void DWIN_Draw_Plot_Nozzle() {
     HMI_SaveProcessID(PlotProcess);
     htemp = 1;

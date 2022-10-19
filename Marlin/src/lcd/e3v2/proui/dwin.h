@@ -280,7 +280,6 @@ void HMI_SaveProcessID(const uint8_t id);
 void HMI_SDCardUpdate();
 void EachMomentUpdate();
 void update_variable();
-//void update_variable2();
 void DWIN_InitScreen();
 void DWIN_HandleScreen();
 void DWIN_CheckStatusMessage();

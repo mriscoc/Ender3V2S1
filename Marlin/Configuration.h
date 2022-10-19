@@ -749,10 +749,10 @@
 
   // 120V 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
   // from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
-  // Aquila
-  #define DEFAULT_bedKp 128.06
-  #define DEFAULT_bedKi 24.95
-  #define DEFAULT_bedKd 438.07
+  // Aquila old: P-128.06, I-24.95, D-438.07
+  #define DEFAULT_bedKp 51.71   //58.34
+  #define DEFAULT_bedKi 9.79    //11.05
+  #define DEFAULT_bedKd 182.02  //205.36
 
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
 #endif // PIDTEMPBED

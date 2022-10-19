@@ -81,7 +81,7 @@
 
 #define _PIN_ADD(NAME_ALPHA, ARDUINO_NUM) { NAME_ALPHA, ARDUINO_NUM },
 #define PIN_ADD(NAME) _PIN_ADD(#NAME, NAME)
-
+#include "../../inc/MarlinConfig.h"
 typedef struct {
   char Port_pin_alpha[5];
   pin_t Ard_num;

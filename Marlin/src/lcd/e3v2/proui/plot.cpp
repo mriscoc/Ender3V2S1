@@ -70,6 +70,9 @@ void PlotClass::Update(const float value) {
     DWIN_Draw_Point(Color_Yellow, 1, 1, x2 - 1, y);
   }
   grphpoints++;
+  #if LCD_BACKLIGHT_TIMEOUT_MINS
+    ui.refresh_backlight_timeout();
+  #endif
 }
 
 #endif // HAS_PIDPLOT
