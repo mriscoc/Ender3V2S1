@@ -5,11 +5,12 @@
   
 ## How to install
   
-[**Click to Download**](https://downgit.github.io/#/home?url=https://github.com/mriscoc/Ender3V2S1/tree/Ender3V2S1-Released/display%20assets/Giadej%20compilation/DWIN_SET)  
+[**Click to Download DWIN_SET**](https://downgit.github.io/#/home?url=https://github.com/mriscoc/Ender3V2S1/tree/Ender3V2S1-Released/display%20assets/Giadej%20compilation/DWIN_SET) (for DWIN screen units)  
+[**Click to Download private**](https://downgit.github.io/#/home?url=https://github.com/mriscoc/Ender3V2S1/tree/Ender3V2S1-Released/display%20assets/Giadej%20compilation/private) (for DACAI screen units)  
   
 1. Get an µSD card of 8GB or less.
 1. Format the µSD card MBR, FAT32 and with a 4 KB sector size
-1. Copy the `DWIN_SET` directory in the Root of SD
+1. Copy the `DWIN_SET` or `private`directory in the Root of SD
 1. Turn off your printer
 1. Disconnect and dissasembly the screen unit
 1. Install the µSD card into the slot of the screen unit
@@ -29,7 +30,7 @@ If you wasn't able to update the display, verify the format of the µSD Card
 
 <img src="../DWIN_SET-folder.jpg"  height="350" />
   
-Be sure to leave **only** the `DWIN_SET` folder at the root of the card.  
+Be sure to leave **only** the `DWIN_SET` or `private`folder at the root of the card.  
   
   
 <img src="preview2.jpg"  height="400" />
@@ -38,15 +39,7 @@ Be sure to leave **only** the `DWIN_SET` folder at the root of the card.
 - [**Giadej**](https://github.com/Giadej) for Main and Control panel icons, and custom Boot-Screen  
 - [**Lighty1989**](https://github.com/Lighty1989) for "XYZ Move Axis" icons and "Bed Points" icons  
 - [**Gothcha**](https://github.com/gothcha) for other icons  
-
-## CRC  
-|File                        | SHA-256
-|----------------------------|-----------------------
-|9.ICO                       | A8E9A0669C43C567B8B795E615175243F88FABA4C5D667FCD5C71FDD0A08AE5C
-|T5UIC1.CFG                  | E1C573639BFA2B3A06C2FA7AD3CAB483653DD3DC383217FF653FAB3145458095
-|T5UIC1_V20_4页面_191022.BIN | F8F9A3075AE5516328044ACB79CA522753133B66F1ECBD108E7B5DB2F3FF2FE5
-
-  
+ 
 <br>
   
 ---
