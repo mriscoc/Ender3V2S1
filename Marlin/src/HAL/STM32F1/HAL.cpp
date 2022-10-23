@@ -381,8 +381,7 @@ void MarlinHAL::adc_start(const pin_t pin) {
     _TCASE(POWER_MONITOR_CURRENT, POWER_MONITOR_CURRENT_PIN, POWERMON_CURRENT)
     _TCASE(POWER_MONITOR_VOLTAGE, POWER_MONITOR_VOLTAGE_PIN, POWERMON_VOLTS)
   }
-  //adc_result = (adc_results[(int)pin_index] & 0xFFF) >> (12 - HAL_ADC_RESOLUTION); // shift out unused bits
-  adc_result = (adc_results[(int)pin_index] >> 2) & 0x3FF; // shift out unused bits
+  adc_result = (adc_results[(int)pin_index] & 0xFFF) >> (12 - HAL_ADC_RESOLUTION); // shift out unused bits
 }
 
 #endif // ndef VOXELAB_N32
@@ -2260,8 +2259,7 @@ void MarlinHAL::adc_start(const pin_t pin) {
     _TCASE(POWER_MONITOR_CURRENT, POWER_MONITOR_CURRENT_PIN, POWERMON_CURRENT)
     _TCASE(POWER_MONITOR_VOLTAGE, POWER_MONITOR_VOLTAGE_PIN, POWERMON_VOLTS)
   }
-  //adc_result = (adc_results[(int)pin_index] & 0xFFF) >> (12 - HAL_ADC_RESOLUTION); // shift out unused bits
-  adc_result = (adc_results[(int)pin_index] >> 2) & 0x3FF; // shift out unused bits
+  adc_result = (adc_results[(int)pin_index] & 0xFFF) >> (12 - HAL_ADC_RESOLUTION); // shift out unused bits
 }
 
 uint16_t analogRead(pin_t pin) {

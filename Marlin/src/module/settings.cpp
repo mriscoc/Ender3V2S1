@@ -3718,7 +3718,7 @@ void MarlinSettings::reset() {
     //
     // PROUI custom G-codes
     //
-    #if ProUIex
+    #if ProUIex && ENABLED(HAS_CGCODE)
       custom_gcode_report(forReplay);
     #endif
   }
