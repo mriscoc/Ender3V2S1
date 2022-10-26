@@ -407,7 +407,7 @@ void unified_bed_leveling::G29() {
           z_values[x][x2] += 9.999f; // We want the altered line several mesh points thick
           #if ENABLED(EXTENSIBLE_UI)
             ExtUI::onMeshUpdate(x, x, z_values[x][x]);
-            ExtUI::onMeshUpdate(x, (x2), z_values[x][x2]);
+            ExtUI::onMeshUpdate(x, x2, z_values[x][x2]);
           #endif
         }
         break;
@@ -1433,29 +1433,29 @@ bool unified_bed_leveling::smart_fill_one(const uint8_t x, const uint8_t y, cons
 #if DISABLED(ProUIex)
   typedef struct { uint8_t sx, ex, sy, ey; bool yfirst; } smart_fill_info;
 
-  void unified_bed_leveling::smart_fill_mesh() {
-    static const smart_fill_info
+void unified_bed_leveling::smart_fill_mesh() {
+  static const smart_fill_info
     info0 PROGMEM = { 0, GRID_MAX_POINTS_X,       0, (GRID_MAX_POINTS_Y) - 2, false },  // Bottom of the mesh looking up
     info1 PROGMEM = { 0, GRID_MAX_POINTS_X,     (GRID_MAX_POINTS_Y) - 1, 0,   false },  // Top of the mesh looking down
     info2 PROGMEM = { 0, (GRID_MAX_POINTS_X) - 2, 0, GRID_MAX_POINTS_Y,       true  },  // Left side of the mesh looking right
     info3 PROGMEM = { (GRID_MAX_POINTS_X) - 1, 0, 0, GRID_MAX_POINTS_Y,       true  };  // Right side of the mesh looking left
-    static const smart_fill_info * const info[] PROGMEM = { &info0, &info1, &info2, &info3 };
+  static const smart_fill_info * const info[] PROGMEM = { &info0, &info1, &info2, &info3 };
 
-    LOOP_L_N(i, COUNT(info)) {
-      const smart_fill_info *f = (smart_fill_info*)pgm_read_ptr(&info[i]);
-      const int8_t sx = pgm_read_byte(&f->sx), sy = pgm_read_byte(&f->sy),
-                  ex = pgm_read_byte(&f->ex), ey = pgm_read_byte(&f->ey);
-      if (pgm_read_byte(&f->yfirst)) {
-        const int8_t dir = ex > sx ? 1 : -1;
-        for (uint8_t y = sy; y != ey; ++y)
-          for (uint8_t x = sx; x != ex; x += dir)
-            if (smart_fill_one(x, y, dir, 0)) break;
-      }
-      else {
-        const int8_t dir = ey > sy ? 1 : -1;
-        for (uint8_t x = sx; x != ex; ++x)
-          for (uint8_t y = sy; y != ey; y += dir)
-            if (smart_fill_one(x, y, 0, dir)) break;
+  LOOP_L_N(i, COUNT(info)) {
+    const smart_fill_info *f = (smart_fill_info*)pgm_read_ptr(&info[i]);
+    const int8_t sx = pgm_read_byte(&f->sx), sy = pgm_read_byte(&f->sy),
+                 ex = pgm_read_byte(&f->ex), ey = pgm_read_byte(&f->ey);
+    if (pgm_read_byte(&f->yfirst)) {
+      const int8_t dir = ex > sx ? 1 : -1;
+      for (uint8_t y = sy; y != ey; ++y)
+        for (uint8_t x = sx; x != ex; x += dir)
+          if (smart_fill_one(x, y, dir, 0)) break;
+    }
+    else {
+      const int8_t dir = ey > sy ? 1 : -1;
+       for (uint8_t x = sx; x != ex; ++x)
+        for (uint8_t y = sy; y != ey; y += dir)
+          if (smart_fill_one(x, y, 0, dir)) break;
       }
     }
   }

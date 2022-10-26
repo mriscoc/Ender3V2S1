@@ -192,8 +192,8 @@ class FilamentSensorBase {
         #if ProUIex
           ProEx.SetRunoutState(FIL_RUNOUT1_PIN);
         #else
-        INIT_RUNOUT_PIN(1);
-        #endif
+          INIT_RUNOUT_PIN(1);
+        #endif  
       #endif
       #if NUM_RUNOUT_SENSORS >= 2
         INIT_RUNOUT_PIN(2);
@@ -273,84 +273,84 @@ class FilamentSensorBase {
 #else
   #if ENABLED(FILAMENT_MOTION_SENSOR)
 
-    /**
-     * This sensor uses a magnetic encoder disc and a Hall effect
-     * sensor (or a slotted disc and optical sensor). The state
-     * will toggle between 0 and 1 on filament movement. It can detect
-     * filament runout and stripouts or jams.
-     */
-    class FilamentSensorEncoder : public FilamentSensorBase {
-      private:
-        static uint8_t motion_detected;
+  /**
+   * This sensor uses a magnetic encoder disc and a Hall effect
+   * sensor (or a slotted disc and optical sensor). The state
+   * will toggle between 0 and 1 on filament movement. It can detect
+   * filament runout and stripouts or jams.
+   */
+  class FilamentSensorEncoder : public FilamentSensorBase {
+    private:
+      static uint8_t motion_detected;
 
-        static void poll_motion_sensor() {
-          static uint8_t old_state;
-          const uint8_t new_state = poll_runout_pins(),
-                        change    = old_state ^ new_state;
-          old_state = new_state;
+      static void poll_motion_sensor() {
+        static uint8_t old_state;
+        const uint8_t new_state = poll_runout_pins(),
+                      change    = old_state ^ new_state;
+        old_state = new_state;
 
-          #if ENABLED(FILAMENT_RUNOUT_SENSOR_DEBUG)
+        #if ENABLED(FILAMENT_RUNOUT_SENSOR_DEBUG)
           if (change) {
             SERIAL_ECHOPGM("Motion detected:");
             LOOP_L_N(e, NUM_RUNOUT_SENSORS)
               if (TEST(change, e)) SERIAL_CHAR(' ', '0' + e);
             SERIAL_EOL();
-            }
-          #endif
+          }
+        #endif
 
-          motion_detected |= change;
-        }
+        motion_detected |= change;
+      }
 
-      public:
-        static void block_completed(const block_t * const b) {
-          // If the sensor wheel has moved since the last call to
-          // this method reset the runout counter for the extruder.
-          if (TEST(motion_detected, b->extruder))
-            filament_present(b->extruder);
+    public:
+      static void block_completed(const block_t * const b) {
+        // If the sensor wheel has moved since the last call to
+        // this method reset the runout counter for the extruder.
+        if (TEST(motion_detected, b->extruder))
+          filament_present(b->extruder);
 
-          // Clear motion triggers for next block
-          motion_detected = 0;
-        }
+        // Clear motion triggers for next block
+        motion_detected = 0;
+      }
 
-        static void run() { poll_motion_sensor(); }
-    };
+      static void run() { poll_motion_sensor(); }
+  };
 
-  #else
+#else
 
-    /**
-     * This is a simple endstop switch in the path of the filament.
-     * It can detect filament runout, but not stripouts or jams.
-     */
-    class FilamentSensorSwitch : public FilamentSensorBase {
-      private:
+  /**
+   * This is a simple endstop switch in the path of the filament.
+   * It can detect filament runout, but not stripouts or jams.
+   */
+  class FilamentSensorSwitch : public FilamentSensorBase {
+    private:
       static bool poll_runout_state(const uint8_t extruder) {
-          const uint8_t runout_states = poll_runout_states();
-          #if MULTI_FILAMENT_SENSOR
-            if ( !TERN0(DUAL_X_CARRIAGE, idex_is_duplicating())
-              && !TERN0(MULTI_NOZZLE_DUPLICATION, extruder_duplication_enabled)
-            ) return TEST(runout_states, extruder); // A specific extruder ran out
-          #else
-            UNUSED(extruder);
-          #endif
-          return !!runout_states;                   // Any extruder ran out
-        }
+        const uint8_t runout_states = poll_runout_states();
+        #if MULTI_FILAMENT_SENSOR
+          if ( !TERN0(DUAL_X_CARRIAGE, idex_is_duplicating())
+            && !TERN0(MULTI_NOZZLE_DUPLICATION, extruder_duplication_enabled)
+          ) return TEST(runout_states, extruder); // A specific extruder ran out
+        #else
+          UNUSED(extruder);
+        #endif
+        return !!runout_states;                   // Any extruder ran out
+      }
 
-      public:
+    public:
       static void block_completed(const block_t * const) {}
 
       static void run() {
-          LOOP_L_N(s, NUM_RUNOUT_SENSORS) {
-            const bool out = poll_runout_state(s);
-            if (!out) filament_present(s);
-            #if ENABLED(FILAMENT_RUNOUT_SENSOR_DEBUG)
-              static uint8_t was_out; // = 0
-              if (out != TEST(was_out, s)) {
-                TBI(was_out, s);
+        LOOP_L_N(s, NUM_RUNOUT_SENSORS) {
+          const bool out = poll_runout_state(s);
+          if (!out) filament_present(s);
+          #if ENABLED(FILAMENT_RUNOUT_SENSOR_DEBUG)
+            static uint8_t was_out; // = 0
+            if (out != TEST(was_out, s)) {
+              TBI(was_out, s);
               SERIAL_ECHOLNF(F("Filament Sensor "), AS_DIGIT(s), out ? F(" OUT") : F(" IN"));
-              }
-            #endif
-          }
+            }
+          #endif
         }
+      }
     };
   #endif // !FILAMENT_MOTION_SENSOR
 #endif // ProUIex

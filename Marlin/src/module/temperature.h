@@ -388,8 +388,7 @@ struct HeaterWatch {
 
 // Temperature sensor read value ranges
 #if ProUIex
-  typedef struct { raw_adc_t raw_min, raw_max; celsius_t mintemp, tablemax, maxtemp; } temp_range_t;
-  const int8_t SGN_RAW_TEMP = ((TEMP_SENSOR_0_RAW_LO_TEMP) < (TEMP_SENSOR_0_RAW_HI_TEMP) ? 1 : -1) * (OVERSAMPLENR);
+  typedef struct { raw_adc_t raw_min, raw_max; celsius_t mintemp, maxtemp, tablemax; } temp_range_t;
 #else
   typedef struct { raw_adc_t raw_min, raw_max; celsius_t mintemp, maxtemp; } temp_range_t;
 #endif
@@ -463,7 +462,6 @@ class Temperature {
     #if HAS_HOTEND
       static hotend_info_t temp_hotend[HOTENDS];
       static TERN(ProUIex,,const) celsius_t hotend_maxtemp[HOTENDS];
-      static temp_range_t temp_range[HOTENDS];
       static celsius_t hotend_max_target(const uint8_t e) { return hotend_maxtemp[e] - (HOTEND_OVERSHOOT); }
     #endif
 
@@ -598,6 +596,10 @@ class Temperature {
 
     #if ENABLED(MPCTEMP)
       static int32_t mpc_e_position;
+    #endif
+
+    #if HAS_HOTEND
+      static temp_range_t temp_range[HOTENDS];
     #endif
 
     #if HAS_HEATED_BED

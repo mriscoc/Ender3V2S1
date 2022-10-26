@@ -47,8 +47,8 @@ private:
   #endif
 
   #if ENABLED(MEASURE_BACKLASH_WHEN_PROBING)
-      static xyz_float_t measured_mm;
-      static xyz_uint8_t measured_count;
+    static xyz_float_t measured_mm;
+    static xyz_uint8_t measured_count;
   #endif
 
   class StepAdjuster;

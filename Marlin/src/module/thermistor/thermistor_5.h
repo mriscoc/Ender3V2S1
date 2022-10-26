@@ -27,9 +27,8 @@
 // Verified by linagee. Source: https://www.mouser.com/datasheet/2/362/semitec%20usa%20corporation_gtthermistor-1202937.pdf
 // Calculated using 4.7kohm pullup, voltage divider math, and manufacturer provided temp/resistance
 constexpr temp_entry_t temptable_5[] PROGMEM = {
-  { OV(   1), 713 },
 
-// Extended table from SteinhartHart curvefit
+/* Extended table from SteinhartHart curvefit
   { OV( 09.92), 350 },
   { OV( 11.09), 340 },
   { OV( 12.44), 330 },
@@ -40,12 +39,18 @@ constexpr temp_entry_t temptable_5[] PROGMEM = {
   { OV( 23.67), 280 },
   { OV( 27.32), 270 },
 
-//
+*/
 
   // { OV(  17), 300 }, // top rating 300C
   // { OV(  20), 290 },
   // { OV(  23), 280 },
   // { OV(  27), 270 },
+
+  { OV(   1), 713 },
+  { OV(  17), 300 }, // top rating 300C
+  { OV(  20), 290 },
+  { OV(  23), 280 },
+  { OV(  27), 270 },
   { OV(  31), 260 },
   { OV(  37), 250 },
   { OV(  43), 240 },

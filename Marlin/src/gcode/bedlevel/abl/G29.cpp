@@ -686,7 +686,6 @@ G29_TYPE GcodeSuite::G29() {
         int8_t inStart, inStop, inInc;
 
         TERN_(ProUIex, if (ProEx.QuitLeveling()) break; )
-
         if (zig) {                      // Zig away from origin
           inStart = 0;                  // Left or front
           inStop = PR_INNER_SIZE;       // Right or back

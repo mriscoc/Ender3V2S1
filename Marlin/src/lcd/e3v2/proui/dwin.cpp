@@ -147,7 +147,11 @@
 #define MIN_BEDTEMP 0
 #define MAX_BEDTEMP BED_MAX_TARGET
 
-#define FEEDRATE_E      (60)
+#ifdef MANUAL_FEEDRATE
+  #define FEEDRATE_E      (manual_feedrate_mm_s.e)
+#else
+  #define FEEDRATE_E      (1)
+#endif
 
 #define DWIN_VAR_UPDATE_INTERVAL         500
 #define DWIN_UPDATE_INTERVAL             1000
@@ -295,6 +299,9 @@ TERN_(PIDTEMPBED, MenuClass *BedPIDMenu = nullptr);
   #endif
   #if ProUIex
     MenuClass *MeshInsetMenu = nullptr;
+  #endif
+  #if ENABLED(SHAPING_MENU)
+    MenuClass *InputShapingMenu = nullptr;
   #endif
 #endif
 
@@ -1009,7 +1016,7 @@ void Draw_Info_Menu() {
     DWINUI::Draw_CenteredString(271, F(DateTime));
   #endif
 
-    LOOP_L_N(i, (TERN(ProUIex, 4, 6)) - 2 * ENABLED(ProUIex)) {
+    LOOP_L_N(i, TERN(ProUIex, 2, 4)) {
     DWINUI::Draw_Icon(ICON_Step + i, ICOX, 90 + i * MLINE);
     DWIN_Draw_HLine(HMI_data.SplitLine_Color, 16, MYPOS(i + 2), 240);
   }
@@ -1205,7 +1212,7 @@ void EachMomentUpdate() {
       if (checkkey == ESDiagProcess) ESDiag.Update();
     #endif
     #if HAS_PIDPLOT
-      if (checkkey == PidProcess) Plot.Update((HMI_value.pidresult == PIDTEMP_START) ? thermalManager.wholeDegHotend(0) : thermalManager.wholeDegBed());
+      if (checkkey == PidProcess) Plot.Update((HMI_value.pidresult == PID_EXTR_START) ? thermalManager.wholeDegHotend(0) : thermalManager.wholeDegBed());
       if (checkkey == MPCProcess) Plot.Update(thermalManager.wholeDegHotend(0));
       if (checkkey == PlotProcess) Plot.Update(htemp ? thermalManager.wholeDegHotend(0) : thermalManager.wholeDegBed());
     #endif
@@ -1461,7 +1468,7 @@ void DWIN_LevelingDone() {
           DWINUI::Draw_String(HMI_data.PopupTxt_Color, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, F("MPC target:    Celsius"));
           DWINUI::Draw_CenteredString(HMI_data.PopupTxt_Color, 120, F("for Nozzle is running."));
           break;
-        case PIDTEMPBED_START:
+        case PID_BED_START:
           _maxtemp = BED_MAXTEMP;
           _target = HMI_data.BedPidT;
           DWINUI::Draw_CenteredString(HMI_data.PopupTxt_Color, 100, GET_TEXT_F(MSG_PID_AUTOTUNE));
@@ -1475,12 +1482,12 @@ void DWIN_LevelingDone() {
       DWINUI::Draw_CenteredString(2, HMI_data.PopupTxt_Color, 70, GET_TEXT_F(MSG_PID_AUTOTUNE));
       DWINUI::Draw_String(HMI_data.PopupTxt_Color, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, F("PID target:     Celsius"));
       switch (HMI_value.pidresult) {
-        case PIDTEMP_START:
+        case PID_EXTR_START:
           _maxtemp = thermalManager.hotend_maxtemp[0];
           _target = HMI_data.HotendPidT;
           DWINUI::Draw_CenteredString(2, HMI_data.PopupTxt_Color, 92, F("for NOZZLE"));
           break;
-        case PIDTEMPBED_START:
+        case PID_BED_START:
           _maxtemp = BED_MAXTEMP;
           _target = HMI_data.BedPidT;
           DWINUI::Draw_CenteredString(2, HMI_data.PopupTxt_Color, 92, F("for BED"));
@@ -1498,7 +1505,7 @@ void DWIN_LevelingDone() {
   void DWIN_PidTuning(tempcontrol_t result) {
     HMI_value.pidresult = result;
     switch (result) {
-      case PIDTEMPBED_START:
+      case PID_BED_START:
         HMI_SaveProcessID(PidProcess);
         #if HAS_PIDPLOT
           DWIN_Draw_PID_MPC_Popup();
@@ -1506,7 +1513,7 @@ void DWIN_LevelingDone() {
           DWIN_Draw_Popup(ICON_TempTooHigh, GET_TEXT_F(MSG_PID_AUTOTUNE), F("for BED is running."));
         #endif
         break;
-      case PIDTEMP_START:
+      case PID_EXTR_START:
         HMI_SaveProcessID(PidProcess);
         #if HAS_PIDPLOT
           DWIN_Draw_PID_MPC_Popup();
@@ -2775,6 +2782,63 @@ void SetStepsZ() { HMI_value.axis = Z_AXIS, SetPFloatOnClick( MIN_STEP, MAX_STEP
   }
 #endif // HAS_TOOLBAR
 
+// M593 - Acceleration items
+/*
+
+#if ENABLED(SHAPING_MENU)
+
+void ApplyMaxJerk() { planner.set_max_jerk(HMI_value.axis, MenuData.Value / MINUNITMULT); }
+  void SetMaxJerkX() { HMI_value.axis = X_AXIS, SetFloatOnClick(MIN_MAXJERK, max_jerk_edit_values[X_AXIS], UNITFDIGITS, planner.max_jerk[X_AXIS], ApplyMaxJerk); }
+
+
+constexpr float min_frequency = TERN(__AVR__, float(STEPPER_TIMER_RATE) / 2 / 0x10000, 1.0f);
+
+void ApplyXFreq() { stepper.set_shaping_frequency(X_AXIS, PRO_data.xfreq); }
+void ApplyYFreq() { stepper.set_shaping_frequency(Y_AXIS, PRO_data.yfreq); }
+void ApplyXZeta() { stepper.set_shaping_damping_ratio(X_AXIS, PRO_data.xzeta); }
+void ApplyYZeta() { stepper.set_shaping_damping_ratio(Y_AXIS, PRO_data.yzeta); }
+
+
+
+void SetXFreq() { SetPFloatOnClick(min_frequency, 200.0f, 2, ApplyXFreq); }
+
+void SetYFreq() { SetPFloatOnClick(min_frequency, 200.0f, 2, ApplyYFreq); }
+
+void SetXZeta() { SetPFloatOnClick(0.0f, 1.0f, 2, ApplyXZeta); }
+
+void SetYZeta() { SetPFloatOnClick(0.0f, 1.0f, 2, ApplyYZeta); }
+
+
+
+
+  void Draw_InputShaping_Menu() {
+    checkkey = Menu;
+    if (SET_MENU(InputShapingMenu, MSG_INPUT_SHAPING, 8)) {
+      BACK_ITEM(Draw_Prepare_Menu);
+    // M593 F Frequency
+    #if HAS_SHAPING_X
+      //&PRO_data.xfreq = stepper.get_shaping_frequency(X_AXIS);
+      EDIT_ITEM(ICON_MoveX, MSG_SHAPING_X_FREQ, onDrawPFloatMenu, SetXFreq, &PRO_data.xfreq);
+    #endif
+    #if HAS_SHAPING_Y
+      //*MenuData.P_Float = stepper.get_shaping_frequency(Y_AXIS);
+      EDIT_ITEM(ICON_MoveY, MSG_SHAPING_Y_FREQ, onDrawPFloatMenu, SetYFreq, &PRO_data.yfreq);
+    #endif
+    // M593 D Damping ratio
+    #if HAS_SHAPING_X
+      //*MenuData.P_Float = stepper.get_shaping_damping_ratio(X_AXIS);
+      EDIT_ITEM(ICON_MoveX, MSG_SHAPING_X_ZETA, onDrawPFloatMenu, SetXZeta, &PRO_data.xzeta);
+    #endif
+    #if HAS_SHAPING_Y
+     // *MenuData.P_Float = stepper.get_shaping_damping_ratio(Y_AXIS);
+      EDIT_ITEM(ICON_MoveY, MSG_SHAPING_Y_ZETA, onDrawPFloatMenu, SetYZeta, &PRO_data.yzeta);
+    #endif
+    }
+  UpdateMenu(InputShapingMenu);
+  }
+#endif
+
+*/
 // Special Menuitem Drawing functions =================================================
 
 void onDrawSelColorItem(MenuItemClass* menuitem, int8_t line) {
@@ -2828,7 +2892,7 @@ Draw_Chkb_Line(CurrentMenu->line(), HMI_data.SetLiveMove);
 
 void Draw_Prepare_Menu() {
   checkkey = Menu;
-  if (SET_MENU(PrepareMenu, MSG_PREPARE, 8 + PREHEAT_COUNT)) {
+  if (SET_MENU(PrepareMenu, MSG_PREPARE, 9 + PREHEAT_COUNT)) {
     BACK_ITEM(Goto_Main_Menu);
     MENU_ITEM(ICON_Axis, MSG_MOVE_AXIS, onDrawSubMenu, Goto_Move_Menu);
     #if ENABLED(INDIVIDUAL_AXIS_HOMING_SUBMENU)
@@ -2849,6 +2913,9 @@ void Draw_Prepare_Menu() {
       REPEAT_1(PREHEAT_COUNT, _ITEM_PREHEAT)
     #endif
     MENU_ITEM(ICON_Cool, MSG_COOLDOWN, onDrawMenuItem, DoCoolDown);
+    #if ENABLED(SHAPING_MENU)
+      MENU_ITEM(ICON_Language, MSG_INPUT_SHAPING, onDrawSubMenu, Draw_InputShaping_Menu);
+    #endif
   }
   ui.reset_status(true);
   UpdateMenu(PrepareMenu);
@@ -2947,9 +3014,11 @@ void Draw_Move_Menu() {
       EDIT_ITEM(ICON_HomeOffsetX, MSG_HOME_OFFSET_X, onDrawPFloatMenu, SetHomeOffsetX, &home_offset[X_AXIS]);
       EDIT_ITEM(ICON_HomeOffsetY, MSG_HOME_OFFSET_Y, onDrawPFloatMenu, SetHomeOffsetY, &home_offset[Y_AXIS]);
       EDIT_ITEM(ICON_HomeOffsetZ, MSG_HOME_OFFSET_Z, onDrawPFloatMenu, SetHomeOffsetZ, &home_offset[Z_AXIS]);
-      #if ENABLED(NOZZLE_PARK_FEATURE)
+      #if ProUIex
+        #if ENABLED(NOZZLE_PARK_FEATURE)
         MENU_ITEM(ICON_ParkPos, MSG_FILAMENT_PARK_ENABLED, onDrawSubMenu, Draw_ParkPos_Menu);
-      #endif
+        #endif
+      #endif  
     }
     UpdateMenu(HomeOffMenu);
   }

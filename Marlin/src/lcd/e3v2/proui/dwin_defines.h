@@ -96,7 +96,7 @@
     #if HAS_BED_PROBE
       #define DEF_TBOPT {9, 8, 0, 1, 4}   // Default shorcuts for ALB/UBL
     #else
-      #define DEF_TBOPT {9, 8, 0, 1, 4};  // Default shortcuts for MM
+      #define DEF_TBOPT {7, 0, 6, 2, 8};  // Default shortcuts for MM
     #endif
   #endif
 

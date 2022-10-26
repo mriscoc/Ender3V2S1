@@ -95,8 +95,8 @@ enum processID : uint8_t {
 #if HAS_PID_HEATING || ENABLED(MPCTEMP)
   enum tempcontrol_t : uint8_t {
   #if HAS_PID_HEATING
-    PIDTEMP_START = 0,
-    PIDTEMPBED_START,
+    PID_EXTR_START = 0,
+    PID_BED_START,
     PID_BAD_EXTRUDER_NUM,
     PID_TEMP_TOO_HIGH,
     PID_TUNING_TIMEOUT,

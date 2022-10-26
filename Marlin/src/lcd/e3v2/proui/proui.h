@@ -107,7 +107,9 @@ typedef struct {
     uint16_t zprobefeedslow = DEF_Z_PROBE_FEEDRATE_SLOW;
     uint8_t multiple_probing = MULTIPLE_PROBING;
   #endif
-  TERN_(HAS_EXTRUDERS, bool Invert_E0 = DEF_INVERT_E0_DIR);
+  #if HAS_EXTRUDERS
+    bool Invert_E0 = DEF_INVERT_E0_DIR;
+  #endif
   #if ENABLED(NOZZLE_PARK_FEATURE)
     xyz_int_t Park_point = DEF_NOZZLE_PARK_POINT;
   #endif
@@ -115,9 +117,17 @@ typedef struct {
     bool Runout_active_state = FIL_RUNOUT_STATE;
     bool FilamentMotionSensor = DEF_FIL_MOTION_SENSOR;
   #endif
-  TERN_(HAS_HOTEND, celsius_t hotend_maxtemp = HEATER_0_MAXTEMP);
+  #if HAS_HOTEND
+    celsius_t hotend_maxtemp = HEATER_0_MAXTEMP;
+  #endif
   #if HAS_TOOLBAR
     uint8_t TBopt[TBMaxOpt] = DEF_TBOPT;
+  #endif
+  #if ENABLED(INPUT_SHAPING)
+    float xfreq = SHAPING_FREQ_X; //stepper.get_shaping_frequency(X_AXIS);
+    float yfreq = SHAPING_FREQ_Y; //stepper.get_shaping_frequency(Y_AXIS);
+    float xzeta = SHAPING_ZETA_X; //stepper.get_shaping_damping_ratio(X_AXIS);
+    float yzeta = SHAPING_ZETA_Y; //stepper.get_shaping_damping_ratio(Y_AXIS);
   #endif
 } PRO_data_t;
 extern PRO_data_t PRO_data;

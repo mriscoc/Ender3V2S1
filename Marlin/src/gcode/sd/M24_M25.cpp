@@ -96,7 +96,7 @@ void GcodeSuite::M25() {
 
   #if ENABLED(PARK_HEAD_ON_PAUSE)
 
-    if (printingIsActive()) M125();  // ProUI Do only if printing
+    M125();
 
   #else
 

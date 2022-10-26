@@ -227,7 +227,7 @@ float Planner::previous_nominal_speed;
 #endif
 
 #if ENABLED(LIN_ADVANCE)
-  float Planner::extruder_advance_K[EXTRUDERS]; // Initialized by settings.load()
+  float Planner::extruder_advance_K[DISTINCT_E]; // Initialized by settings.load()
 #endif
 
 #if HAS_POSITION_FLOAT
@@ -854,7 +854,7 @@ void Planner::calculate_trapezoid_for_block(block_t * const block, const_float_t
 
   #if ENABLED(LIN_ADVANCE)
     if (block->la_advance_rate) {
-      const float comp = extruder_advance_K[block->extruder] * block->steps.e / block->step_event_count;
+      const float comp = extruder_advance_K[E_INDEX_N(block->extruder)] * block->steps.e / block->step_event_count;
       block->max_adv_steps = cruise_rate * comp;
       block->final_adv_steps = final_rate * comp;
     }
@@ -1006,7 +1006,7 @@ void Planner::reverse_pass_kernel(block_t * const current, const block_t * const
 
       const float next_entry_speed_sqr = next ? next->entry_speed_sqr : _MAX(TERN0(HINTS_SAFE_EXIT_SPEED, safe_exit_speed_sqr), sq(float(MINIMUM_PLANNER_SPEED))),
                   new_entry_speed_sqr = current->flag.nominal_length
-        ? max_entry_speed_sqr
+                    ? max_entry_speed_sqr
                     : _MIN(max_entry_speed_sqr, max_allowable_speed_sqr(-current->acceleration, next_entry_speed_sqr, current->millimeters));
       if (current->entry_speed_sqr != new_entry_speed_sqr) {
 
@@ -1282,16 +1282,10 @@ void Planner::recalculate(TERN_(HINTS_SAFE_EXIT_SPEED, const_float_t safe_exit_s
 
   void Planner::sync_fan_speeds(uint8_t (&fan_speed)[FAN_COUNT]) {
 
-    #if FAN_MIN_PWM != 0 || FAN_MAX_PWM != 255
-      #define CALC_FAN_SPEED(f) (fan_speed[f] ? map(fan_speed[f], 1, 255, FAN_MIN_PWM, FAN_MAX_PWM) : FAN_OFF_PWM)
-    #else
-      #define CALC_FAN_SPEED(f) (fan_speed[f] ?: FAN_OFF_PWM)
-    #endif
-
     #if ENABLED(FAN_SOFT_PWM)
-      #define _FAN_SET(F) thermalManager.soft_pwm_amount_fan[F] = CALC_FAN_SPEED(F);
+      #define _FAN_SET(F) thermalManager.soft_pwm_amount_fan[F] = CALC_FAN_SPEED(fan_speed[F]);
     #else
-      #define _FAN_SET(F) hal.set_pwm_duty(pin_t(FAN##F##_PIN), CALC_FAN_SPEED(F));
+      #define _FAN_SET(F) hal.set_pwm_duty(pin_t(FAN##F##_PIN), CALC_FAN_SPEED(fan_speed[F]));
     #endif
     #define FAN_SET(F) do{ kickstart_fan(fan_speed, ms, F); _FAN_SET(F); }while(0)
 
@@ -1306,13 +1300,13 @@ void Planner::recalculate(TERN_(HINTS_SAFE_EXIT_SPEED, const_float_t safe_exit_s
 
     void Planner::kickstart_fan(uint8_t (&fan_speed)[FAN_COUNT], const millis_t &ms, const uint8_t f) {
       static millis_t fan_kick_end[FAN_COUNT] = { 0 };
-      if (fan_speed[f]) {
+      if (fan_speed[f] > FAN_OFF_PWM) {
         if (fan_kick_end[f] == 0) {
           fan_kick_end[f] = ms + FAN_KICKSTART_TIME;
-          fan_speed[f] = 255;
+          fan_speed[f] = FAN_KICKSTART_POWER;
         }
         else if (PENDING(ms, fan_kick_end[f]))
-          fan_speed[f] = 255;
+          fan_speed[f] = FAN_KICKSTART_POWER;
       }
       else
         fan_kick_end[f] = 0;
@@ -2176,8 +2170,8 @@ bool Planner::_populate_block(
           );
         #elif ENABLED(FOAMCUTTER_XYUV)
           #if HAS_J_AXIS
-          // Special 5 axis kinematics. Return the largest distance move from either X/Y or I/J plane
-          _MAX(sq(steps_dist_mm.x) + sq(steps_dist_mm.y), sq(steps_dist_mm.i) + sq(steps_dist_mm.j))
+            // Special 5 axis kinematics. Return the largest distance move from either X/Y or I/J plane
+            _MAX(sq(steps_dist_mm.x) + sq(steps_dist_mm.y), sq(steps_dist_mm.i) + sq(steps_dist_mm.j))
           #else // Foamcutter with only two axes (XY)
             sq(steps_dist_mm.x) + sq(steps_dist_mm.y)
           #endif
@@ -2243,7 +2237,6 @@ bool Planner::_populate_block(
   if (block->step_event_count < MIN_STEPS_PER_SEGMENT) return false;
 
   TERN_(MIXING_EXTRUDER, mixer.populate_block(block->b_color));
-
 
   #if HAS_FAN
     FANS_LOOP(i) block->fan_speed[i] = thermalManager.fan_speed[i];
@@ -2490,6 +2483,14 @@ bool Planner::_populate_block(
 
   #endif // XY_FREQUENCY_LIMIT
 
+  #if ENABLED(INPUT_SHAPING)
+    const float top_freq = _MIN(float(0x7FFFFFFFL)
+                                OPTARG(HAS_SHAPING_X, stepper.get_shaping_frequency(X_AXIS))
+                                OPTARG(HAS_SHAPING_Y, stepper.get_shaping_frequency(Y_AXIS))),
+                max_factor = (top_freq * float(shaping_dividends - 3) * 2.0f) / block->nominal_rate;
+    NOMORE(speed_factor, max_factor);
+  #endif
+
   // Correct the speed
   if (speed_factor < 1.0f) {
     current_speed *= speed_factor;
@@ -2541,7 +2542,7 @@ bool Planner::_populate_block(
        *
        * de > 0                       : Extruder is running forward (e.g., for "Wipe while retracting" (Slic3r) or "Combing" (Cura) moves)
        */
-      use_advance_lead = esteps && extruder_advance_K[extruder] && de > 0;
+      use_advance_lead = esteps && extruder_advance_K[E_INDEX_N(extruder)] && de > 0;
 
       if (use_advance_lead) {
         float e_D_ratio = (target_float.e - position_float.e) /
@@ -2557,7 +2558,7 @@ bool Planner::_populate_block(
           use_advance_lead = false;
         else {
           // Scale E acceleration so that it will be possible to jump to the advance speed.
-          const uint32_t max_accel_steps_per_s2 = MAX_E_JERK(extruder) / (extruder_advance_K[extruder] * e_D_ratio) * steps_per_mm;
+          const uint32_t max_accel_steps_per_s2 = MAX_E_JERK(extruder) / (extruder_advance_K[E_INDEX_N(extruder)] * e_D_ratio) * steps_per_mm;
           if (TERN0(LA_DEBUG, accel > max_accel_steps_per_s2))
             SERIAL_ECHOLNPGM("Acceleration limited.");
           NOMORE(accel, max_accel_steps_per_s2);
@@ -2594,7 +2595,7 @@ bool Planner::_populate_block(
 
     if (use_advance_lead) {
       // the Bresenham algorithm will convert this step rate into extruder steps
-      block->la_advance_rate = extruder_advance_K[extruder] * block->acceleration_steps_per_s2;
+      block->la_advance_rate = extruder_advance_K[E_INDEX_N(extruder)] * block->acceleration_steps_per_s2;
 
       // reduce LA ISR frequency by calling it only often enough to ensure that there will
       // never be more than four extruder steps per call
@@ -2707,96 +2708,96 @@ bool Planner::_populate_block(
 
           const float sin_theta_d2 = SQRT(0.5f * (1.0f - junction_cos_theta)); // Trig half angle identity. Always positive.
 
-        vmax_junction_sqr = junction_acceleration * junction_deviation_mm * sin_theta_d2 / (1.0f - sin_theta_d2);
+          vmax_junction_sqr = junction_acceleration * junction_deviation_mm * sin_theta_d2 / (1.0f - sin_theta_d2);
 
-        #if ENABLED(JD_HANDLE_SMALL_SEGMENTS)
+          #if ENABLED(JD_HANDLE_SMALL_SEGMENTS)
 
-          // For small moves with >135° junction (octagon) find speed for approximate arc
-          if (block->millimeters < 1 && junction_cos_theta < -0.7071067812f) {
+            // For small moves with >135° junction (octagon) find speed for approximate arc
+            if (block->millimeters < 1 && junction_cos_theta < -0.7071067812f) {
 
-            #if ENABLED(JD_USE_MATH_ACOS)
+              #if ENABLED(JD_USE_MATH_ACOS)
 
-              #error "TODO: Inline maths with the MCU / FPU."
+                #error "TODO: Inline maths with the MCU / FPU."
 
-            #elif ENABLED(JD_USE_LOOKUP_TABLE)
+              #elif ENABLED(JD_USE_LOOKUP_TABLE)
 
-              // Fast acos approximation (max. error +-0.01 rads)
-              // Based on LUT table and linear interpolation
+                // Fast acos approximation (max. error +-0.01 rads)
+                // Based on LUT table and linear interpolation
 
-              /**
-               *  // Generate the JD Lookup Table
-               *  constexpr float c = 1.00751495f; // Correction factor to center error around 0
-               *  for (int i = 0; i < jd_lut_count - 1; ++i) {
-               *    const float x0 = (sq(i) - 1) / sq(i),
-               *                y0 = acos(x0) * (i == 0 ? 1 : c),
-               *                x1 = i < jd_lut_count - 1 ?  0.5 * x0 + 0.5 : 0.999999f,
-               *                y1 = acos(x1) * (i < jd_lut_count - 1 ? c : 1);
-               *    jd_lut_k[i] = (y0 - y1) / (x0 - x1);
-               *    jd_lut_b[i] = (y1 * x0 - y0 * x1) / (x0 - x1);
-               *  }
-               *
-               *  // Compute correction factor (Set c to 1.0f first!)
-               *  float min = INFINITY, max = -min;
-               *  for (float t = 0; t <= 1; t += 0.0003f) {
-               *    const float e = acos(t) / approx(t);
-               *    if (isfinite(e)) {
-               *      if (e < min) min = e;
-               *      if (e > max) max = e;
-               *    }
-               *  }
-               *  fprintf(stderr, "%.9gf, ", (min + max) / 2);
-               */
-              static constexpr int16_t  jd_lut_count = 16;
-              static constexpr uint16_t jd_lut_tll   = _BV(jd_lut_count - 1);
-              static constexpr int16_t  jd_lut_tll0  = __builtin_clz(jd_lut_tll) + 1; // i.e., 16 - jd_lut_count + 1
-              static constexpr float jd_lut_k[jd_lut_count] PROGMEM = {
-                -1.03145837f, -1.30760646f, -1.75205851f, -2.41705704f,
-                -3.37769222f, -4.74888992f, -6.69649887f, -9.45661736f,
-                -13.3640480f, -18.8928222f, -26.7136841f, -37.7754593f,
-                -53.4201813f, -75.5458374f, -106.836761f, -218.532821f };
-              static constexpr float jd_lut_b[jd_lut_count] PROGMEM = {
-                 1.57079637f,  1.70887053f,  2.04220939f,  2.62408352f,
-                 3.52467871f,  4.85302639f,  6.77020454f,  9.50875854f,
-                 13.4009285f,  18.9188995f,  26.7321243f,  37.7885055f,
-                 53.4293975f,  75.5523529f,  106.841369f,  218.534011f };
+                /**
+                 *  // Generate the JD Lookup Table
+                 *  constexpr float c = 1.00751495f; // Correction factor to center error around 0
+                 *  for (int i = 0; i < jd_lut_count - 1; ++i) {
+                 *    const float x0 = (sq(i) - 1) / sq(i),
+                 *                y0 = acos(x0) * (i == 0 ? 1 : c),
+                 *                x1 = i < jd_lut_count - 1 ?  0.5 * x0 + 0.5 : 0.999999f,
+                 *                y1 = acos(x1) * (i < jd_lut_count - 1 ? c : 1);
+                 *    jd_lut_k[i] = (y0 - y1) / (x0 - x1);
+                 *    jd_lut_b[i] = (y1 * x0 - y0 * x1) / (x0 - x1);
+                 *  }
+                 *
+                 *  // Compute correction factor (Set c to 1.0f first!)
+                 *  float min = INFINITY, max = -min;
+                 *  for (float t = 0; t <= 1; t += 0.0003f) {
+                 *    const float e = acos(t) / approx(t);
+                 *    if (isfinite(e)) {
+                 *      if (e < min) min = e;
+                 *      if (e > max) max = e;
+                 *    }
+                 *  }
+                 *  fprintf(stderr, "%.9gf, ", (min + max) / 2);
+                 */
+                static constexpr int16_t  jd_lut_count = 16;
+                static constexpr uint16_t jd_lut_tll   = _BV(jd_lut_count - 1);
+                static constexpr int16_t  jd_lut_tll0  = __builtin_clz(jd_lut_tll) + 1; // i.e., 16 - jd_lut_count + 1
+                static constexpr float jd_lut_k[jd_lut_count] PROGMEM = {
+                  -1.03145837f, -1.30760646f, -1.75205851f, -2.41705704f,
+                  -3.37769222f, -4.74888992f, -6.69649887f, -9.45661736f,
+                  -13.3640480f, -18.8928222f, -26.7136841f, -37.7754593f,
+                  -53.4201813f, -75.5458374f, -106.836761f, -218.532821f };
+                static constexpr float jd_lut_b[jd_lut_count] PROGMEM = {
+                   1.57079637f,  1.70887053f,  2.04220939f,  2.62408352f,
+                   3.52467871f,  4.85302639f,  6.77020454f,  9.50875854f,
+                   13.4009285f,  18.9188995f,  26.7321243f,  37.7885055f,
+                   53.4293975f,  75.5523529f,  106.841369f,  218.534011f };
 
-              const float neg = junction_cos_theta < 0 ? -1 : 1,
-                          t = neg * junction_cos_theta;
+                const float neg = junction_cos_theta < 0 ? -1 : 1,
+                            t = neg * junction_cos_theta;
 
-              const int16_t idx = (t < 0.00000003f) ? 0 : __builtin_clz(uint16_t((1.0f - t) * jd_lut_tll)) - jd_lut_tll0;
+                const int16_t idx = (t < 0.00000003f) ? 0 : __builtin_clz(uint16_t((1.0f - t) * jd_lut_tll)) - jd_lut_tll0;
 
-              float junction_theta = t * pgm_read_float(&jd_lut_k[idx]) + pgm_read_float(&jd_lut_b[idx]);
-              if (neg > 0) junction_theta = RADIANS(180) - junction_theta; // acos(-t)
+                float junction_theta = t * pgm_read_float(&jd_lut_k[idx]) + pgm_read_float(&jd_lut_b[idx]);
+                if (neg > 0) junction_theta = RADIANS(180) - junction_theta; // acos(-t)
 
-            #else
+              #else
 
-              // Fast acos(-t) approximation (max. error +-0.033rad = 1.89°)
-              // Based on MinMax polynomial published by W. Randolph Franklin, see
-              // https://wrf.ecse.rpi.edu/Research/Short_Notes/arcsin/onlyelem.html
-              //  acos( t) = pi / 2 - asin(x)
-              //  acos(-t) = pi - acos(t) ... pi / 2 + asin(x)
+                // Fast acos(-t) approximation (max. error +-0.033rad = 1.89°)
+                // Based on MinMax polynomial published by W. Randolph Franklin, see
+                // https://wrf.ecse.rpi.edu/Research/Short_Notes/arcsin/onlyelem.html
+                //  acos( t) = pi / 2 - asin(x)
+                //  acos(-t) = pi - acos(t) ... pi / 2 + asin(x)
 
-              const float neg = junction_cos_theta < 0 ? -1 : 1,
-                          t = neg * junction_cos_theta,
-                          asinx =       0.032843707f
-                                + t * (-1.451838349f
-                                + t * ( 29.66153956f
-                                + t * (-131.1123477f
-                                + t * ( 262.8130562f
-                                + t * (-242.7199627f
-                                + t * ( 84.31466202f ) ))))),
-                          junction_theta = RADIANS(90) + neg * asinx; // acos(-t)
+                const float neg = junction_cos_theta < 0 ? -1 : 1,
+                            t = neg * junction_cos_theta,
+                            asinx =       0.032843707f
+                                  + t * (-1.451838349f
+                                  + t * ( 29.66153956f
+                                  + t * (-131.1123477f
+                                  + t * ( 262.8130562f
+                                  + t * (-242.7199627f
+                                  + t * ( 84.31466202f ) ))))),
+                            junction_theta = RADIANS(90) + neg * asinx; // acos(-t)
 
-              // NOTE: junction_theta bottoms out at 0.033 which avoids divide by 0.
+                // NOTE: junction_theta bottoms out at 0.033 which avoids divide by 0.
 
-            #endif
+              #endif
 
-            const float limit_sqr = (block->millimeters * junction_acceleration) / junction_theta;
-            NOMORE(vmax_junction_sqr, limit_sqr);
-          }
+              const float limit_sqr = (block->millimeters * junction_acceleration) / junction_theta;
+              NOMORE(vmax_junction_sqr, limit_sqr);
+            }
 
-        #endif // JD_HANDLE_SMALL_SEGMENTS
-      }
+          #endif // JD_HANDLE_SMALL_SEGMENTS
+        }
       }
 
       // Get the lowest speed

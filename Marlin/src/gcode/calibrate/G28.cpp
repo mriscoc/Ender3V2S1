@@ -470,22 +470,22 @@ void GcodeSuite::G28() {
       // skip homing of unused Z axis for foamcutters
       if (doZ) set_axis_is_at_home(Z_AXIS);
     #else
-    // Home Z last if homing towards the bed
-    #if HAS_Z_AXIS && DISABLED(HOME_Z_FIRST)
-      if (doZ) {
-        #if EITHER(Z_MULTI_ENDSTOPS, Z_STEPPER_AUTO_ALIGN)
-          stepper.set_all_z_lock(false);
-          stepper.set_separate_multi_axis(false);
-        #endif
+      // Home Z last if homing towards the bed
+      #if HAS_Z_AXIS && DISABLED(HOME_Z_FIRST)
+        if (doZ) {
+          #if EITHER(Z_MULTI_ENDSTOPS, Z_STEPPER_AUTO_ALIGN)
+            stepper.set_all_z_lock(false);
+            stepper.set_separate_multi_axis(false);
+          #endif
 
-        #if ENABLED(Z_SAFE_HOMING)
-          if (TERN1(POWER_LOSS_RECOVERY, !parser.seen_test('H'))) home_z_safely(); else homeaxis(Z_AXIS);
-        #else
-          homeaxis(Z_AXIS);
-        #endif
-        probe.move_z_after_homing();
-      }
-    #endif
+          #if ENABLED(Z_SAFE_HOMING)
+            if (TERN1(POWER_LOSS_RECOVERY, !parser.seen_test('H'))) home_z_safely(); else homeaxis(Z_AXIS);
+          #else
+            homeaxis(Z_AXIS);
+          #endif
+          probe.move_z_after_homing();
+        }
+      #endif
 
       SECONDARY_AXIS_CODE(
         if (doI) homeaxis(I_AXIS),

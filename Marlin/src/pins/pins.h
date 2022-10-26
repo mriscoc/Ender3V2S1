@@ -591,6 +591,8 @@
   #include "stm32f1/pins_CREALITY_V24S1_301.h"  // STM32F1                                env:STM32F103RE_creality env:STM32F103RE_creality_xfer env:STM32F103RC_creality env:STM32F103RC_creality_xfer env:STM32F103RE_creality_maple
 #elif MB(CREALITY_V25S1)
   #include "stm32f1/pins_CREALITY_V25S1.h"      // STM32F1                                env:STM32F103RE_creality_smartPro env:STM32F103RE_creality_smartPro_maple
+#elif MB(CREALITY_V521)
+  #include "stm32f1/pins_CREALITY_V521.h"       // STM32F103VE                            env:STM32F103VE_creality
 #elif MB(TRIGORILLA_PRO)
   #include "stm32f1/pins_TRIGORILLA_PRO.h"      // STM32F1                                env:trigorilla_pro env:trigorilla_pro_maple env:trigorilla_pro_disk
 #elif MB(FLY_MINI)
@@ -612,7 +614,7 @@
 #elif MB(PANDA_PI_V29)
   #include "stm32f1/pins_PANDA_PI_V29.h"        // STM32F103RCT6                          env:PANDA_PI_V29
 #elif MB(VOXELAB_AQUILA)
-  #include "stm32f1/pins_CREALITY_V4.h"         // STM32F1                                env:GD32F103RE_aquila env:GD32F103RC_aquila env:GD32F103RE_aquila_maple env:GD32F103RC_aquila_maple
+  #include "stm32f1/pins_CREALITY_V4.h"         // STM32F1                                env:GD32F103RE_aquila env:GD32F103RC_aquila env:GD32F103RE_aquila_maple env:GD32F103RC_aquila_maple env:GD32F103RE_voxelab env:GD32F103RC_voxelab env:GD32F103RE_voxelab_maple env:GD32F103RC_voxelab_maple
 
 //
 // ARM Cortex-M4F
@@ -709,6 +711,10 @@
   #include "stm32f4/pins_OPULO_LUMEN_REV4.h"    // STM32F4                                env:Opulo_Lumen_REV4
 #elif MB(FYSETC_SPIDER_KING407)
   #include "stm32f4/pins_FYSETC_SPIDER_KING407.h" // STM32F4                              env:FYSETC_SPIDER_KING407
+#elif MB(MKS_SKIPR_V1)
+  #include "stm32f4/pins_MKS_SKIPR_V1_0.h"      // STM32F4                                env:mks_skipr_v1 env:mks_skipr_v1_nobootloader
+#elif MB(TRONXY_V10)
+  #include "stm32f4/pins_TRONXY_V10.h"          // STM32F4                                env:STM32F446_tronxy
 
 //
 // ARM Cortex M7

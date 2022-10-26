@@ -24,7 +24,7 @@
 // R25 = 100 kOhm, beta25 = 4100 K, 4.7 kOhm pull-up, Hisens thermistor
 constexpr temp_entry_t temptable_13[] PROGMEM = {
 
-// Extended table from SteinhartHart curvefit
+/* Extended table from SteinhartHart curvefit
   { OV( 11.72), 350 },
   { OV( 12.36), 345 },
   { OV( 13.06), 340 },
@@ -35,7 +35,7 @@ constexpr temp_entry_t temptable_13[] PROGMEM = {
   { OV( 17.43), 315 },
   { OV( 18.53), 310 },
   { OV( 19.72), 305 },
-//
+*/
 
   { OV( 20.04), 300 },
   { OV( 23.19), 290 },

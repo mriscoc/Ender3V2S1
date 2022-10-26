@@ -166,6 +166,9 @@ typedef struct { raw_adc_t value; celsius_t celsius; } temp_entry_t;
 #if ANY_THERMISTOR_IS(75) // beta25 = 4100 K, R25 = 100 kOhm, Pull-up = 4.7 kOhm, "MGB18-104F39050L32 thermistor"
   #include "thermistor_75.h"
 #endif
+#if ANY_THERMISTOR_IS(98) // 100k bed thermistor with a 4.7K pull-up resistor (HT-NTC-100k 3mm Cartridge)
+  #include "thermistor_98.h"
+#endif
 #if ANY_THERMISTOR_IS(99) // 100k bed thermistor with a 10K pull-up resistor (on some Wanhao i3 models)
   #include "thermistor_99.h"
 #endif
@@ -192,6 +195,9 @@ typedef struct { raw_adc_t value; celsius_t celsius; } temp_entry_t;
 #endif
 #if ANY_THERMISTOR_IS(1010) // Pt1000 with 1k0 pullup
   #include "thermistor_1010.h"
+#endif
+#if ANY_THERMISTOR_IS(1022) // Pt1000 with 2k2 pullup
+  #include "thermistor_1022.h"
 #endif
 #if ANY_THERMISTOR_IS(1047) // Pt1000 with 4k7 pullup
   #include "thermistor_1047.h"
@@ -335,7 +341,7 @@ static_assert(255 > TEMPTABLE_0_LEN || 255 > TEMPTABLE_1_LEN || 255 > TEMPTABLE_
 // For thermocouples the highest temperature results in the highest ADC value
 
 #define _TT_REV(N)    REVERSE_TEMP_SENSOR_RANGE_##N
-#define TT_REV(N)     TERN0(TEMP_SENSOR_##N##_IS_THERMISTOR, DEFER4(_TT_REV)(TEMP_SENSOR_##N))
+#define TT_REV(N)     TERN0(TEMP_SENSOR_##N##_IS_THERMISTOR, DEFER4(_TT_REV)(TEMP_SENSOR(N)))
 #define _TT_REVRAW(N) !TEMP_SENSOR_##N##_IS_THERMISTOR
 #define TT_REVRAW(N)  (TT_REV(N) || _TT_REVRAW(N))
 
