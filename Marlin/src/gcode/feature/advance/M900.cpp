@@ -48,9 +48,7 @@ void GcodeSuite::M900() {
     SERIAL_ECHOLNPGM(".");
   };
 
-  #if EXTRUDERS < 2
-    constexpr uint8_t tool_index = 0;
-  #else
+  #if EXTRUDERS >= 2
     const uint8_t tool_index = parser.intval('T', active_extruder);
     if (tool_index >= EXTRUDERS) {
       echo_value_oor('T', false);

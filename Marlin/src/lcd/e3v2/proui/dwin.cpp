@@ -2783,9 +2783,9 @@ void SetStepsZ() { HMI_value.axis = Z_AXIS, SetPFloatOnClick( MIN_STEP, MAX_STEP
 #endif // HAS_TOOLBAR
 
 // M593 - Acceleration items
-/*
 
-#if ENABLED(SHAPING_MENU)
+/*
+//#if ENABLED(SHAPING_MENU)
 
 void ApplyMaxJerk() { planner.set_max_jerk(HMI_value.axis, MenuData.Value / MINUNITMULT); }
   void SetMaxJerkX() { HMI_value.axis = X_AXIS, SetFloatOnClick(MIN_MAXJERK, max_jerk_edit_values[X_AXIS], UNITFDIGITS, planner.max_jerk[X_AXIS], ApplyMaxJerk); }
@@ -2800,13 +2800,13 @@ void ApplyYZeta() { stepper.set_shaping_damping_ratio(Y_AXIS, PRO_data.yzeta); }
 
 
 
-void SetXFreq() { SetPFloatOnClick(min_frequency, 200.0f, 2, ApplyXFreq); }
+void SetXFreq() { HMI_value.axis = X_AXIS, SetFloatOnClick(min_frequency, 200.0f, 2, ApplyXFreq); }
 
-void SetYFreq() { SetPFloatOnClick(min_frequency, 200.0f, 2, ApplyYFreq); }
+void SetYFreq() { HMI_value.axis = Y_AXIS, SetFloatOnClick(min_frequency, 200.0f, 2, ApplyYFreq); }
 
-void SetXZeta() { SetPFloatOnClick(0.0f, 1.0f, 2, ApplyXZeta); }
+void SetXZeta() { HMI_value.axis = X_AXIS, SetFloatOnClick(0.0f, 1.0f, 2, ApplyXZeta); }
 
-void SetYZeta() { SetPFloatOnClick(0.0f, 1.0f, 2, ApplyYZeta); }
+void SetYZeta() { HMI_value.axis = Y_AXIS, SetFloatOnClick(0.0f, 1.0f, 2, ApplyYZeta); }
 
 
 
@@ -2818,20 +2818,20 @@ void SetYZeta() { SetPFloatOnClick(0.0f, 1.0f, 2, ApplyYZeta); }
     // M593 F Frequency
     #if HAS_SHAPING_X
       //&PRO_data.xfreq = stepper.get_shaping_frequency(X_AXIS);
-      EDIT_ITEM(ICON_MoveX, MSG_SHAPING_X_FREQ, onDrawPFloatMenu, SetXFreq, &PRO_data.xfreq);
+      EDIT_ITEM(ICON_MoveX, MSG_SHAPING_X_FREQ, onDrawPFloatMenu, SetXFreq, SettingsData::&shaping_x_frequency);
     #endif
     #if HAS_SHAPING_Y
-      //*MenuData.P_Float = stepper.get_shaping_frequency(Y_AXIS);
-      EDIT_ITEM(ICON_MoveY, MSG_SHAPING_Y_FREQ, onDrawPFloatMenu, SetYFreq, &PRO_data.yfreq);
+      //* MenuData.P_Float = stepper.get_shaping_frequency(Y_AXIS);
+      EDIT_ITEM(ICON_MoveY, MSG_SHAPING_Y_FREQ, onDrawPFloatMenu, SetYFreq, SettingsData::&shaping_y_frequency);
     #endif
     // M593 D Damping ratio
     #if HAS_SHAPING_X
-      //*MenuData.P_Float = stepper.get_shaping_damping_ratio(X_AXIS);
-      EDIT_ITEM(ICON_MoveX, MSG_SHAPING_X_ZETA, onDrawPFloatMenu, SetXZeta, &PRO_data.xzeta);
+      //* MenuData.P_Float = stepper.get_shaping_damping_ratio(X_AXIS);
+      EDIT_ITEM(ICON_MoveX, MSG_SHAPING_X_ZETA, onDrawPFloatMenu, SetXZeta, SettingsData::&shaping_x_zeta);
     #endif
     #if HAS_SHAPING_Y
      // *MenuData.P_Float = stepper.get_shaping_damping_ratio(Y_AXIS);
-      EDIT_ITEM(ICON_MoveY, MSG_SHAPING_Y_ZETA, onDrawPFloatMenu, SetYZeta, &PRO_data.yzeta);
+      EDIT_ITEM(ICON_MoveY, MSG_SHAPING_Y_ZETA, onDrawPFloatMenu, SetYZeta, SettingsData::&shaping_y_zeta);
     #endif
     }
   UpdateMenu(InputShapingMenu);

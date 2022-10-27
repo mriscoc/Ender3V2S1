@@ -123,12 +123,6 @@ typedef struct {
   #if HAS_TOOLBAR
     uint8_t TBopt[TBMaxOpt] = DEF_TBOPT;
   #endif
-  #if ENABLED(INPUT_SHAPING)
-    float xfreq = SHAPING_FREQ_X; //stepper.get_shaping_frequency(X_AXIS);
-    float yfreq = SHAPING_FREQ_Y; //stepper.get_shaping_frequency(Y_AXIS);
-    float xzeta = SHAPING_ZETA_X; //stepper.get_shaping_damping_ratio(X_AXIS);
-    float yzeta = SHAPING_ZETA_Y; //stepper.get_shaping_damping_ratio(Y_AXIS);
-  #endif
 } PRO_data_t;
 extern PRO_data_t PRO_data;
 
