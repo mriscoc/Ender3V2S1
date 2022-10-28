@@ -37,7 +37,7 @@
 
 #include <stdint.h>
 #include <util/atomic.h>
-#include <usb_serial.h>
+//#include <usb_serial.h>
 
 #include "../../inc/MarlinConfigPre.h"
 

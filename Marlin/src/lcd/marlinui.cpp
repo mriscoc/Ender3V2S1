@@ -321,7 +321,7 @@ void MarlinUI::init() {
     #endif
   #endif
 
-  #if SCREENS_CAN_TIME_OUT
+  #if HAS_SCREEN_TIMEOUT
     bool MarlinUI::defer_return_to_status;
     millis_t MarlinUI::return_to_status_ms = 0;
   #endif
@@ -1052,6 +1052,7 @@ void MarlinUI::init() {
                     SERIAL_ECHO_START();
                     SERIAL_ECHOPGM("Enc Step Rate: ", encoderStepRate);
                     SERIAL_ECHOPGM("  Multiplier: ", encoderMultiplier);
+                    SERIAL_ECHOPGM("  ENCODER_5X_STEPS_PER_SEC: ", ENCODER_5X_STEPS_PER_SEC);
                     SERIAL_ECHOPGM("  ENCODER_10X_STEPS_PER_SEC: ", ENCODER_10X_STEPS_PER_SEC);
                     SERIAL_ECHOPGM("  ENCODER_100X_STEPS_PER_SEC: ", ENCODER_100X_STEPS_PER_SEC);
                     SERIAL_EOL();
@@ -1176,7 +1177,7 @@ void MarlinUI::init() {
           NOLESS(max_display_update_time, millis() - ms);
       }
 
-      #if SCREENS_CAN_TIME_OUT
+      #if HAS_SCREEN_TIMEOUT
         // Return to Status Screen after a timeout
         if (on_status_screen() || defer_return_to_status)
           reset_status_timeout(ms);

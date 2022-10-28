@@ -66,7 +66,7 @@
   #include "../../../module/probe.h"
 #endif
 
-#if ENABLED(BLTOUCH)
+#ifdef BLTOUCH
   #include "../../../feature/bltouch.h"
 #endif
 
@@ -1020,7 +1020,6 @@ void Draw_Info_Menu() {
     DWINUI::Draw_Icon(ICON_Step + i, ICOX, 90 + i * MLINE);
     DWIN_Draw_HLine(HMI_data.SplitLine_Color, 16, MYPOS(i + 2), 240);
   }
-
 }
 
 // Main Process
@@ -1622,7 +1621,7 @@ void DWIN_LevelingDone() {
 // Started a Print Job
 void DWIN_Print_Started() {
   TERN_(DEBUG_DWIN, SERIAL_ECHOLNPGM("DWIN_Print_Started: ", SD_Printing()));
-  if (Host_Printing()) Preview_Invalidate();
+  TERN_(HAS_GCODE_PREVIEW, if (Host_Printing()) Preview_Invalidate());
   _percent_done = 0;
   _remain_time = 0;
   HMI_flag.percent_flag = false;
@@ -2067,8 +2066,8 @@ void AutoHome() { queue.inject_P(G28_STR); }
   void HomeY() { queue.inject(F("G28Y")); }
   void HomeZ() { queue.inject(F("G28Z")); }
   #if BOTH(INDIVIDUAL_AXIS_HOMING_SUBMENU, MESH_BED_LEVELING)
-    void ApplyZAfterHomming() { HMI_data.z_after_homing = MenuData.Value; };
-    void SetZAfterHomming() { SetIntOnClick(0, 20, HMI_data.z_after_homing, ApplyZAfterHomming); }
+    void ApplyZAfterHoming() { HMI_data.z_after_homing = MenuData.Value; };
+    void SetZAfterHoming() { SetIntOnClick(0, 20, HMI_data.z_after_homing, ApplyZAfterHoming); }
   #endif
 #endif
 
@@ -2140,7 +2139,7 @@ void ApplyMoveE() {
   last_E = MenuData.Value / MINUNITMULT;
   if (!planner.is_full()) {
     planner.synchronize();
-    planner.buffer_line(current_position, MMM_TO_MMS(FEEDRATE_E));
+    planner.buffer_line(current_position, FEEDRATE_E);
   }
 }
 
@@ -2614,7 +2613,7 @@ void TramC () { Tram(4); }
 
   void SetCalcAvg() {
     HMI_data.CalcAvg = !HMI_data.CalcAvg;
-    Draw_Chkb_Line(CurrentMenu->line(), HMI_data.CalcAvg);
+    Show_Chkb_Line(CurrentMenu->line(), HMI_data.CalcAvg);
   }  
 
 #endif // HAS_BED_PROBE
@@ -2821,16 +2820,16 @@ void SetYZeta() { HMI_value.axis = Y_AXIS, SetFloatOnClick(0.0f, 1.0f, 2, ApplyY
       EDIT_ITEM(ICON_MoveX, MSG_SHAPING_X_FREQ, onDrawPFloatMenu, SetXFreq, SettingsData::&shaping_x_frequency);
     #endif
     #if HAS_SHAPING_Y
-      //* MenuData.P_Float = stepper.get_shaping_frequency(Y_AXIS);
+      // MenuData.P_Float = stepper.get_shaping_frequency(Y_AXIS);
       EDIT_ITEM(ICON_MoveY, MSG_SHAPING_Y_FREQ, onDrawPFloatMenu, SetYFreq, SettingsData::&shaping_y_frequency);
     #endif
     // M593 D Damping ratio
     #if HAS_SHAPING_X
-      //* MenuData.P_Float = stepper.get_shaping_damping_ratio(X_AXIS);
+      // MenuData.P_Float = stepper.get_shaping_damping_ratio(X_AXIS);
       EDIT_ITEM(ICON_MoveX, MSG_SHAPING_X_ZETA, onDrawPFloatMenu, SetXZeta, SettingsData::&shaping_x_zeta);
     #endif
     #if HAS_SHAPING_Y
-     // *MenuData.P_Float = stepper.get_shaping_damping_ratio(Y_AXIS);
+     // MenuData.P_Float = stepper.get_shaping_damping_ratio(Y_AXIS);
       EDIT_ITEM(ICON_MoveY, MSG_SHAPING_Y_ZETA, onDrawPFloatMenu, SetYZeta, SettingsData::&shaping_y_zeta);
     #endif
     }
@@ -2886,7 +2885,7 @@ void onDrawPIDd(MenuItemClass* menuitem, int8_t line) { onDrawFloatMenu(menuitem
 
 void SetLiveMove() {
 HMI_data.SetLiveMove = !HMI_data.SetLiveMove;
-Draw_Chkb_Line(CurrentMenu->line(), HMI_data.SetLiveMove);
+Show_Chkb_Line(CurrentMenu->line(), HMI_data.SetLiveMove);
 }
 // Menu Creation and Drawing functions ======================================================
 
@@ -3514,7 +3513,7 @@ void Draw_Steps_Menu() {
         MENU_ITEM(ICON_Park, MSG_FILAMENT_PARK_ENABLED, onDrawMenuItem, ParkHead);
       #endif
       #if ENABLED(MESH_BED_LEVELING)
-        EDIT_ITEM(ICON_ZAfterHome, MSG_Z_AFTER_HOME, onDrawPInt8Menu, SetZAfterHomming, &HMI_data.z_after_homing);
+        EDIT_ITEM(ICON_ZAfterHome, MSG_Z_AFTER_HOME, onDrawPInt8Menu, SetZAfterHoming, &HMI_data.z_after_homing);
       #endif
     }
     UpdateMenu(HomingMenu);
@@ -3664,7 +3663,7 @@ void Draw_Steps_Menu() {
   void UBLLoadMesh() {
     if (bedlevel.storage_slot < 0) bedlevel.storage_slot = 0;
     settings.load_mesh(bedlevel.storage_slot);
-    #if ENABLED(DWIN_LCD_PROUI)
+    /* #if ENABLED(DWIN_LCD_PROUI)
       if (BedLevelTools.meshvalidate()) {
         ui.status_printf(0, GET_TEXT_F(MSG_MESH_LOADED), bedlevel.storage_slot);
         DONE_BUZZ(true);
@@ -3674,7 +3673,7 @@ void Draw_Steps_Menu() {
         LCD_MESSAGE(MSG_UBL_MESH_INVALID);
         DONE_BUZZ(false);
       }
-    #endif
+    #endif */
   }
 
 #endif  // AUTO_BED_LEVELING_UBL

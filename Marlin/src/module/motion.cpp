@@ -341,7 +341,6 @@ void report_current_position_projected() {
       can_reach = (
            a < polargraph_max_belt_len + 1
         && b < polargraph_max_belt_len + 1
-        //&& (a + b) > _MIN(draw_area_size.x, draw_area_size.y) //changed
       );
 
     #endif

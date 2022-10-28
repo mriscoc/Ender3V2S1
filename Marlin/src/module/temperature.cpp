@@ -1089,6 +1089,7 @@ volatile bool Temperature::raw_temps_ready = false;
     SERIAL_ECHOLNPGM(STR_MPC_AUTOTUNE_FINISHED);
     TERN_(DWIN_LCD_PROUI, DWIN_MPCTuning(MPC_DONE));
 
+
     /* <-- add a slash to enable
       SERIAL_ECHOLNPGM("t1_time ", t1_time);
       SERIAL_ECHOLNPGM("sample_count ", sample_count);

@@ -48,7 +48,11 @@ void GcodeSuite::M75() {
  * M76: Pause print timer
  */
 void GcodeSuite::M76() {
-  print_job_timer.pause();
+  #if ENABLED(DWIN_LCD_PROUI)
+    ui.pause_print();
+  #else
+    print_job_timer.pause();
+  #endif
   TERN_(HOST_PAUSE_M76, hostui.pause());
   TERN_(DWIN_LCD_PROUI, DWIN_Print_Pause());
 }

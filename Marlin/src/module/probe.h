@@ -49,14 +49,12 @@
   #define PROBE_TRIGGERED() (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING)
 #endif
 
-#if ALL(DWIN_LCD_PROUI, INDIVIDUAL_AXIS_HOMING_SUBMENU, MESH_BED_LEVELING)
-  #define Z_POST_CLEARANCE HMI_data.z_after_homing;
-#elif defined(Z_AFTER_HOMING)
-  #define Z_POST_CLEARANCE Z_AFTER_HOMING
+#ifdef Z_AFTER_HOMING
+   #define Z_POST_CLEARANCE Z_AFTER_HOMING
 #elif defined(Z_HOMING_HEIGHT)
-  #define Z_POST_CLEARANCE Z_HOMING_HEIGHT
+   #define Z_POST_CLEARANCE Z_HOMING_HEIGHT
 #else
-  #define Z_POST_CLEARANCE 10
+   #define Z_POST_CLEARANCE 10
 #endif
 
 #if ENABLED(PREHEAT_BEFORE_LEVELING)
@@ -161,9 +159,7 @@ public:
   #endif
 
   static void move_z_after_homing() {
-    #if ALL(DWIN_LCD_PROUI, INDIVIDUAL_AXIS_HOMING_SUBMENU, MESH_BED_LEVELING)
-      do_z_clearance(HMI_data.z_after_homing, true);
-    #elif Z_AFTER_HOMING
+    #ifdef Z_AFTER_HOMING
       do_z_clearance(Z_AFTER_HOMING, true);
     #elif BOTH(Z_AFTER_PROBING, HAS_BED_PROBE)
       move_z_after_probing();
