@@ -258,7 +258,7 @@ bool BedLevelToolsClass::meshvalidate() {
   }
 
   void BedLevelToolsClass::Set_Mesh_Viewer_Status() { // TODO: draw gradient with values as a legend instead
-    float v_max = abs(get_max_value()), v_min = abs(get_min_value()), range = _MAX(v_min, v_max);
+    float v_max = abs(get_max_value()), v_min = abs(get_min_value()), range = _MAX(v_min, v_max), rangeb = _MIN(v_min, v_max);
     if (v_min > 3e+10F) v_min = 0.0000001;
     if (v_max > 3e+10F) v_max = 0.0000001;
     if (range > 3e+10F) range = 0.0000001;
@@ -268,7 +268,7 @@ bool BedLevelToolsClass::meshvalidate() {
       dtostrf( v_max, 1, 3, str_2);
     }
     else {
-      dtostrf(-range, 1, 3, str_1);
+      dtostrf(-rangeb, 1, 3, str_1);
       dtostrf( range, 1, 3, str_2);
     }
     sprintf_P(msg, PSTR("Red %s..0..%s Green"), str_1, str_2);

@@ -1877,7 +1877,7 @@ static_assert(COUNT(arm) == LOGICAL_AXES, "AXIS_RELATIVE_MODES must contain " _L
     #if MULTIPLE_PROBING == 0
       #error "EXTRA_PROBING requires MULTIPLE_PROBING."
     #elif MULTIPLE_PROBING < 2
-      #error "MULTIPLE_PROBING must be 2 or more."
+      //#error "MULTIPLE_PROBING must be 2 or more."
     #elif MULTIPLE_PROBING <= EXTRA_PROBING
       #error "EXTRA_PROBING must be less than MULTIPLE_PROBING."
     #endif
