@@ -2781,33 +2781,22 @@ void SetStepsZ() { HMI_value.axis = Z_AXIS, SetPFloatOnClick( MIN_STEP, MAX_STEP
   }
 #endif // HAS_TOOLBAR
 
-// M593 - Acceleration items
+// M593 - Acceleration items (Input Shaping)
 
-/*
-//#if ENABLED(SHAPING_MENU)
-
-void ApplyMaxJerk() { planner.set_max_jerk(HMI_value.axis, MenuData.Value / MINUNITMULT); }
-  void SetMaxJerkX() { HMI_value.axis = X_AXIS, SetFloatOnClick(MIN_MAXJERK, max_jerk_edit_values[X_AXIS], UNITFDIGITS, planner.max_jerk[X_AXIS], ApplyMaxJerk); }
+#if ENABLED(SHAPING_MENU)
 
 
-constexpr float min_frequency = TERN(__AVR__, float(STEPPER_TIMER_RATE) / 2 / 0x10000, 1.0f);
-
-void ApplyXFreq() { stepper.set_shaping_frequency(X_AXIS, PRO_data.xfreq); }
-void ApplyYFreq() { stepper.set_shaping_frequency(Y_AXIS, PRO_data.yfreq); }
-void ApplyXZeta() { stepper.set_shaping_damping_ratio(X_AXIS, PRO_data.xzeta); }
-void ApplyYZeta() { stepper.set_shaping_damping_ratio(Y_AXIS, PRO_data.yzeta); }
+void ApplyFreq() { stepper.set_shaping_frequency(HMI_value.axis, *MenuData.P_Float ); }
+void ApplyZeta() { stepper.set_shaping_damping_ratio(HMI_value.axis, *MenuData.P_Float ); }
 
 
+void SetXFreq() { HMI_value.axis = X_AXIS, SetPFloatOnClick(1.0f, 200.0f, 2, ApplyFreq); }
 
-void SetXFreq() { HMI_value.axis = X_AXIS, SetFloatOnClick(min_frequency, 200.0f, 2, ApplyXFreq); }
+void SetYFreq() { HMI_value.axis = Y_AXIS, SetPFloatOnClick(1.0f, 200.0f, 2, ApplyFreq); }
 
-void SetYFreq() { HMI_value.axis = Y_AXIS, SetFloatOnClick(min_frequency, 200.0f, 2, ApplyYFreq); }
+void SetXZeta() { HMI_value.axis = X_AXIS, SetPFloatOnClick(0.0f, 1.0f, 2, ApplyZeta); }
 
-void SetXZeta() { HMI_value.axis = X_AXIS, SetFloatOnClick(0.0f, 1.0f, 2, ApplyXZeta); }
-
-void SetYZeta() { HMI_value.axis = Y_AXIS, SetFloatOnClick(0.0f, 1.0f, 2, ApplyYZeta); }
-
-
+void SetYZeta() { HMI_value.axis = Y_AXIS, SetPFloatOnClick(0.0f, 1.0f, 2, ApplyZeta); }
 
 
   void Draw_InputShaping_Menu() {
@@ -2816,28 +2805,29 @@ void SetYZeta() { HMI_value.axis = Y_AXIS, SetFloatOnClick(0.0f, 1.0f, 2, ApplyY
       BACK_ITEM(Draw_Prepare_Menu);
     // M593 F Frequency
     #if HAS_SHAPING_X
-      //&PRO_data.xfreq = stepper.get_shaping_frequency(X_AXIS);
-      EDIT_ITEM(ICON_MoveX, MSG_SHAPING_X_FREQ, onDrawPFloatMenu, SetXFreq, SettingsData::&shaping_x_frequency);
+      static float xfreq = stepper.get_shaping_frequency(X_AXIS);
+      EDIT_ITEM(ICON_MoveX, MSG_SHAPING_X_FREQ, onDrawPFloat2Menu, SetXFreq, &xfreq);
+ 
     #endif
     #if HAS_SHAPING_Y
-      // MenuData.P_Float = stepper.get_shaping_frequency(Y_AXIS);
-      EDIT_ITEM(ICON_MoveY, MSG_SHAPING_Y_FREQ, onDrawPFloatMenu, SetYFreq, SettingsData::&shaping_y_frequency);
+      static float yfreq = stepper.get_shaping_frequency(Y_AXIS);
+      EDIT_ITEM(ICON_MoveY, MSG_SHAPING_Y_FREQ, onDrawPFloat2Menu, SetYFreq, &yfreq);
     #endif
     // M593 D Damping ratio
     #if HAS_SHAPING_X
-      // MenuData.P_Float = stepper.get_shaping_damping_ratio(X_AXIS);
-      EDIT_ITEM(ICON_MoveX, MSG_SHAPING_X_ZETA, onDrawPFloatMenu, SetXZeta, SettingsData::&shaping_x_zeta);
+      static float xzeta = stepper.get_shaping_damping_ratio(X_AXIS);
+      EDIT_ITEM(ICON_MoveX, MSG_SHAPING_X_ZETA, onDrawPFloat2Menu, SetXZeta, &xzeta);
+ 
     #endif
     #if HAS_SHAPING_Y
-     // MenuData.P_Float = stepper.get_shaping_damping_ratio(Y_AXIS);
-      EDIT_ITEM(ICON_MoveY, MSG_SHAPING_Y_ZETA, onDrawPFloatMenu, SetYZeta, SettingsData::&shaping_y_zeta);
+      static float yzeta = stepper.get_shaping_damping_ratio(Y_AXIS);
+      EDIT_ITEM(ICON_MoveY, MSG_SHAPING_Y_ZETA, onDrawPFloat2Menu, SetYZeta, &yzeta);
     #endif
     }
   UpdateMenu(InputShapingMenu);
   }
 #endif
 
-*/
 // Special Menuitem Drawing functions =================================================
 
 void onDrawSelColorItem(MenuItemClass* menuitem, int8_t line) {
@@ -3865,11 +3855,6 @@ void Draw_AdvancedSettings_Menu() {
         MENU_ITEM(ICON_UBLActive, MSG_EDIT_MESH, onDrawSubMenu, Draw_EditMesh_Menu);
       #endif
         MENU_ITEM(ICON_Level, MSG_AUTO_MESH, onDrawMenuItem, AutoLev);
-        EDIT_ITEM(ICON_ResumeEEPROM, MSG_UBL_STORAGE_SLOT, onDrawUBLSlot, SetUBLSlot, &bedlevel.storage_slot);
-        MENU_ITEM(ICON_WriteEEPROM, MSG_UBL_SAVE_MESH, onDrawMenuItem, UBLSaveMesh);
-        MENU_ITEM(ICON_ReadEEPROM, MSG_UBL_LOAD_MESH, onDrawMenuItem, UBLLoadMesh);
-        MENU_ITEM(ICON_ProbeMargin, MSG_UBL_TILT_MESH, onDrawMenuItem, UBLTiltMesh);
-        MENU_ITEM(ICON_HSMode, MSG_UBL_SMART_FILLIN, onDrawMenuItem, UBLSmartFillMesh);
         MENU_ITEM_F(ICON_SetZOffset, "Zero Current Mesh", onDrawSubMenu, ZeroCurrentMesh);
     #endif 
   }
