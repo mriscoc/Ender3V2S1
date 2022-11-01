@@ -1550,7 +1550,7 @@
  * A total of 2 does fast/slow probes with a weighted average.
  * A total of 3 or more adds more slow probes, taking the average.
  */
-#define MULTIPLE_PROBING 2
+#define MULTIPLE_PROBING 1
 //#define EXTRA_PROBING    1
 
 /**
@@ -2030,7 +2030,7 @@
 
 // Add a menu item to move between bed corners for manual bed adjustment
 //#define LCD_BED_TRAMMING
-#define BED_SCREW_INSET 25.4 //distance the knob screw is from corners
+#define BED_SCREW_INSET 35 // distance the knob screw is from corners
 
 #if ENABLED(LCD_BED_TRAMMING)
   #define BED_TRAMMING_INSET_LFRB { 25.4, 25.4, 25.4, 25.4 } // (mm) Left, Front, Right, Back insets

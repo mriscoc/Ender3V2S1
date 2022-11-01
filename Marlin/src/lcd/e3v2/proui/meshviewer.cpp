@@ -31,10 +31,8 @@
 #include "dwin_popup.h"
 #include "../../../feature/bedlevel/bedlevel.h"
 #include "meshviewer.h"
+#include "bedlevel_tools.h"
 
-#if ENABLED(AUTO_BED_LEVELING_UBL)
-  #include "bedlevel_tools.h"
-#endif
 
 MeshViewerClass MeshViewer;
 
