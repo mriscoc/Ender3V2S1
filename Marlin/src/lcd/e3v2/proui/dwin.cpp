@@ -1827,7 +1827,9 @@ void DWIN_InitScreen() {
     ProEx.Init();
     safe_delay(2000);
   #endif
-  UBLLoadMesh();
+  #if ENABLED(AUTO_BED_LEVELING_UBL)
+    UBLLoadMesh();
+  #endif
   DWINUI::init();
   DWINUI::SetColors(HMI_data.Text_Color, HMI_data.Background_Color, HMI_data.TitleBg_color);
   DWINUI::onTitleDraw = Draw_Title;
@@ -2807,7 +2809,7 @@ void SetYZeta() { HMI_value.axis = Y_AXIS, SetPFloatOnClick(0.0f, 1.0f, 2, Apply
   void Draw_InputShaping_Menu() {
     checkkey = Menu;
     if (SET_MENU(InputShapingMenu, MSG_INPUT_SHAPING, 8)) {
-      BACK_ITEM(Draw_Prepare_Menu);
+      BACK_ITEM(Draw_Motion_Menu);
     // M593 F Frequency
     #if HAS_SHAPING_X
       static float xfreq = stepper.get_shaping_frequency(X_AXIS);
@@ -2891,20 +2893,22 @@ void OnClick_ResetStats() {
 }
 void PrintStatsReset() { Goto_Popup(Popup_ResetStats, OnClick_ResetStats); }
 
-//Trammingwizard Popup
-void PopUp_StartTramwiz() { DWIN_Popup_ConfirmCancel(ICON_Info_0, F("Start Tramming Wizard?")); }
-void onClick_StartTramwiz() {
-  if (HMI_flag.select_flag) {
-    if (HMI_data.FullManualTramming) {
-      LCD_MESSAGE_F("Disable manual tramming");
-      HMI_ReturnScreen();
-      return;
+#if EITHER(AUTO_BED_LEVELING_UBL, AUTO_BED_LEVELING_BILINEAR)
+  //Trammingwizard Popup
+  void PopUp_StartTramwiz() { DWIN_Popup_ConfirmCancel(ICON_Info_0, F("Start Tramming Wizard?")); }
+  void onClick_StartTramwiz() {
+    if (HMI_flag.select_flag) {
+      if (HMI_data.FullManualTramming) {
+        LCD_MESSAGE_F("Disable manual tramming");
+        HMI_ReturnScreen();
+        return;
+      }
+    Trammingwizard();
     }
-  Trammingwizard();
+    else HMI_ReturnScreen();
   }
-  else HMI_ReturnScreen();
-}
-void TramwizStart() { Goto_Popup(PopUp_StartTramwiz, onClick_StartTramwiz); }
+  void TramwizStart() { Goto_Popup(PopUp_StartTramwiz, onClick_StartTramwiz); }
+#endif
 
 //Auto Bed Leveling / Create Mesh Popup
 void PopUp_StartAutoLev() { DWIN_Popup_ConfirmCancel(ICON_AutoLeveling, F("Start Auto Bed Leveling?")); }
@@ -3883,7 +3887,7 @@ void Draw_AdvancedSettings_Menu() {
 #elif defined(MESH_BED_LEVELING)
 void Draw_AdvancedSettings_Menu() {
   checkkey = Menu;
-  if (SET_MENU(AdvancedSettings, MSG_UBL_MESH_LEVELING, 12)) {
+  if (SET_MENU(AdvancedSettings, MSG_UBL_MESH_LEVELING, 10)) {
     BACK_ITEM(Goto_Main_Menu);
     MENU_ITEM(ICON_ManualMesh, MSG_UBL_CONTINUE_MESH, onDrawMenuItem, ManualMeshStart);
     MMeshMoveZItem = EDIT_ITEM(ICON_Zoffset, MSG_MESH_EDIT_Z, onDrawPFloat2Menu, SetMMeshMoveZ, &current_position.z);
@@ -3897,8 +3901,6 @@ void Draw_AdvancedSettings_Menu() {
       MENU_ITEM(ICON_UBLActive, MSG_EDIT_MESH, onDrawSubMenu, Draw_EditMesh_Menu);
     #endif
     MENU_ITEM(ICON_MeshSave, MSG_UBL_SAVE_MESH, onDrawMenuItem, ManualMeshSave);
-    EDIT_ITEM(ICON_ResumeEEPROM, MSG_UBL_STORAGE_SLOT, onDrawUBLSlot, SetUBLSlot, &bedlevel.storage_slot);
-    MENU_ITEM(ICON_ReadEEPROM, MSG_UBL_LOAD_MESH, onDrawMenuItem, UBLLoadMesh);
     MENU_ITEM_F(ICON_SetZOffset, "Zero Current Mesh", onDrawMenuItem, ZeroCurrentMesh);
   }
   ui.reset_status(true);
