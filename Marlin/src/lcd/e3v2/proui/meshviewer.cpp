@@ -125,13 +125,13 @@ void MeshViewerClass::Draw(bool withsave /*= false*/) {
       BedLevelTools.Set_Mesh_Viewer_Status();}
     else {
     char str_1[6], str_2[6] = "";
-    ui.status_printf(0, F("Mesh minZ: %s, maxZ: %s"),
+    ui.status_printf(0, F("minZ: %s, maxZ: %s"),
       dtostrf(min, 1, 2, str_1),
       dtostrf(max, 1, 2, str_2)
     );}
   #else
     char str_1[6], str_2[6] = "";
-    ui.status_printf(0, F("Mesh minZ: %s, maxZ: %s"),
+    ui.status_printf(0, F("minZ: %s, maxZ: %s"),
       dtostrf(min, 1, 2, str_1),
       dtostrf(max, 1, 2, str_2)
     );
