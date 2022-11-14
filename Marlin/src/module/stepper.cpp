@@ -1646,7 +1646,7 @@ void Stepper::pulse_phase_isr() {
   }
 
   // If there is no current block, do nothing
-  if (!current_block || step_events_completed >= step_event_count) return;
+  if (!current_block || (step_events_completed >= step_event_count)) return;
 
   // Skipping step processing causes motion to freeze
   if (TERN0(FREEZE_FEATURE, frozen)) return;

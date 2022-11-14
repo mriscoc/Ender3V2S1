@@ -268,13 +268,14 @@ bool BedLevelToolsClass::meshvalidate() {
       dtostrf( v_max, 1, 2, str_2);
     }
     else {
-      dtostrf(-rangeb, 1, 2, str_1);
-      dtostrf( range, 1, 2, str_2);
+      dtostrf(-range, 1, 2, str_1);
+      dtostrf( rangeb, 1, 2, str_2);
     }
     sprintf_P(msg, PSTR("Red %s..0..%s+ Green"), str_1, str_2);
     ui.set_status(msg);
     drawing_mesh = false;
   }
-#endif
 
-#endif // DWIN_LCD_PROUI
+#endif // USE_UBL_VIEWER
+
+#endif // DWIN_LCD_PROUI && HAS_LEVELING

@@ -301,6 +301,7 @@ void DWIN_Print_Aborted();
 void DWIN_M73();
 void DWIN_Print_Header(const char *text);
 void DWIN_SetColorDefaults();
+void DWIN_SetAltColor();
 void DWIN_ApplyColor();
 void DWIN_ApplyColor(const int8_t element, const bool ldef=false);
 void DWIN_CopySettingsTo(char * const buff);

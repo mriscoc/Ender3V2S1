@@ -71,15 +71,13 @@ constexpr int16_t DEF_Z_MAX_POS = Z_MAX_POS;
   constexpr int16_t DEF_MESH_MAX_X = MESH_MAX_X;
   constexpr int16_t DEF_MESH_MIN_Y = MESH_MIN_Y;
   constexpr int16_t DEF_MESH_MAX_Y = MESH_MAX_Y;
-  #define MIN_MESH_INSET 5
+  #define MIN_MESH_INSET 0
   #define MAX_MESH_INSET X_BED_SIZE
 
 #endif
 
 #if HAS_BED_PROBE
   constexpr int16_t DEF_PROBING_MARGIN = PROBING_MARGIN;
-  #define MIN_PROBE_MARGIN 5
-  #define MAX_PROBE_MARGIN 60
   constexpr int16_t DEF_Z_PROBE_FEEDRATE_SLOW = Z_PROBE_FEEDRATE_SLOW;
   #ifndef MULTIPLE_PROBING
     #define MULTIPLE_PROBING 0

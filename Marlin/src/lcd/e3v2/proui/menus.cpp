@@ -40,7 +40,7 @@ MenuData_t MenuData;
 
 void Draw_Title(TitleClass* title) {
   DWIN_Draw_Rectangle(1, HMI_data.TitleBg_color, 0, 0, DWIN_WIDTH - 1, TITLE_HEIGHT - 1);
-  if (title->frameid) 
+  if (title->frameid)
     DWIN_Frame_AreaCopy(title->frameid, title->frame.left, title->frame.top, title->frame.right, title->frame.bottom, 14, (TITLE_HEIGHT - (title->frame.bottom - title->frame.top)) / 2 - 1);
   else
     #if ENABLED(TITLE_CENTERED)
@@ -98,9 +98,9 @@ void Draw_Menu_IntValue(uint16_t bcolor, const uint8_t line, uint8_t iNum, const
 
 void onDrawMenuItem(MenuItemClass* menuitem, int8_t line) {
   if (menuitem->icon) DWINUI::Draw_Icon(menuitem->icon, ICOX, MBASE(line) - 3);
-  if (menuitem->frameid) 
+  if (menuitem->frameid)
     DWIN_Frame_AreaCopy(menuitem->frameid, menuitem->frame.left, menuitem->frame.top, menuitem->frame.right, menuitem->frame.bottom, LBLX, MBASE(line));
-  else if (menuitem->caption) 
+  else if (menuitem->caption)
     DWINUI::Draw_String(LBLX, MBASE(line) - 1, menuitem->caption);
   DWIN_Draw_HLine(HMI_data.SplitLine_Color, 16, MYPOS(line + 1), 240);
 }

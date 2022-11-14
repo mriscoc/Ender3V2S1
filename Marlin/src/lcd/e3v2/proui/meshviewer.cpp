@@ -47,8 +47,8 @@ void MeshViewerClass::DrawMesh(bed_mesh_t zval, const uint8_t sizex, const uint8
   #define py(yp) (30 + DWIN_WIDTH - my - (yp) * sty)
   #define rm(z) ((z - minz) * (rmax - rmin) / _MAX(1, (maxz - minz)) + rmin)
   #define DrawMeshValue(xp, yp, zv) DWINUI::Draw_Signed_Float(font6x12, 1, 2, px(xp) - 18, py(yp) - 6, zv)
-  #define DrawMeshHLine(yp) DWIN_Draw_HLine(HMI_data.SplitLine_Color, px(0), py(yp), DWIN_WIDTH - 2 * mx)
-  #define DrawMeshVLine(xp) DWIN_Draw_VLine(HMI_data.SplitLine_Color, px(xp), py(sizey - 1), DWIN_WIDTH - 2 * my)
+  #define DrawMeshHLine(yp) DWIN_Draw_HLine(HMI_data.Selected_Color, px(0), py(yp), DWIN_WIDTH - 2 * mx)
+  #define DrawMeshVLine(xp) DWIN_Draw_VLine(HMI_data.Selected_Color, px(xp), py(sizey - 1), DWIN_WIDTH - 2 * my)
   int16_t maxz =-32000; int16_t minz = 32000;
   LOOP_L_N(y, sizey) LOOP_L_N(x, sizex) {
     const float v = isnan(zval[x][y]) ? 0 : round(zval[x][y] * 100);
@@ -59,7 +59,7 @@ void MeshViewerClass::DrawMesh(bed_mesh_t zval, const uint8_t sizex, const uint8
   max = (float)maxz / 100;
   min = (float)minz / 100;
   DWINUI::ClearMainArea();
-  DWIN_Draw_Rectangle(0, HMI_data.SplitLine_Color, px(0), py(0), px(sizex - 1), py(sizey - 1));
+  DWIN_Draw_Rectangle(0, HMI_data.Selected_Color, px(0), py(0), px(sizex - 1), py(sizey - 1));
   LOOP_S_L_N(x, 1, sizex - 1) DrawMeshVLine(x);
   LOOP_S_L_N(y, 1, sizey - 1) DrawMeshHLine(y);
   LOOP_L_N(y, sizey) {
@@ -125,13 +125,13 @@ void MeshViewerClass::Draw(bool withsave /*= false*/) {
       BedLevelTools.Set_Mesh_Viewer_Status();}
     else {
     char str_1[6], str_2[6] = "";
-    ui.status_printf(0, F("minZ: %s, maxZ: %s"),
+    ui.status_printf(0, F("minZ: %s | maxZ: +%s"),
       dtostrf(min, 1, 2, str_1),
       dtostrf(max, 1, 2, str_2)
     );}
   #else
     char str_1[6], str_2[6] = "";
-    ui.status_printf(0, F("minZ: %s, maxZ: %s"),
+    ui.status_printf(0, F("minZ: %s | maxZ: +%s"),
       dtostrf(min, 1, 2, str_1),
       dtostrf(max, 1, 2, str_2)
     );
@@ -140,6 +140,6 @@ void MeshViewerClass::Draw(bool withsave /*= false*/) {
 
 void Draw_MeshViewer() { MeshViewer.Draw(true); }
 void onClick_MeshViewer() { if (HMI_flag.select_flag) SaveMesh(); HMI_ReturnScreen(); }
-void Goto_MeshViewer() { if (leveling_is_valid()) Goto_Popup(Draw_MeshViewer, onClick_MeshViewer);  else HMI_ReturnScreen(); }
+void Goto_MeshViewer() { if (leveling_is_valid()) Goto_Popup(Draw_MeshViewer, onClick_MeshViewer); else HMI_ReturnScreen(); }
 
 #endif // DWIN_LCD_PROUI && HAS_MESH

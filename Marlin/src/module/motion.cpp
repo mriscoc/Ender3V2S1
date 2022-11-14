@@ -370,16 +370,6 @@ void home_if_needed(const bool keeplev/*=false*/) {
   if (!all_axes_trusted()) gcode.home_all_axes(keeplev);
 }
 
-/**
- * Run out the planner buffer and re-sync the current
- * position from the last-updated stepper positions.
- */
-void quickstop_stepper() {
-  planner.quick_stop();
-  planner.synchronize();
-  set_current_from_steppers_for_axis(ALL_AXES_ENUM);
-  sync_plan_position();
-}
 
 #if ENABLED(REALTIME_REPORTING_COMMANDS)
 
@@ -482,6 +472,17 @@ void line_to_current_position(const_feedRate_t fr_mm_s/*=feedrate_mm_s*/) {
     planner.synchronize();
   }
 #endif
+
+/**
+ * Run out the planner buffer and re-sync the current
+ * position from the last-updated stepper positions.
+ */
+void quickstop_stepper() {
+  planner.quick_stop();
+  planner.synchronize();
+  set_current_from_steppers_for_axis(ALL_AXES_ENUM);
+  sync_plan_position();
+}
 
 #if IS_KINEMATIC
 

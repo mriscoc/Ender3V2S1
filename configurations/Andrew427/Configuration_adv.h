@@ -1080,7 +1080,7 @@
  *  X<1>         Set the given parameters only for the X axis.
  *  Y<1>         Set the given parameters only for the Y axis.
  */
-#define INPUT_SHAPING
+//#define INPUT_SHAPING
 #if ENABLED(INPUT_SHAPING)
   #define SHAPING_FREQ_X    40  // (Hz) The dominant resonant frequency of the X axis.
   #define SHAPING_FREQ_Y    40  // (Hz) The dominant resonant frequency of the Y axis.
@@ -2457,7 +2457,7 @@
  */
 //#define REALTIME_REPORTING_COMMANDS
 #if ENABLED(REALTIME_REPORTING_COMMANDS)
-  //#define FULL_REPORT_TO_HOST_FEATURE   // Auto-report the machine status like Grbl CNC
+  #define FULL_REPORT_TO_HOST_FEATURE   // Auto-report the machine status like Grbl CNC
 #endif
 
 // Bad Serial-connections can miss a received command by sending an 'ok'

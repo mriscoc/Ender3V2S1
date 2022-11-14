@@ -585,12 +585,15 @@ void Draw_PrintDone() {
   Title.ShowCaption(GET_TEXT_F(MSG_PRINT_DONE));
   DWINUI::ClearMainArea();
   DWIN_Print_Header(nullptr);
-  if (TERN0(HAS_GCODE_PREVIEW, Preview_Valid())) {  // TODO: Revisar si se activa luego de ver un archivo en la SD y mandar a imprimir desde el host
-    Preview_Show();
-    DWINUI::Draw_Button(BTN_Continue, 86, 295);
-    Draw_Select_Box(86, 295);
-  }
-  else {
+  #if HAS_GCODE_PREVIEW
+    if (Preview_Valid()) {  // TODO: Revisar si se activa luego de ver un archivo en la SD y mandar a imprimir desde el host
+      Preview_Show();
+      DWINUI::Draw_Button(BTN_Continue, 86, 295);
+      Draw_Select_Box(86, 295);
+    }
+    else
+  #endif
+  {
     Draw_Print_ProgressBar();
     Draw_Print_Labels();
     DWINUI::Draw_Icon(ICON_PrintTime, 15, 173);
@@ -768,10 +771,6 @@ void update_variable() {
   _draw_ZOffsetIcon();
   _draw_xyz_position(false);
 }
-
-//void update_variable2() {
-
-//}
 
 /**
  * Memory card and file management
@@ -1692,6 +1691,28 @@ void DWIN_M73() {
 
 void DWIN_SetColorDefaults() {
   HMI_data.Background_Color = Def_Background_Color;
+  HMI_data.Cursor_color     = Def_Text_Color; //Def_Cursor_color;
+  HMI_data.TitleBg_color    = Def_TitleBg_color;
+  HMI_data.TitleTxt_color   = Def_TitleTxt_color;
+  HMI_data.Text_Color       = Def_Text_Color;
+  HMI_data.Selected_Color   = Def_Selected_Color;
+  HMI_data.SplitLine_Color  = Def_SplitLine_Color;
+  HMI_data.Highlight_Color  = Def_Highlight_Color;
+  HMI_data.StatusBg_Color   = Def_StatusBg_Color;
+  HMI_data.StatusTxt_Color  = Def_StatusTxt_Color;
+  HMI_data.PopupBg_color    = Def_PopupBg_color;
+  HMI_data.PopupTxt_Color   = Def_PopupTxt_Color;
+  HMI_data.AlertBg_Color    = Def_AlertBg_Color;
+  HMI_data.AlertTxt_Color   = Def_AlertTxt_Color;
+  HMI_data.PercentTxt_Color = Def_PercentTxt_Color;
+  HMI_data.Barfill_Color    = Def_Barfill_Color;
+  HMI_data.Indicator_Color  = Def_Text_Color;//Def_Indicator_Color;
+  HMI_data.Coordinate_Color = Def_Text_Color;//Def_Coordinate_Color;
+  HMI_data.Bottom_Color     = Def_TitleBg_color;//Def_Bottom_Color;
+}
+
+void DWIN_SetAltColor() {
+  HMI_data.Background_Color = Def_Background_Color;
   HMI_data.Cursor_color     = Def_Cursor_color;
   HMI_data.TitleBg_color    = Def_TitleBg_color;
   HMI_data.TitleTxt_color   = Def_TitleTxt_color;
@@ -1710,6 +1731,11 @@ void DWIN_SetColorDefaults() {
   HMI_data.Indicator_Color  = Def_Indicator_Color;
   HMI_data.Coordinate_Color = Def_Coordinate_Color;
   HMI_data.Bottom_Color     = Def_Bottom_Color;
+}
+
+void SetAltColor(){
+  DWIN_SetAltColor();
+  DWIN_RedrawScreen();
 }
 
 void DWIN_SetDataDefaults() {
@@ -1827,9 +1853,7 @@ void DWIN_InitScreen() {
     ProEx.Init();
     safe_delay(2000);
   #endif
-  #if ENABLED(AUTO_BED_LEVELING_UBL)
-    UBLLoadMesh();
-  #endif
+
   DWINUI::init();
   DWINUI::SetColors(HMI_data.Text_Color, HMI_data.Background_Color, HMI_data.TitleBg_color);
   DWINUI::onTitleDraw = Draw_Title;
@@ -1839,6 +1863,9 @@ void DWIN_InitScreen() {
   last_E = 0;
   DWIN_DrawStatusLine();
   DWIN_Draw_Dashboard();
+  #if ENABLED(AUTO_BED_LEVELING_UBL)
+    UBLLoadMesh();
+  #endif
   LCD_MESSAGE(WELCOME_MSG);
   Goto_Main_Menu();
 }
@@ -2111,10 +2138,14 @@ void AutoHome() { queue.inject_P(G28_STR); }
       gcode.process_subcommands_now(cmd);
     #else
       TERN_(HAS_LEVELING, set_bed_leveling_enabled(false));
-      gcode.process_subcommands_now(F("G28Z\nG0Z0F300\nM400"));
+      char cmd[54], str_1[5], str_2[5];
+      sprintf_P(cmd, PSTR("G28XYO\nG28Z\nG0X%sY%sF5000\nG0Z0F300\nM400"),
+        dtostrf(X_CENTER, 1, 1, str_1),
+        dtostrf(Y_CENTER, 1, 1, str_2)
+      );
+      gcode.process_subcommands_now(cmd);
     #endif
     ui.reset_status();
-    DONE_BUZZ(true);
   }
 
   #if !HAS_BED_PROBE
@@ -2314,8 +2345,7 @@ void SetPID(celsius_t t, heater_id_t h) {
 
 
   #if LCD_BACKLIGHT_TIMEOUT_MINS
-  void SetTimer()   { SetPIntOnClick(ui.backlight_timeout_min, ui.backlight_timeout_max);
-   }
+  void SetTimer() { SetPIntOnClick(ui.backlight_timeout_min, ui.backlight_timeout_max); }
   #endif
 
 #if ProUIex && ENABLED(NOZZLE_PARK_FEATURE)
@@ -2918,6 +2948,17 @@ void onClick_StartAutoLev() {
 }
 void AutoLevStart() { Goto_Popup(PopUp_StartAutoLev, onClick_StartAutoLev); }
 
+// Clear or Zero Bed Mesh Values
+  void Popup_ZeroMesh() { DWIN_Popup_ConfirmCancel(ICON_Info_0, F("Zero Current Mesh?")); }
+  void OnClick_ZeroMesh() { 
+    if (HMI_flag.select_flag) { 
+    ZERO(bedlevel.z_values);
+    DONE_BUZZ(true);
+    }
+    HMI_ReturnScreen();
+  }
+  void ZeroCurrentMesh() { Goto_Popup(Popup_ZeroMesh, OnClick_ZeroMesh); }
+
 
 // Menu Creation and Drawing functions ======================================================
 
@@ -3037,7 +3078,7 @@ void Draw_Move_Menu() {
 #if HAS_HOME_OFFSET
   void Draw_HomeOffset_Menu() {
     checkkey = Menu;
-    if (SET_MENU(HomeOffMenu, MSG_SET_HOME_OFFSETS, 5)) {
+    if (SET_MENU(HomeOffMenu, MSG_SET_HOME_OFFSETS, 6)) {
       BACK_ITEM(Draw_Control_Menu);
       EDIT_ITEM(ICON_HomeOffsetX, MSG_HOME_OFFSET_X, onDrawPFloatMenu, SetHomeOffsetX, &home_offset[X_AXIS]);
       EDIT_ITEM(ICON_HomeOffsetY, MSG_HOME_OFFSET_Y, onDrawPFloatMenu, SetHomeOffsetY, &home_offset[Y_AXIS]);
@@ -3046,7 +3087,10 @@ void Draw_Move_Menu() {
         #if ENABLED(NOZZLE_PARK_FEATURE)
         MENU_ITEM(ICON_ParkPos, MSG_FILAMENT_PARK_ENABLED, onDrawSubMenu, Draw_ParkPos_Menu);
         #endif
-      #endif  
+      #endif
+      #if HAS_HOME_OFFSET
+        MENU_ITEM_F(ICON_SetHome, "Set as Home position: 0,0,0", onDrawMenuItem, SetHome);
+      #endif
     }
     UpdateMenu(HomeOffMenu);
   }
@@ -3137,8 +3181,9 @@ void Draw_FilSet_Menu() {
 
 void Draw_SelectColors_Menu() {
   checkkey = Menu;
-  if (SET_MENU(SelectColorMenu, MSG_COLORS_SELECT, 21)) {
+  if (SET_MENU(SelectColorMenu, MSG_COLORS_SELECT, 22)) {
     BACK_ITEM(Draw_Control_Menu);
+    MENU_ITEM_F(ICON_ResumeEEPROM, "Set Alt Colors", onDrawMenuItem, SetAltColor);
     MENU_ITEM(ICON_ResumeEEPROM, MSG_RESTORE_DEFAULTS, onDrawMenuItem, RestoreDefaultsColors);
     EDIT_ITEM_F(0, "Screen Background", onDrawSelColorItem, SelColor, &HMI_data.Background_Color);
     EDIT_ITEM_F(0, "Cursor", onDrawSelColorItem, SelColor, &HMI_data.Cursor_color);
@@ -3654,17 +3699,6 @@ void Draw_Steps_Menu() {
     }
   #endif
   
-// Clear or Zero Bed Mesh Values
-  void Popup_ZeroMesh() { DWIN_Popup_ConfirmCancel(ICON_Info_0, F("Zero Current Mesh?")); }
-  void OnClick_ZeroMesh() { 
-    if (HMI_flag.select_flag) { 
-    ZERO(bedlevel.z_values);
-    DONE_BUZZ(true);
-    }
-    HMI_ReturnScreen();
-  }
-  void ZeroCurrentMesh() { Goto_Popup(Popup_ZeroMesh, OnClick_ZeroMesh); }
-
 #endif // HAS_MESH
 
 #if ENABLED(AUTO_BED_LEVELING_UBL)
@@ -3837,7 +3871,7 @@ void Draw_AdvancedSettings_Menu() {
       #endif
         MENU_ITEM(ICON_PrintSize, MSG_MESH_LEVELING, onDrawSubMenu, Draw_MeshSet_Menu);
         MENU_ITEM(ICON_Level, MSG_AUTO_MESH, onDrawMenuItem, AutoLevStart);
-        MENU_ITEM(ICON_ProbeMargin, MSG_UBL_TILT_MESH, onDrawMenuItem, UBLTiltMesh);
+        MENU_ITEM(ICON_Tilt, MSG_UBL_TILT_MESH, onDrawMenuItem, UBLTiltMesh);
       #if ENABLED(MESH_EDIT_MENU)
         MENU_ITEM(ICON_UBLActive, MSG_EDIT_MESH, onDrawSubMenu, Draw_EditMesh_Menu);
       #endif

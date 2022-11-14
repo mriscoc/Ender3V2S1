@@ -303,26 +303,26 @@ void GcodeSuite::dwell(millis_t time) {
   #endif
 
   #if !ProUIex
-    void GcodeSuite::G29_with_retry() {
-      uint8_t retries = G29_MAX_RETRIES;
-      while (G29()) { // G29 should return true for failed probes ONLY
-        if (retries) {
-          event_probe_recover();
-          --retries;
-        }
-        else {
-          event_probe_failure();
-          return;
-        }
+  void GcodeSuite::G29_with_retry() {
+    uint8_t retries = G29_MAX_RETRIES;
+    while (G29()) { // G29 should return true for failed probes ONLY
+      if (retries) {
+        event_probe_recover();
+        --retries;
       }
-
-      TERN_(HOST_PROMPT_SUPPORT, hostui.prompt_end());
-
-      #ifdef G29_SUCCESS_COMMANDS
-        process_subcommands_now(F(G29_SUCCESS_COMMANDS));
-      #endif
+      else {
+        event_probe_failure();
+        return;
+      }
     }
-  #endif
+
+    TERN_(HOST_PROMPT_SUPPORT, hostui.prompt_end());
+
+    #ifdef G29_SUCCESS_COMMANDS
+      process_subcommands_now(F(G29_SUCCESS_COMMANDS));
+    #endif
+  }
+ #endif
 
 #endif // G29_RETRY_AND_RECOVER
 

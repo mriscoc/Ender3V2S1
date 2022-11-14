@@ -38,6 +38,7 @@ void GcodeSuite::M524() {
 
   #if ENABLED(DWIN_LCD_PROUI)
     ui.abort_print();
+    HMI_flag.abort_flag = true;    // The LCD will handle it
   #else
 
     if (IS_SD_PRINTING())

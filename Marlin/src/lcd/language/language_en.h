@@ -526,7 +526,7 @@ namespace Language_en {
   LSTR MSG_KILLED                         = _UxGT("KILLED. ");
   LSTR MSG_STOPPED                        = _UxGT("STOPPED. ");
   LSTR MSG_FWRETRACT                      = _UxGT("Firmware Retract");
-  LSTR MSG_CONTROL_RETRACT                = _UxGT("Retract Distance");
+  LSTR MSG_CONTROL_RETRACT                = _UxGT("Retract mm");
   LSTR MSG_CONTROL_RETRACT_SWAP           = _UxGT("Swap Re.mm");
   LSTR MSG_CONTROL_RETRACTF               = _UxGT("Retract V");
   LSTR MSG_CONTROL_RETRACT_ZHOP           = _UxGT("Z Hop");
