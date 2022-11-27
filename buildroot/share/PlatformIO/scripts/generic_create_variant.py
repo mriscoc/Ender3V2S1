@@ -52,7 +52,7 @@ if pioutil.is_pio_build():
         variant_dir.mkdir()
 
     # Source dir is a local variant sub-folder
-    source_dir = Path("buildroot/share/PlatformIO/variants", variant)
+    source_dir = Path("buildroot/share/PlatformIO/variants", variant.upper())
     assert source_dir.is_dir()
 
     marlin.copytree(source_dir, variant_dir)
