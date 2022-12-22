@@ -4,18 +4,24 @@
 ![GitHub Release Date](https://img.shields.io/github/release-date/mriscoc/Ender3V2S1.svg)
 [![Build Status](https://github.com/mriscoc/Ender3V2S1/workflows/CI/badge.svg?branch=Ender3V2S1-Released)](https://github.com/mriscoc/Ender3V2S1/actions)
 
-## Universal RET6/RCT6 Ender 3 V2/S1 Edition
+## Universal RET6/RCT6 Edition
 
-Please test this firmware and let us know if it misbehaves in any way.
-Volunteers are standing by!  
-Precompiled binary files can be downloader from:
+The Precompiled binary files of this firmware can work with STM32FX RET6 or RCT6 and can be downloader from:
 [Latest Release](https://github.com/mriscoc/Ender3V2S1/releases/latest)
 
 <img aling=left height=240 src="buildroot/share/pixmaps/Ender-3V2.jpg" /> <img height=300 src="buildroot/share/pixmaps/Ender-3S1.jpg" />
 <BR/>
 
+## Donations
+Thank you for your support, I receive donations through [Patreon](https://www.patreon.com/mriscoc) and [Paypal](https://www.paypal.com/paypalme/mriscoc)   
+
+[<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif">](https://www.paypal.com/donate?business=85SPAAR6UZEE8&currency_code=USD)   
+
 ## Wiki
+ - [About of this firmware and features](https://github.com/mriscoc/Ender3V2S1/wiki)
  - [How to install the firmware](https://github.com/mriscoc/Ender3V2S1/wiki/How-to-install-the-firmware)
+ - [Getting started](https://github.com/mriscoc/Ender3V2S1/wiki/Calibration-Guides)
+ - [Saving preferences in Configuration Files](https://github.com/mriscoc/Ender3V2S1/wiki/Configuration-files)
  - [Installing a 3D/BLTouch](https://github.com/mriscoc/Ender3V2S1/wiki/3D-BLTouch)
  - [Color themes](https://github.com/mriscoc/Ender3V2S1/wiki/Color-Themes)
  - [How to use with Octoprint](https://github.com/mriscoc/Ender3V2S1/wiki/Octoprint)
