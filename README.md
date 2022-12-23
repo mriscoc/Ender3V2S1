@@ -53,6 +53,8 @@ The Issue Queue is reserved for Bug Reports and Feature Requests. To get help wi
 
 ## Credits
 
+HonorBond on Reddit
+
 This fork of Mriscoc's ProUI firmware is maintained by [@classicrocker883](https://github.com/classicrocker883) (yours truly)
 
 ProUI is a Marlin based firmware maintained by [@mriscoc](https://github.com/mriscoc)
