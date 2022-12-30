@@ -195,6 +195,19 @@ void DWIN_Frame_AreaMove(uint8_t mode, uint8_t dir, uint16_t dis,
   DWIN_Send(i);
 }
 
+//Color: color
+//x/y: Upper-left coordinate of the first pixel
+void DWIN_Draw_DegreeSymbol(uint16_t Color, uint16_t x, uint16_t y)	{
+  	DWIN_Draw_Point(Color, 1, 1, x + 1, y);		               	
+  	DWIN_Draw_Point(Color, 1, 1, x + 2, y);	
+  	DWIN_Draw_Point(Color, 1, 1, x, y + 1);
+		DWIN_Draw_Point(Color, 1, 1, x + 3, y + 1);
+  	DWIN_Draw_Point(Color, 1, 1, x, y + 2);
+		DWIN_Draw_Point(Color, 1, 1, x + 3, y + 2);
+    DWIN_Draw_Point(Color, 1, 1, x + 1, y + 3);		               	
+  	DWIN_Draw_Point(Color, 1, 1, x + 2, y + 3);	
+}
+
 /*---------------------------------------- Text related functions ----------------------------------------*/
 
 // Draw a string

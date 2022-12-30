@@ -65,7 +65,7 @@ constexpr int16_t DEF_Z_MAX_POS = Z_MAX_POS;
     #define MESH_MAX_X  X_BED_SIZE - (MESH_INSET)
   #endif
   #ifndef MESH_MAX_Y
-    #define MESH_MAX_Y  X_BED_SIZE - (MESH_INSET)
+    #define MESH_MAX_Y  Y_BED_SIZE - (MESH_INSET)
   #endif
   constexpr int16_t DEF_MESH_MIN_X = MESH_MIN_X;
   constexpr int16_t DEF_MESH_MAX_X = MESH_MAX_X;
