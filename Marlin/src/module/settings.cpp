@@ -593,11 +593,11 @@ typedef struct SettingsDataStruct {
   //
   // Input Shaping
   //
-  #if HAS_SHAPING_X
+  #if ENABLED(INPUT_SHAPING_X)
     float shaping_x_frequency, // M593 X F
           shaping_x_zeta;      // M593 X D
   #endif
-  #if HAS_SHAPING_Y
+  #if ENABLED(INPUT_SHAPING_Y)
     float shaping_y_frequency, // M593 Y F
           shaping_y_zeta;      // M593 Y D
   #endif
@@ -671,7 +671,7 @@ void MarlinSettings::postprocess() {
 
   #if LCD_BACKLIGHT_TIMEOUT_MINS
     ui.refresh_backlight_timeout();
-  #elif HAS_DISPLAY_SLEEP && DISABLED(TFT_COLOR_UI)
+  #elif HAS_DISPLAY_SLEEP
     ui.refresh_screen_timeout();
   #endif
 }
@@ -1131,7 +1131,7 @@ void MarlinSettings::postprocess() {
     {
       _FIELD_TEST(bedPID);
       #if ENABLED(PIDTEMPBED)
-        const PID_t &pid = thermalManager.temp_bed.pid;
+        const auto &pid = thermalManager.temp_bed.pid;
         const raw_pid_t bed_pid = { pid.p(), pid.i(), pid.d() };
       #else
         const raw_pid_t bed_pid = { NAN, NAN, NAN };
@@ -1145,7 +1145,7 @@ void MarlinSettings::postprocess() {
     {
       _FIELD_TEST(chamberPID);
       #if ENABLED(PIDTEMPCHAMBER)
-        const PID_t &pid = thermalManager.temp_chamber.pid;
+        const auto &pid = thermalManager.temp_chamber.pid;
         const raw_pid_t chamber_pid = { pid.p(), pid.i(), pid.d() };
       #else
         const raw_pid_t chamber_pid = { NAN, NAN, NAN };
@@ -1481,10 +1481,12 @@ void MarlinSettings::postprocess() {
 
     _FIELD_TEST(coordinate_system);
 
-    #if DISABLED(CNC_COORDINATE_SYSTEMS)
-      const xyz_pos_t coordinate_system[MAX_COORDINATE_SYSTEMS] = { { 0 } };
+    #if ENABLED(CNC_COORDINATE_SYSTEMS)
+      EEPROM_WRITE(gcode.coordinate_system);
+    #else
+      xyz_pos_t coordinate_system[MAX_COORDINATE_SYSTEMS];
+      EEPROM_SKIP(coordinate_system);
     #endif
-    EEPROM_WRITE(TERN(CNC_COORDINATE_SYSTEMS, gcode.coordinate_system, coordinate_system));
 
     //
     // Skew correction factors
@@ -1655,12 +1657,12 @@ void MarlinSettings::postprocess() {
     //
     // Input Shaping
     ///
-    #if ENABLED(INPUT_SHAPING)
-      #if HAS_SHAPING_X
+    #if HAS_SHAPING
+      #if ENABLED(INPUT_SHAPING_X)
         EEPROM_WRITE(stepper.get_shaping_frequency(X_AXIS));
         EEPROM_WRITE(stepper.get_shaping_damping_ratio(X_AXIS));
       #endif
-      #if HAS_SHAPING_Y
+      #if ENABLED(INPUT_SHAPING_Y)
         EEPROM_WRITE(stepper.get_shaping_frequency(Y_AXIS));
         EEPROM_WRITE(stepper.get_shaping_damping_ratio(Y_AXIS));
       #endif
@@ -1735,7 +1737,11 @@ void MarlinSettings::postprocess() {
       #if ENABLED(EEPROM_INIT_NOW)
         uint32_t stored_hash;
         EEPROM_READ_ALWAYS(stored_hash);
-        if (stored_hash != build_hash) { EEPROM_FINISH(); return false; }
+        if (stored_hash != build_hash) {
+          DEBUG_ECHO_MSG("Resetting EEPROM after flashing");
+          EEPROM_FINISH();
+          return false;
+        }
       #endif
 
       uint16_t stored_crc;
@@ -2462,7 +2468,7 @@ void MarlinSettings::postprocess() {
           EEPROM_READ(gcode.coordinate_system);
         #else
           xyz_pos_t coordinate_system[MAX_COORDINATE_SYSTEMS];
-          EEPROM_READ(coordinate_system);
+          EEPROM_SKIP(coordinate_system);
         #endif
       }
 
@@ -2540,7 +2546,7 @@ void MarlinSettings::postprocess() {
       #endif
 
       //
-      // Creality DWIN User Data
+      // DWIN ProUI User Data
       //
       #if ENABLED(DWIN_LCD_PROUI)
       {
@@ -2655,7 +2661,7 @@ void MarlinSettings::postprocess() {
       //
       // Input Shaping
       //
-      #if HAS_SHAPING_X
+      #if ENABLED(INPUT_SHAPING_X)
       {
         float _data[2];
         EEPROM_READ(_data);
@@ -2664,7 +2670,7 @@ void MarlinSettings::postprocess() {
       }
       #endif
 
-      #if HAS_SHAPING_Y
+      #if ENABLED(INPUT_SHAPING_Y)
       {
         float _data[2];
         EEPROM_READ(_data);
@@ -2888,12 +2894,15 @@ void MarlinSettings::postprocess() {
         #endif
 
         #if ENABLED(DWIN_LCD_PROUI)
-          status = !BedLevelTools.meshvalidate();
-          if (status) {
+          if (BedLevelTools.meshvalidate()) {
+            ui.status_printf(0, GET_TEXT_F(MSG_MESH_LOADED), slot);
+          }
+          else {
+            status = true;
             bedlevel.invalidate();
             LCD_MESSAGE(MSG_UBL_MESH_INVALID);
+            DONE_BUZZ(false);
           }
-          else
             ui.status_printf(0, GET_TEXT_F(MSG_MESH_LOADED), bedlevel.storage_slot);
         #endif
 
@@ -3123,11 +3132,7 @@ void MarlinSettings::reset() {
   //
 
   #if IS_KINEMATIC
-    segments_per_second = (
-      TERN_(DELTA, DELTA_SEGMENTS_PER_SECOND)
-      TERN_(IS_SCARA, SCARA_SEGMENTS_PER_SECOND)
-      TERN_(POLARGRAPH, POLAR_SEGMENTS_PER_SECOND)
-    );
+    segments_per_second = DEFAULT_SEGMENTS_PER_SECOND;
     #if ENABLED(DELTA)
       const abc_float_t adj = DELTA_ENDSTOP_ADJ, dta = DELTA_TOWER_ANGLE_TRIM, ddr = DELTA_DIAGONAL_ROD_TRIM_TOWER;
       delta_height = DELTA_HEIGHT;
@@ -3472,12 +3477,12 @@ void MarlinSettings::reset() {
   //
   // Input Shaping
   //
-  #if ENABLED(INPUT_SHAPING)
-    #if HAS_SHAPING_X
+  #if HAS_SHAPING
+    #if ENABLED(INPUT_SHAPING_X)
       stepper.set_shaping_frequency(X_AXIS, SHAPING_FREQ_X);
       stepper.set_shaping_damping_ratio(X_AXIS, SHAPING_ZETA_X);
     #endif
-    #if HAS_SHAPING_Y
+    #if ENABLED(INPUT_SHAPING_Y)
       stepper.set_shaping_frequency(Y_AXIS, SHAPING_FREQ_Y);
       stepper.set_shaping_damping_ratio(Y_AXIS, SHAPING_ZETA_Y);
     #endif
@@ -3743,7 +3748,7 @@ void MarlinSettings::reset() {
     //
     // Input Shaping
     //
-    TERN_(INPUT_SHAPING, gcode.M593_report(forReplay));
+    TERN_(HAS_SHAPING, gcode.M593_report(forReplay));
 
     //
     // Linear Advance
@@ -3796,7 +3801,7 @@ void MarlinSettings::reset() {
     //
     // PROUI custom G-codes
     //
-    #if ProUIex && ENABLED(HAS_CGCODE)
+    #if ProUIex
       custom_gcode_report(forReplay);
     #endif
   }

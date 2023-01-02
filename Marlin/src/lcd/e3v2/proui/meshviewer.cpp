@@ -1,8 +1,8 @@
 /**
  * Mesh Viewer for PRO UI
  * Author: Miguel A. Risco-Castillo (MRISCOC)
- * version: 3.14.1
- * Date: 2022/04/11
+ * version: 3.15.1
+ * Date: 2022/10/25
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -31,75 +31,85 @@
 #include "dwin_popup.h"
 #include "../../../feature/bedlevel/bedlevel.h"
 #include "meshviewer.h"
-#include "bedlevel_tools.h"
 
+#if ENABLED(AUTO_BED_LEVELING_UBL)
+  #include "bedlevel_tools.h"
+#endif
 
 MeshViewerClass MeshViewer;
 
-void MeshViewerClass::DrawMesh(bed_mesh_t zval, const uint8_t sizex, const uint8_t sizey) {
-  const int8_t mx = 25, my = 25;  // Margins
-  const int16_t stx = (DWIN_WIDTH - 2 * mx) / (sizex - 1),  // Steps
-                sty = (DWIN_WIDTH - 2 * my) / (sizey - 1);
-  const int8_t rmax = _MIN(mx - 2, stx / 2);
-  const int8_t rmin = 7;
-  int16_t zmesh[sizex][sizey];
-  #define px(xp) (mx + (xp) * stx)
-  #define py(yp) (30 + DWIN_WIDTH - my - (yp) * sty)
-  #define rm(z) ((z - minz) * (rmax - rmin) / _MAX(1, (maxz - minz)) + rmin)
-  #define DrawMeshValue(xp, yp, zv) DWINUI::Draw_Signed_Float(font6x12, 1, 2, px(xp) - 18, py(yp) - 6, zv)
-  #define DrawMeshHLine(yp) DWIN_Draw_HLine(HMI_data.Selected_Color, px(0), py(yp), DWIN_WIDTH - 2 * mx)
-  #define DrawMeshVLine(xp) DWIN_Draw_VLine(HMI_data.Selected_Color, px(xp), py(sizey - 1), DWIN_WIDTH - 2 * my)
-  int16_t maxz =-32000; int16_t minz = 32000;
-  LOOP_L_N(y, sizey) LOOP_L_N(x, sizex) {
-    const float v = isnan(zval[x][y]) ? 0 : round(zval[x][y] * 100);
-    zmesh[x][y] = v;
-    NOLESS(maxz, v);
-    NOMORE(minz, v);
-  }
-  max = (float)maxz / 100;
-  min = (float)minz / 100;
+bool meshredraw;                            // Redraw mesh points
+uint8_t sizex, sizey;                       // Mesh XY size
+uint8_t rmax;                               // Maximum radius
+#define margin 25                           // XY Margins
+#define rmin 5                              // Minimum radius
+#define zmin -20                            // rmin at z=-0.20
+#define zmax  20                            // rmax at z= 0.20
+#define width DWIN_WIDTH - 2 * margin
+#define r(z) ((z-zmin)*(rmax-rmin)/(zmax-zmin)+rmin)
+#define px(xp) (margin + (xp)*(width)/(sizex - 1))
+#define py(yp) (30 + DWIN_WIDTH - margin - (yp)*(width)/(sizey - 1))
+
+void MeshViewerClass::DrawMeshGrid(const uint8_t csizex, const uint8_t csizey) {
+  sizex = csizex;
+  sizey = csizey;
+  rmax = _MIN(margin - 2, 0.5*(width)/(sizex - 1));
+  min = 100;
+  max = -100;
   DWINUI::ClearMainArea();
-  DWIN_Draw_Rectangle(0, HMI_data.Selected_Color, px(0), py(0), px(sizex - 1), py(sizey - 1));
-  LOOP_S_L_N(x, 1, sizex - 1) DrawMeshVLine(x);
-  LOOP_S_L_N(y, 1, sizey - 1) DrawMeshHLine(y);
-  LOOP_L_N(y, sizey) {
-    hal.watchdog_refresh();
-    LOOP_L_N(x, sizex) {
-      uint16_t color = DWINUI::RainbowInt(zmesh[x][y], _MIN(-5, minz), _MAX(5, maxz));
-      uint8_t radius = rm(zmesh[x][y]);
-      DWINUI::Draw_FillCircle(color, px(x), py(y), radius);
-      if (sizex < 9) {
-        if (zmesh[x][y] == 0) DWINUI::Draw_Float(font6x12, 1, 2, px(x) - 12, py(y) - 6, 0);
-        else DWINUI::Draw_Signed_Float(font6x12, 1, 2, px(x) - 18, py(y) - 6, zval[x][y]);
-      }
-      else {
-        char str_1[9];
-        str_1[0] = 0;
-        switch (zmesh[x][y]) {
-          case -999 ... -100:
-            DWINUI::Draw_Signed_Float(font6x12, 1, 1, px(x) - 18, py(y) - 6, zval[x][y]);
-            break;
-          case -99 ... -1:
-            sprintf_P(str_1, PSTR("-.%02i"), -zmesh[x][y]);
-            break;
-          case 0:
-            DWIN_Draw_String(false, font6x12, DWINUI::textcolor, DWINUI::backcolor, px(x) - 4, py(y) - 6, "0");
-            break;
-          case 1 ... 99:
-            sprintf_P(str_1, PSTR(".%02i"), zmesh[x][y]);
-            break;
-          case 100 ... 999:
-            DWINUI::Draw_Signed_Float(font6x12, 1, 1, px(x) - 18, py(y) - 6, zval[x][y]);
-            break;
-        }
-        if (str_1[0])
-          DWIN_Draw_String(false, font6x12, DWINUI::textcolor, DWINUI::backcolor, px(x) - 12, py(y) - 6, str_1);
-      }
+  DWIN_Draw_Rectangle(0, HMI_data.SplitLine_Color, px(0), py(0), px(sizex - 1), py(sizey - 1));
+  LOOP_S_L_N(x, 1, sizex - 1) DWIN_Draw_VLine(HMI_data.SplitLine_Color, px(x), py(sizey - 1), width);
+  LOOP_S_L_N(y, 1, sizey - 1) DWIN_Draw_HLine(HMI_data.SplitLine_Color, px(0), py(y), width);
+}
+
+void MeshViewerClass::DrawMeshPoint(const uint8_t x, const uint8_t y, const float z) {
+  int16_t v = isnan(z) ? 0 : round(z * 100);
+  LIMIT(v, zmin, zmax);
+  NOLESS(max, z);
+  NOMORE(min, z);
+
+  const int8_t radio = r(v);
+  const uint16_t color = DWINUI::RainbowInt(v, zmin, zmax);
+  DWINUI::Draw_FillCircle(color, px(x), py(y), radio);
+
+  if (sizex < 9) {
+    if (v == 0) DWINUI::Draw_Float(font6x12, 1, 2, px(x) - 12, py(y) - 6, 0);
+    else DWINUI::Draw_Signed_Float(font6x12, 1, 2, px(x) - 18, py(y) - 6, z);
+  }
+  else {
+    char str_1[9];
+    str_1[0] = 0;
+    switch (v) {
+      case -999 ... -100:
+        DWINUI::Draw_Signed_Float(font6x12, 1, 1, px(x) - 18, py(y) - 6, z);
+        break;
+      case -99 ... -1:
+        sprintf_P(str_1, PSTR("-.%02i"), -v);
+        break;
+      case 0:
+        DWIN_Draw_String(false, font6x12, DWINUI::textcolor, DWINUI::backcolor, px(x) - 4, py(y) - 6, "0");
+        break;
+      case 1 ... 99:
+        sprintf_P(str_1, PSTR(".%02i"), v);
+        break;
+      case 100 ... 999:
+        DWINUI::Draw_Signed_Float(font6x12, 1, 1, px(x) - 18, py(y) - 6, z);
+        break;
     }
+    if (str_1[0])
+      DWIN_Draw_String(false, font6x12, DWINUI::textcolor, DWINUI::backcolor, px(x) - 12, py(y) - 6, str_1);
   }
 }
 
-void MeshViewerClass::Draw(bool withsave /*= false*/) {
+void MeshViewerClass::DrawMesh(bed_mesh_t zval, const uint8_t csizex, const uint8_t csizey) {
+  DrawMeshGrid(csizex, csizey);
+  LOOP_L_N(y, csizey) {
+    hal.watchdog_refresh();
+    LOOP_L_N(x, csizex) DrawMeshPoint(x, y, zval[x][y]);
+  }
+}
+
+void MeshViewerClass::Draw(bool withsave /*=false*/, bool redraw /*=true*/) {
   Title.ShowCaption(GET_TEXT_F(MSG_MESH_VIEWER));
   #if ENABLED(USE_UBL_VIEWER)
   if(BedLevelTools.view_mesh) {
@@ -138,8 +148,14 @@ void MeshViewerClass::Draw(bool withsave /*= false*/) {
   #endif
 }
 
-void Draw_MeshViewer() { MeshViewer.Draw(true); }
+void Draw_MeshViewer() { MeshViewer.Draw(true, meshredraw); }
+
 void onClick_MeshViewer() { if (HMI_flag.select_flag) SaveMesh(); HMI_ReturnScreen(); }
-void Goto_MeshViewer() { if (leveling_is_valid()) Goto_Popup(Draw_MeshViewer, onClick_MeshViewer); else HMI_ReturnScreen(); }
+
+void Goto_MeshViewer(bool redraw) { 
+  meshredraw = redraw;
+  if (leveling_is_valid()) Goto_Popup(Draw_MeshViewer, onClick_MeshViewer);
+  else HMI_ReturnScreen();
+}
 
 #endif // DWIN_LCD_PROUI && HAS_MESH

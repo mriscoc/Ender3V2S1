@@ -222,7 +222,7 @@ void GcodeSuite::M115() {
 
     // Machine Geometry
     #if ENABLED(M115_GEOMETRY_REPORT)
-      const xyz_pos_t bmin{0},
+      TERN(ProUIex, const, constexpr) xyz_pos_t bmin{0},
                           bmax = ARRAY_N(NUM_AXES, X_BED_SIZE, Y_BED_SIZE, Z_MAX_POS, I_MAX_POS, J_MAX_POS, K_MAX_POS, U_MAX_POS, V_MAX_POS, W_MAX_POS),
                           dmin = ARRAY_N(NUM_AXES, X_MIN_POS,  Y_MIN_POS,  Z_MIN_POS, I_MIN_POS, J_MIN_POS, K_MIN_POS, U_MIN_POS, V_MIN_POS, W_MIN_POS),
                           dmax = ARRAY_N(NUM_AXES, X_MAX_POS,  Y_MAX_POS,  Z_MAX_POS, I_MAX_POS, J_MAX_POS, K_MAX_POS, U_MAX_POS, V_MAX_POS, W_MAX_POS);
@@ -235,30 +235,36 @@ void GcodeSuite::M115() {
       SERIAL_ECHOLNPGM(
         "area:{"
           "full:{"
-            LIST_N(DOUBLE(NUM_AXES),
-              "min:{x:", lmin.x, ",y:", lmin.y, ",z:", lmin.z,
-                  ",i:", lmin.i, ",j:", lmin.j, ",k:", lmin.k,
-                  ",u:", lmin.u, ",v:", lmin.v, ",w:", lmin.w
-            ),
-            LIST_N(DOUBLE(NUM_AXES),
-              "max:{x:", lmax.x, ",y:", lmax.y, ",z:", lmax.z,
-                  ",i:", lmax.i, ",j:", lmax.j, ",k:", lmax.k,
-                  ",u:", lmax.u, ",v:", lmax.v, ",w:", lmax.w
-            ),
-          "},"
+            "min:{"
+              LIST_N(DOUBLE(NUM_AXES),
+                 "x:", lmin.x, ",y:", lmin.y, ",z:", lmin.z,
+                ",i:", lmin.i, ",j:", lmin.j, ",k:", lmin.k,
+                ",u:", lmin.u, ",v:", lmin.v, ",w:", lmin.w
+              ),
+            "},max:{"
+              LIST_N(DOUBLE(NUM_AXES),
+                 "x:", lmax.x, ",y:", lmax.y, ",z:", lmax.z,
+                ",i:", lmax.i, ",j:", lmax.j, ",k:", lmax.k,
+                ",u:", lmax.u, ",v:", lmax.v, ",w:", lmax.w
+              ),
+            "}" // max
+          "}," // full
           "work:{"
-            LIST_N(DOUBLE(NUM_AXES),
-              "min:{x:", wmin.x, ",y:", wmin.y, ",z:", wmin.z,
-                  ",i:", wmin.i, ",j:", wmin.j, ",k:", wmin.k,
-                  ",u:", wmin.u, ",v:", wmin.v, ",w:", wmin.w
-            ),
-            LIST_N(DOUBLE(NUM_AXES),
-              "max:{x:", wmax.x, ",y:", wmax.y, ",z:", wmax.z,
-                  ",i:", wmax.i, ",j:", wmax.j, ",k:", wmax.k,
-                  ",u:", wmax.u, ",v:", wmax.v, ",w:", wmax.w
-            ),
-          "}"
-        "}"
+            "min:{"
+              LIST_N(DOUBLE(NUM_AXES),
+                 "x:", wmin.x, ",y:", wmin.y, ",z:", wmin.z,
+                ",i:", wmin.i, ",j:", wmin.j, ",k:", wmin.k,
+                ",u:", wmin.u, ",v:", wmin.v, ",w:", wmin.w
+              ),
+            "},max:{"
+              LIST_N(DOUBLE(NUM_AXES),
+                 "x:", wmax.x, ",y:", wmax.y, ",z:", wmax.z,
+                ",i:", wmax.i, ",j:", wmax.j, ",k:", wmax.k,
+                ",u:", wmax.u, ",v:", wmax.v, ",w:", wmax.w
+              ),
+            "}" // max
+          "}" // work
+        "}" // area
       );
     #endif
 

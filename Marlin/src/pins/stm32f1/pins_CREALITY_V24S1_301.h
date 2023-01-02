@@ -75,8 +75,8 @@
 //
 // SD Card
 //
-#define ONBOARD_SPI_DEVICE                     1
-#define ONBOARD_SD_CS_PIN                   PA4   // SDSS
+#define ONBOARD_SPI_DEVICE                  1
+#define ONBOARD_SD_CS_PIN                   PA4  // SDSS
 
 //
 // M3/M4/M5 - Spindle/Laser Control

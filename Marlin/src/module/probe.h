@@ -49,12 +49,14 @@
   #define PROBE_TRIGGERED() (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING)
 #endif
 
-#ifdef Z_AFTER_HOMING
-   #define Z_POST_CLEARANCE Z_AFTER_HOMING
+#if ALL(DWIN_LCD_PROUI, INDIVIDUAL_AXIS_HOMING_SUBMENU, MESH_BED_LEVELING)
+  #define Z_POST_CLEARANCE HMI_data.z_after_homing;
+#elif defined(Z_AFTER_HOMING)
+  #define Z_POST_CLEARANCE Z_AFTER_HOMING
 #elif defined(Z_HOMING_HEIGHT)
-   #define Z_POST_CLEARANCE Z_HOMING_HEIGHT
+  #define Z_POST_CLEARANCE Z_HOMING_HEIGHT
 #else
-   #define Z_POST_CLEARANCE 10
+  #define Z_POST_CLEARANCE 10
 #endif
 
 #if ENABLED(PREHEAT_BEFORE_LEVELING)
@@ -99,7 +101,7 @@ public:
         // Note: This won't work on SCARA since the probe offset rotates with the arm.
         static bool can_reach(const_float_t rx, const_float_t ry, const bool probe_relative=true) {
           if (probe_relative) {
-            return position_is_reachable(rx - offset_xy.x, ry - offset_xy.y) // The nozzle can go where it needs to go?
+          return position_is_reachable(rx - offset_xy.x, ry - offset_xy.y) // The nozzle can go where it needs to go?
                 && position_is_reachable(rx, ry, PROBING_MARGIN);            // Can the probe also go near there?
           }
           else {
@@ -125,10 +127,10 @@ public:
        */
       static bool can_reach(const_float_t rx, const_float_t ry, const bool probe_relative=true) {
         if (probe_relative) {
-          return position_is_reachable(rx - offset_xy.x, ry - offset_xy.y)
-              && COORDINATE_OKAY(rx, min_x() - fslop, max_x() + fslop)
-              && COORDINATE_OKAY(ry, min_y() - fslop, max_y() + fslop);
-        }
+        return position_is_reachable(rx - offset_xy.x, ry - offset_xy.y)
+            && COORDINATE_OKAY(rx, min_x() - fslop, max_x() + fslop)
+            && COORDINATE_OKAY(ry, min_y() - fslop, max_y() + fslop);
+      }
         else {
           return position_is_reachable(rx, ry)
               && COORDINATE_OKAY(rx + offset_xy.x, min_x() - fslop, max_x() + fslop)
@@ -159,7 +161,9 @@ public:
   #endif
 
   static void move_z_after_homing() {
-    #ifdef Z_AFTER_HOMING
+    #if ALL(DWIN_LCD_PROUI, INDIVIDUAL_AXIS_HOMING_SUBMENU, MESH_BED_LEVELING)
+      do_z_clearance(HMI_data.z_after_homing, true);
+    #elif Z_AFTER_HOMING
       do_z_clearance(Z_AFTER_HOMING, true);
     #elif BOTH(Z_AFTER_PROBING, HAS_BED_PROBE)
       move_z_after_probing();

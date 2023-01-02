@@ -39,7 +39,7 @@ Be sure to leave **only** the `DWIN_SET` or `private`folder at the root of the c
 - [**Giadej**](https://github.com/Giadej) for Main and Control panel icons, and custom Boot-Screen  
 - [**Lighty1989**](https://github.com/Lighty1989) for "XYZ Move Axis" icons and "Bed Points" icons  
 - [**Gothcha**](https://github.com/gothcha) for other icons  
- 
+
 <br>
   
 ---

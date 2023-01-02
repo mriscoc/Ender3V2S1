@@ -33,8 +33,6 @@ private:
   static xy_pos_t cached_rel;
   static xy_int8_t cached_g;
 
-  static void extrapolate_one_point(const uint8_t x, const uint8_t y, const int8_t xdir, const int8_t ydir);
-
   #if ENABLED(ABL_BILINEAR_SUBDIVISION)
 
     #if ProUIex
@@ -59,6 +57,7 @@ private:
 public:
   static void reset();
   static void set_grid(const xy_pos_t& _grid_spacing, const xy_pos_t& _grid_start);
+  static void extrapolate_one_point(const uint8_t x, const uint8_t y, const int8_t xdir, const int8_t ydir);
   static void extrapolate_unprobed_bed_level();
   static void print_leveling_grid(const bed_mesh_t* _z_values = NULL);
   static void refresh_bed_level();

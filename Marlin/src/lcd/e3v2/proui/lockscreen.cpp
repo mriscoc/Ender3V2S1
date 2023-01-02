@@ -67,6 +67,6 @@ void LockScreenClass::onEncoder(EncoderState encoder_diffState) {
   DWIN_UpdateLCD();
 }
 
-#endif // HAS_LOCKSCREEN
+#endif // HAS_LOCK_SCREEN
 
 #endif // DWIN_LCD_PROUI

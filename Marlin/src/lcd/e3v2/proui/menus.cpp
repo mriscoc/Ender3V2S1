@@ -1,8 +1,8 @@
 /**
  * Menu functions for ProUI
  * Author: Miguel A. Risco-Castillo
- * Version: 1.8.1
- * Date: 2022/09/29
+ * Version: 1.9.1
+ * Date: 2022/12/02
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as 
@@ -87,9 +87,15 @@ void Draw_Chkb_Line(const uint8_t line, const bool checked) {
   DWINUI::Draw_Checkbox(HMI_data.Text_Color, HMI_data.Background_Color, VALX + 3 * DWINUI::fontWidth(), MBASE(line) - 1, checked);
 }
 
-void Show_Chkb_Line(const uint8_t line, const bool checked) {
+void Show_Chkb_Line(const bool checked) {
+  const uint8_t line = CurrentMenu->line();
   DWINUI::Draw_Checkbox(HMI_data.Text_Color, HMI_data.Background_Color, VALX + 3 * DWINUI::fontWidth(), MBASE(line) - 1, checked);
   DWIN_UpdateLCD();
+}
+
+void Toogle_Chkb_Line(bool &checked) {
+  checked = !checked;
+  Show_Chkb_Line(checked);
 }
 
 void Draw_Menu_IntValue(uint16_t bcolor, const uint8_t line, uint8_t iNum, const int32_t value /*=0*/) {

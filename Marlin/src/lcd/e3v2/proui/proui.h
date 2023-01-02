@@ -1,8 +1,8 @@
 /**
  * Professional Firmware UI extensions
  * Author: Miguel A. Risco-Castillo
- * Version: 1.5.0
- * Date: 2022/10/07
+ * Version: 1.7.0
+ * Date: 2022/12/02
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -78,6 +78,8 @@ constexpr int16_t DEF_Z_MAX_POS = Z_MAX_POS;
 
 #if HAS_BED_PROBE
   constexpr int16_t DEF_PROBING_MARGIN = PROBING_MARGIN;
+  #define MIN_PROBE_MARGIN 5
+  #define MAX_PROBE_MARGIN 60
   constexpr int16_t DEF_Z_PROBE_FEEDRATE_SLOW = Z_PROBE_FEEDRATE_SLOW;
   #ifndef MULTIPLE_PROBING
     #define MULTIPLE_PROBING 0
@@ -131,7 +133,8 @@ public:
   static void HeatedBed();
   static void StopLeveling();
   static bool QuitLeveling();
-  static bool LevelingDone();
+  static void MeshUpdate(const int8_t x, const int8_t y, const_float_t zval);
+  static void LevelingDone();
 #endif
 #if HAS_FILAMENT_SENSOR
   static void SetRunoutState(uint32_t ulPin);

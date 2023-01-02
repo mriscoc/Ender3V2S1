@@ -52,6 +52,6 @@ extern ToolBarClass ToolBar;
 
 void onDrawTBItem(MenuItemClass* menuitem, int8_t line);
 void UpdateTBSetupItem(MenuItemClass* menuitem, uint8_t val);
-void DrawTBSetupItem(bool focused, uint8_t line);
+void DrawTBSetupItem(bool focused);
 void Draw_ToolBar(bool force = false);
 void TBGetItem(uint8_t item);

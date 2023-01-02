@@ -1,8 +1,8 @@
 /**
  * DWIN Enhanced implementation for PRO UI
  * Author: Miguel A. Risco-Castillo (MRISCOC)
- * Version: 3.19.1
- * Date: 2022/08/18
+ * Version: 3.21.1
+ * Date: 2022/12/02
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -78,6 +78,7 @@
 #define ICON_HomeOffsetZ       CI(1,ICON_StepZ)
 #define ICON_Host              CI(1,ICON_Contact)
 #define ICON_HSMode            CI(1,ICON_StockConfiguration)
+#define ICON_InputShaping      CI(1,ICON_MaxAccelerated)
 #define ICON_InvertE0          CI(1,ICON_StepE)
 #define ICON_JDmm              CI(1,ICON_MaxJerk)
 #define ICON_Tram              CI(1,ICON_SetEndTemp)
@@ -87,6 +88,10 @@
 #define ICON_MaxPosX           CI(1,ICON_MoveX)
 #define ICON_MaxPosY           CI(1,ICON_MoveY)
 #define ICON_MaxPosZ           CI(1,ICON_MoveZ)
+#define ICON_MeshEdit          CI(1,ICON_Homing)
+#define ICON_MeshEditX         CI(1,ICON_MoveX)
+#define ICON_MeshEditY         CI(1,ICON_MoveY)
+#define ICON_MeshEditZ         CI(1,ICON_MoveZ)
 #define ICON_MeshNext          CI(1,ICON_Axis)
 #define ICON_MeshPoints        CI(1,ICON_SetEndTemp)
 #define ICON_MeshSave          CI(1,ICON_WriteEEPROM)
@@ -109,6 +114,10 @@
 #define ICON_Preheat4          CI(1,ICON_CustomPreheat)
 #define ICON_Preheat5          CI(1,ICON_CustomPreheat)
 #define ICON_Preheat6          CI(1,ICON_CustomPreheat)
+#define ICON_Preheat7          CI(1,ICON_CustomPreheat)
+#define ICON_Preheat8          CI(1,ICON_CustomPreheat)
+#define ICON_Preheat9          CI(1,ICON_CustomPreheat)
+#define ICON_Preheat10         CI(1,ICON_CustomPreheat)
 #define ICON_PrintStatsReset   CI(1,ICON_RemainTime)
 #define ICON_ProbeDeploy       CI(1,ICON_SetEndTemp)
 #define ICON_ProbeMargin       CI(1,ICON_PrintSize)
@@ -125,16 +134,32 @@
 #define ICON_Runout            CI(1,ICON_MaxAccE)
 #define ICON_Scolor            CI(1,ICON_MaxSpeed)
 #define ICON_SetBaudRate       CI(1,ICON_Setspeed)
-#define ICON_SetCustomPreheat  CI(1,ICON_SetBedTemp)
+#define ICON_SetCustomPreheat  CI(1,ICON_SetEndTemp)
 #define ICON_SetPreheat1       CI(1,ICON_SetPLAPreheat)
 #define ICON_SetPreheat2       CI(1,ICON_SetABSPreheat)
 #define ICON_SetPreheat3       CI(1,ICON_SetCustomPreheat)
 #define ICON_SetPreheat4       CI(1,ICON_SetCustomPreheat)
 #define ICON_SetPreheat5       CI(1,ICON_SetCustomPreheat)
 #define ICON_SetPreheat6       CI(1,ICON_SetCustomPreheat)
+#define ICON_SetPreheat7       CI(1,ICON_SetCustomPreheat)
+#define ICON_SetPreheat8       CI(1,ICON_SetCustomPreheat)
+#define ICON_SetPreheat9       CI(1,ICON_SetCustomPreheat)
+#define ICON_SetPreheat10      CI(1,ICON_SetCustomPreheat)
+#define ICON_ShapingX          CI(1,ICON_MoveX)
+#define ICON_ShapingY          CI(1,ICON_MoveY)
 #define ICON_Sound             CI(1,ICON_Cool)
 #define ICON_TBSetup           CI(1,ICON_Contact)
-#define ICON_UBLActive         CI(1,ICON_Mesh)
+#define ICON_TMCSet            CI(1,ICON_PrintSize)
+#define ICON_TMCXSet           CI(1,ICON_MoveX)
+#define ICON_TMCYSet           CI(1,ICON_MoveY)
+#define ICON_TMCZSet           CI(1,ICON_MoveZ)
+#define ICON_TMCESet           CI(1,ICON_Extruder)
+#define ICON_UBLActive         CI(1,ICON_HotendTemp)
+#define ICON_UBLSlot           CI(1,ICON_ResumeEEPROM)
+#define ICON_UBLSaveMesh       CI(1,ICON_WriteEEPROM)
+#define ICON_UBLLoadMesh       CI(1,ICON_ReadEEPROM)
+#define ICON_UBLTiltGrid       CI(1,ICON_PrintSize)
+#define ICON_UBLSmartFill      CI(1,ICON_StockConfiguration)
 #define ICON_ZAfterHome        CI(1,ICON_SetEndTemp)
 
 //LED Lights
