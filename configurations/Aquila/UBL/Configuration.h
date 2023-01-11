@@ -1490,7 +1490,7 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
-#define NOZZLE_TO_PROBE_OFFSET { -45.0, -7.0, -1.75 }
+#define NOZZLE_TO_PROBE_OFFSET { -45.0, -7.0, 0 }
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
@@ -3183,21 +3183,23 @@
 // Professional firmware features:    // Undefine all except SD Extender
 //#define ProUIex 1
 #ifdef ProUIex
-#define HAS_GCODE_PREVIEW 1
-#define HAS_TOOLBAR 1
-#define HAS_PIDPLOT 1
-#define HAS_ESDIAG 1
-#define HAS_CGCODE 1
-#define HAS_LOCKSCREEN 1
-#define MESH_EDIT_MENU
-#define USE_STOCK_DWIN_SET
-//#define HAS_SD_EXTENDER 1  // Enable it to support SD card extender cables
+  #define HAS_GCODE_PREVIEW 1
+  #define HAS_TOOLBAR 1
+  #define HAS_PIDPLOT 1
+  #define HAS_ESDIAG 1
+  #define HAS_CGCODE 1
+  #define HAS_LOCKSCREEN 1
+  #define MESH_EDIT_MENU
+  #define USE_STOCK_DWIN_SET
+  #define SHOW_REAL_POS 1
+  //#define HAS_SD_EXTENDER 1  // Enable it to support SD card extender cables
 #elif ENABLED(DWIN_LCD_PROUI)
-#define HAS_GCODE_PREVIEW 1
-#define HAS_PIDPLOT 1
-#define HAS_ESDIAG 1
-#define HAS_LOCKSCREEN 1
-#define MESH_EDIT_MENU
+  #define HAS_GCODE_PREVIEW 1
+  #define HAS_PIDPLOT 1
+  #define HAS_ESDIAG 1
+  #define HAS_LOCKSCREEN 1
+  #define MESH_EDIT_MENU
+  #define SHOW_REAL_POS 1
 #endif
 
 //#define DWIN_CREALITY_LCD_JYERSUI   // Jyers UI by Jacob Myers (not working) *** use DWIN_CREALITY_LCD instead ***

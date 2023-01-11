@@ -125,7 +125,7 @@ EncoderState Encoder_ReceiveAnalyze() {
     else temp_diffState = TERN(REVERSE_ENCODER_DIRECTION, ENCODER_DIFF_CW, ENCODER_DIFF_CCW);
 
     #if LCD_BACKLIGHT_TIMEOUT_MINS
-      if (temp_diffState > 0) {      
+      if (temp_diffState > 0) {
         ui.refresh_backlight_timeout(); //reset timer after encoder +- (this can be changed -> added to an all in one if statement)
       }
     #endif

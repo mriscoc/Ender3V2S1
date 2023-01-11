@@ -39,7 +39,7 @@
 #endif
 
 //=============================================================================
-// Extended G-CODES 
+// Extended G-CODES
 //=============================================================================
 
 void CError() {
@@ -67,7 +67,7 @@ void C11() {
 }
 
 // Cancel a Wait for User without an Emergecy Parser
-void C108() { 
+void C108() {
   #if DEBUG_DWIN
     SERIAL_ECHOLNPGM(F("wait_for_user was "), wait_for_user);
     SERIAL_ECHOLNPGM(F("checkkey was "), checkkey);

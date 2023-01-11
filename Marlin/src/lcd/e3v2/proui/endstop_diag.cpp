@@ -75,7 +75,7 @@ void ESDiagClass::Draw() {
     #if HAS_Z_MIN
       ES_LABEL(Z_MIN);
     #endif
-  #endif 
+  #endif
   #if HAS_FILAMENT_SENSOR
     draw_es_label(F(STR_FILAMENT));
   #endif

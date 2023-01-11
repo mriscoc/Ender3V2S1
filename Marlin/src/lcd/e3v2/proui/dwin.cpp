@@ -242,7 +242,7 @@ char DateTime[16+1] =
   // Second month letter
   (__DATE__[0] == 'J') ? ( (__DATE__[1] == 'a') ? '1' :       // Jan, Jun or Jul
                           ((__DATE__[2] == 'n') ? '6' : '7') ) :
-  (__DATE__[0] == 'F') ? '2' :                                // Feb 
+  (__DATE__[0] == 'F') ? '2' :                                // Feb
   (__DATE__[0] == 'M') ? (__DATE__[2] == 'r') ? '3' : '5' :   // Mar or May
   (__DATE__[0] == 'A') ? (__DATE__[1] == 'p') ? '4' : '8' :   // Apr or Aug
   (__DATE__[0] == 'S') ? '9' :                                // Sep
@@ -673,8 +673,6 @@ void _update_axis_value(const AxisEnum axis, const uint16_t x, const uint16_t y,
   // Check for a position change
   static xyz_pos_t oldpos = { -1, -1, -1 };
 
-#define SHOW_REAL_POS 1
-
   #if ENABLED(SHOW_REAL_POS)
     const float p = stepper.position(axis) / planner.settings.axis_steps_per_mm[axis];
   #else
@@ -696,14 +694,14 @@ void _update_axis_value(const AxisEnum axis, const uint16_t x, const uint16_t y,
 
 void _draw_ZOffsetIcon() {
   #if HAS_LEVELING
-    #if NO_BLINK_LEV_IND
+    /*#if NO_BLINK_LEV_IND
       static bool _leveling_active = false;
       if (_leveling_active != planner.leveling_active) {
         _leveling_active = planner.leveling_active;
         DWIN_Draw_Rectangle(1, HMI_data.Background_Color, 186, 415, 205, 436);
         DWINUI::Draw_Icon(_leveling_active ? ICON_SetZOffset : ICON_Zoffset, 186, 416);
       }
-    #else
+   */// #else
       if (planner.leveling_active) {
         DWIN_Draw_Rectangle(1, blink ? HMI_data.Selected_Color : HMI_data.Background_Color, 186, 415, 205, 436);
         DWINUI::Draw_Icon(ICON_SetZOffset, 186, 416);
@@ -713,10 +711,10 @@ void _draw_ZOffsetIcon() {
         _leveling_active = planner.leveling_active;
         if (!_leveling_active) {
           DWIN_Draw_Rectangle(1, HMI_data.Background_Color, 186, 415, 205, 436);
-          DWINUI::Draw_Icon(ICON_Zoffset, 186, 416);
+          DWINUI::Draw_Icon(ICON_Zoffset, 187, 416);
         }
       }
-    #endif
+   // #endif
   #else
     DWINUI::Draw_Icon(ICON_SetZOffset, 186, 416);
   #endif
@@ -1910,7 +1908,8 @@ void DWIN_InitScreen() {
   DWIN_DrawStatusLine();
   DWIN_Draw_Dashboard();
   #if ENABLED(AUTO_BED_LEVELING_UBL)
-    UBLLoadMesh();
+    if (bedlevel.storage_slot < 0) bedlevel.storage_slot = 0;
+    settings.load_mesh(bedlevel.storage_slot);
   #endif
   LCD_MESSAGE(WELCOME_MSG);
   Goto_Main_Menu();
@@ -2655,7 +2654,7 @@ void TramC () { Tram(4); }
 
   void SetCalcAvg() {
     Toogle_Chkb_Line(HMI_data.CalcAvg);
-  }  
+  }
 
 #endif // HAS_BED_PROBE
 
@@ -2893,8 +2892,8 @@ void AutoLevStart() { Goto_Popup(PopUp_StartAutoLev, onClick_StartAutoLev); }
 
 // Clear or Zero Bed Mesh Values
   void Popup_ZeroMesh() { DWIN_Popup_ConfirmCancel(ICON_Info_0, F("Zero Current Mesh?")); }
-  void OnClick_ZeroMesh() { 
-    if (HMI_flag.select_flag) { 
+  void OnClick_ZeroMesh() {
+    if (HMI_flag.select_flag) {
     ZERO(bedlevel.z_values);
     DONE_BUZZ(true);
     }
@@ -3292,7 +3291,7 @@ void Draw_Tune_Menu() {
     void SetShapingYZeta() { HMI_value.axis = Y_AXIS; SetFloatOnClick(0, 1, 2, stepper.get_shaping_damping_ratio(Y_AXIS), ApplyShapingZeta); }
   #endif
 
-  void Draw_InputShaping_menu() {
+  void Draw_InputShaping_Menu() {
     checkkey = Menu;
     if (SET_MENU(InputShapingMenu, MSG_INPUT_SHAPING, 5)) {
       BACK_ITEM(Draw_Motion_Menu);
@@ -3358,11 +3357,11 @@ void Draw_Motion_Menu() {
       EDIT_ITEM(ICON_JDmm, MSG_JUNCTION_DEVIATION, onDrawPFloat3Menu, SetJDmm, &planner.junction_deviation_mm);
     #endif
     MENU_ITEM(ICON_Step, MSG_STEPS_PER_MM, onDrawSubMenu, Draw_Steps_Menu);
-    #if ENABLED(LIN_ADVANCE)
-      EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &planner.extruder_advance_K[0]);
-    #endif
     #if ENABLED(SHAPING_MENU)
       MENU_ITEM(ICON_InputShaping, MSG_INPUT_SHAPING, onDrawSubMenu, Draw_InputShaping_Menu);
+    #endif
+    #if ENABLED(LIN_ADVANCE)
+      EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &planner.extruder_advance_K[0]);
     #endif
     #if ENABLED(ADAPTIVE_STEP_SMOOTHING)
       EDIT_ITEM(ICON_UBLActive, MSG_STEP_SMOOTHING, onDrawChkbMenu, SetAdaptiveStepSmoothing, &HMI_data.AdaptiveStepSmoothing);
@@ -3611,7 +3610,7 @@ void Draw_Steps_Menu() {
       MENU_ITEM(ICON_SetHome, MSG_MOVE_NOZZLE_TO_BED, onDrawMenuItem, SetMoveZto0);
       EDIT_ITEM(ICON_Fade, MSG_XATC_UPDATE_Z_OFFSET, onDrawPFloat2Menu, SetZOffset, &BABY_Z_VAR);
       MENU_ITEM_F(0,"For Best Results:\n", onDrawMenuItem);
-      MENU_ITEM_F(ICON_More, "Make Nozzle Touch Bed", onDrawMenuItem);
+      MENU_ITEM_F(ICON_More, "Have Nozzle Touch Bed", onDrawMenuItem);
     }
     UpdateMenu(ZOffsetWizMenu);
     if (!axis_is_trusted(Z_AXIS)) LCD_MESSAGE_F("WARNING: unknown Z position, Home Z axis...");
@@ -3780,6 +3779,7 @@ void Draw_Steps_Menu() {
   void UBLLoadMesh() {
     if (bedlevel.storage_slot < 0) bedlevel.storage_slot = 0;
     settings.load_mesh(bedlevel.storage_slot);
+    ui.status_printf(0, GET_TEXT_F(MSG_MESH_LOADED), bedlevel.storage_slot);
   }
 
 #endif  // AUTO_BED_LEVELING_UBL
@@ -3915,16 +3915,16 @@ void Draw_AdvancedSettings_Menu() {
       #if ENABLED(MESH_EDIT_MENU)
         MENU_ITEM(ICON_UBLActive, MSG_EDIT_MESH, onDrawSubMenu, Draw_EditMesh_Menu);
       #endif
-        MENU_ITEM(ICON_MeshViewer, MSG_MESH_VIEW, onDrawSubMenu, DWIN_MeshViewer);  
+        MENU_ITEM(ICON_MeshViewer, MSG_MESH_VIEW, onDrawSubMenu, DWIN_MeshViewer);
       #if ENABLED(USE_UBL_VIEWER)
-        EDIT_ITEM_F(ICON_PrintSize, "Change Mesh Viewer", onDrawChkbMenu, SetViewMesh, &BedLevelTools.view_mesh); 
+        EDIT_ITEM_F(ICON_PrintSize, "Change Mesh Viewer", onDrawChkbMenu, SetViewMesh, &BedLevelTools.view_mesh);
       #endif
       EDIT_ITEM(ICON_ResumeEEPROM, MSG_UBL_STORAGE_SLOT, onDrawUBLSlot, SetUBLSlot, &bedlevel.storage_slot);
       MENU_ITEM(ICON_WriteEEPROM, MSG_UBL_SAVE_MESH, onDrawMenuItem, UBLSaveMesh);
       MENU_ITEM(ICON_ReadEEPROM, MSG_UBL_LOAD_MESH, onDrawMenuItem, UBLLoadMesh);
       MENU_ITEM(ICON_HSMode, MSG_UBL_SMART_FILLIN, onDrawMenuItem, UBLSmartFillMesh);
       MENU_ITEM_F(ICON_SetZOffset, "Zero Current Mesh", onDrawMenuItem, ZeroCurrentMesh);
-    #endif 
+    #endif
   }
   ui.reset_status(true);
   UpdateMenu(AdvancedSettings);
@@ -3943,16 +3943,16 @@ void Draw_AdvancedSettings_Menu() {
         MENU_ITEM(ICON_ProbeSet, MSG_ZPROBE_SETTINGS, onDrawSubMenu, Draw_ProbeSet_Menu);
       #endif
         MENU_ITEM(ICON_PrintSize, MSG_MESH_LEVELING, onDrawSubMenu, Draw_MeshSet_Menu);
-        MENU_ITEM(ICON_MeshViewer, MSG_MESH_VIEW, onDrawSubMenu, DWIN_MeshViewer);  
+        MENU_ITEM(ICON_MeshViewer, MSG_MESH_VIEW, onDrawSubMenu, DWIN_MeshViewer);
       #if ENABLED(USE_UBL_VIEWER)
-        EDIT_ITEM_F(ICON_PrintSize, "Change Mesh Viewer", onDrawChkbMenu, SetViewMesh, &BedLevelTools.view_mesh); 
+        EDIT_ITEM_F(ICON_PrintSize, "Change Mesh Viewer", onDrawChkbMenu, SetViewMesh, &BedLevelTools.view_mesh);
       #endif
       #if ENABLED(MESH_EDIT_MENU)
         MENU_ITEM(ICON_UBLActive, MSG_EDIT_MESH, onDrawSubMenu, Draw_EditMesh_Menu);
       #endif
         MENU_ITEM(ICON_Level, MSG_AUTO_MESH, onDrawMenuItem, AutoLev);
         MENU_ITEM_F(ICON_SetZOffset, "Zero Current Mesh", onDrawMenuItem, ZeroCurrentMesh);
-    #endif 
+    #endif
   }
   ui.reset_status(true);
   UpdateMenu(AdvancedSettings);
@@ -3969,7 +3969,7 @@ void Draw_AdvancedSettings_Menu() {
     MENU_ITEM(ICON_PrintSize, MSG_MESH_LEVELING, onDrawSubMenu, Draw_MeshSet_Menu);
     MENU_ITEM(ICON_MeshViewer, MSG_MESH_VIEW, onDrawSubMenu, DWIN_MeshViewer);
     #if ENABLED(USE_UBL_VIEWER)
-      EDIT_ITEM_F(ICON_PrintSize, "Change Mesh Viewer", onDrawChkbMenu, SetViewMesh, &BedLevelTools.view_mesh); 
+      EDIT_ITEM_F(ICON_PrintSize, "Change Mesh Viewer", onDrawChkbMenu, SetViewMesh, &BedLevelTools.view_mesh);
     #endif
     #if ENABLED(MESH_EDIT_MENU)
       MENU_ITEM(ICON_UBLActive, MSG_EDIT_MESH, onDrawSubMenu, Draw_EditMesh_Menu);

@@ -5,7 +5,7 @@
  * Date: 2022/12/02
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
+ * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
@@ -222,7 +222,7 @@ void SetValueOnClick(uint8_t process, const float lo, const float hi, uint8_t dp
 //  hi: scaled high limit
 //  val: value
 //  LiveUpdate: live update function when the encoder changes
-//  Apply: update function when the encoder is pressed 
+//  Apply: update function when the encoder is pressed
 void SetIntOnClick(const int32_t lo, const int32_t hi, const int32_t val, void (*Apply)() /*= nullptr*/, void (*LiveUpdate)() /*= nullptr*/) {
   SetValueOnClick(SetInt, lo, hi, val, Apply, LiveUpdate);
 }
@@ -377,7 +377,7 @@ void MenuClass::onScroll(bool dir) {
 }
 
 void MenuClass::onClick() {
-  if (MenuItems[selected]->onClick != nullptr) (*MenuItems[selected]->onClick)(); 
+  if (MenuItems[selected]->onClick != nullptr) (*MenuItems[selected]->onClick)();
 }
 
 CustomMenuItemClass *MenuClass::SelectedItem() {
@@ -388,8 +388,8 @@ CustomMenuItemClass** MenuClass::Items() {
   return MenuItems;
 }
 
-int8_t MenuClass::count() { 
-  return MenuItemCount; 
+int8_t MenuClass::count() {
+  return MenuItemCount;
 };
 
 /* MenuItem Class ===========================================================*/
@@ -488,7 +488,7 @@ MenuItemClass* MenuItemAdd(uint8_t cicon, uint8_t id, uint16_t x1, uint16_t y1, 
     return MenuItemAdd(menuitem);
   }
   else return nullptr;
-}  
+}
 
 MenuItemClass* EditItemAdd(uint8_t cicon, const char * const text, OnDrawItem ondraw, OnClickItem onclick, void* val) {
   if (MenuItemCount < MenuItemTotal) {
