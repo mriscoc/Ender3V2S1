@@ -673,7 +673,7 @@ void resume_print(const_float_t slow_load_length/*=0*/, const_float_t fast_load_
   if (resume_position.e < 0) unscaled_e_move(resume_position.e, feedRate_t(PAUSE_PARK_RETRACT_FEEDRATE));
   #ifdef ADVANCED_PAUSE_RESUME_PRIME
     if (ADVANCED_PAUSE_RESUME_PRIME != 0)
-    unscaled_e_move(ADVANCED_PAUSE_RESUME_PRIME, feedRate_t(ADVANCED_PAUSE_PURGE_FEEDRATE));
+      unscaled_e_move(ADVANCED_PAUSE_RESUME_PRIME, feedRate_t(ADVANCED_PAUSE_PURGE_FEEDRATE));
   #endif
 
   // Now all extrusion positions are resumed and ready to be confirmed

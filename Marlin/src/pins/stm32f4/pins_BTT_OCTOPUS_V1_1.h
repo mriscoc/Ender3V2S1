@@ -21,20 +21,15 @@
  */
 #pragma once
 
-typedef uint8_t fontid_t;
+#define BOARD_INFO_NAME "BTT OCTOPUS V1.1"
 
-/**
- * 3-.0：The font size, 0x00-0x09, corresponds to the font size below:
- * 0x00=6*12   0x01=8*16   0x02=10*20  0x03=12*24  0x04=14*28
- * 0x05=16*32  0x06=20*40  0x07=24*48  0x08=28*56  0x09=32*64
- */
-#define font6x12  (fontid_t)0x00
-#define font8x16  (fontid_t)0x01
-#define font10x20 (fontid_t)0x02
-#define font12x24 (fontid_t)0x03
-#define font14x28 (fontid_t)0x04
-#define font16x32 (fontid_t)0x05
-#define font20x40 (fontid_t)0x06
-#define font24x48 (fontid_t)0x07
-#define font28x56 (fontid_t)0x08
-#define font32x64 (fontid_t)0x09
+//
+// Temperature Sensors
+//
+#if TEMP_SENSOR_0 == 20
+  #define TEMP_0_PIN                        PF8   // PT100 Connector
+#else
+  #define TEMP_0_PIN                        PF4   // TH0
+#endif
+
+#include "pins_BTT_OCTOPUS_V1_common.h"

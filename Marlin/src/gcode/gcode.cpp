@@ -1117,7 +1117,7 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
       case 'S': case 'P': case 'R': break;                        // Invalid S, P, R commands already filtered
     #endif
 
-    #if ENABLED(DWIN_LCD_PROUI)
+    #if BOTH(DWIN_LCD_PROUI, HAS_CGCODE)
       case 'C' : DWIN_Gcode(parser.codenum); break;               // ProUIex Cn: Custom Gcodes
     #endif
 

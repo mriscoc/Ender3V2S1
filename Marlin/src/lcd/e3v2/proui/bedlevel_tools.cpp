@@ -1,8 +1,8 @@
 /**
  * Bed Level Tools for Pro UI
  * Extended by: Miguel A. Risco-Castillo (MRISCOC)
- * Version: 2.0.0
- * Date: 2022/05/23
+ * Version: 2.1.0
+ * Date: 2022/08/27
  * 
  * Based on the original work of: Henri-J-Norden
  * https://github.com/Jyers/Marlin/pull/126
@@ -274,6 +274,6 @@ bool BedLevelToolsClass::meshvalidate() {
     ui.set_status(msg);
     drawing_mesh = false;
   }
-#endif
+#endif // USE_UBL_VIEWER
 
-#endif // DWIN_LCD_PROUI
+#endif // DWIN_LCD_PROUI && HAS_LEVELING

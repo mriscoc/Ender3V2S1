@@ -1,8 +1,8 @@
 /**
  * DWIN Single var plot
  * Author: Miguel A. Risco-Castillo
- * Version: 2.0
- * Date: 2022/01/31
+ * Version: 2.1.3
+ * Date: 2022/11/20
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -22,14 +22,9 @@
 
 #include "../../../inc/MarlinConfigPre.h"
 
-#ifdef DWIN_LCD_PROUI
-
-#include "dwin_defines.h"
-
-#ifdef HAS_PIDPLOT
+#if BOTH(DWIN_LCD_PROUI, HAS_PIDPLOT)
 
 #include "plot.h"
-
 #include "../../../core/types.h"
 #include "../../marlinui.h"
 #include "dwin_lcd.h"
@@ -72,6 +67,4 @@ void PlotClass::Update(const float value) {
   grphpoints++;
 }
 
-#endif // HAS_PIDPLOT
-
-#endif // DWIN_LCD_PROUI
+#endif // DWIN_LCD_PROUI && HAS_PIDPLOT

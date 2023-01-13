@@ -123,6 +123,9 @@
   #include "lockscreen.h"
 #endif
 
+#define DEBUG_OUT ENABLED(DEBUG_DWIN)
+#include "../../../core/debug_out.h"
+
 #define PAUSE_HEAT
 
 // Print speed limit
@@ -282,9 +285,9 @@ MenuClass *FilamentMenu = nullptr;
 #if ENABLED(MESH_BED_LEVELING)
   MenuClass *ManualMesh = nullptr;
 #endif
-#if HAS_HOTEND
+#if HAS_PREHEAT
   MenuClass *PreheatMenu = nullptr;
-  TERN_(HAS_PREHEAT, MenuClass *PreheatHotendMenu = nullptr);
+  MenuClass *PreheatHotendMenu = nullptr;
 #endif
 MenuClass *TemperatureMenu = nullptr;
 MenuClass *MaxSpeedMenu = nullptr;
@@ -293,9 +296,15 @@ MenuClass *MaxAccelMenu = nullptr;
   MenuClass *MaxJerkMenu = nullptr;
 #endif
 MenuClass *StepsMenu = nullptr;
-TERN_(PIDTEMP, MenuClass *HotendPIDMenu = nullptr);
-TERN_(MPCTEMP, MenuClass *HotendMPCMenu = nullptr);
-TERN_(PIDTEMPBED, MenuClass *BedPIDMenu = nullptr);
+#if ENABLED(MPCTEMP)
+  MenuClass *HotendMPCMenu = nullptr;
+#endif
+#if ENABLED(PIDTEMP)
+  MenuClass *HotendPIDMenu = nullptr;
+#endif
+#if ENABLED(PIDTEMPBED)
+  MenuClass *BedPIDMenu = nullptr;
+#endif
 #if ENABLED(CASELIGHT_USES_BRIGHTNESS)
   MenuClass *CaseLightMenu = nullptr;
 #endif
@@ -343,17 +352,9 @@ MenuItemClass *FanSpeedItem = nullptr;
 MenuItemClass *MMeshMoveZItem = nullptr;
 MenuItemClass *EditZValueItem = nullptr;
 
-bool Printing() {
-  return (printingIsActive() || print_job_timer.isPaused());
-}
-
-bool SD_Printing() {
-  return (Printing() && IS_SD_FILE_OPEN());
-}
-
-bool Host_Printing() {
-  return (Printing() && !IS_SD_FILE_OPEN());
-}
+bool Printing() { return (printingIsActive() || print_job_timer.isPaused()); }
+bool SD_Printing() { return (Printing() && IS_SD_FILE_OPEN()); }
+bool Host_Printing() { return (Printing() && !IS_SD_FILE_OPEN()); }
 
 //-----------------------------------------------------------------------------
 // Main Buttons
@@ -798,9 +799,7 @@ void update_variable() {
 
 bool DWIN_lcd_sd_status = false;
 
-void SetMediaAutoMount() {
-  Toogle_Chkb_Line(HMI_data.MediaAutoMount);
-}
+void SetMediaAutoMount() { Toogle_Chkb_Line(HMI_data.MediaAutoMount); }
 
 inline uint16_t nr_sd_menu_items() {
   return _MIN(card.get_num_Files() + !card.flag.workDirIsRoot, MENU_MAX_ITEMS);
@@ -1198,17 +1197,17 @@ void HMI_WaitForUser() {
 }
 
 #if DISABLED(ProUIex)
-// Draws boot screen
-void HMI_Init() {
-  DWINUI::Draw_Box(1, Color_Black, {5, 220, DWIN_WIDTH-5, DWINUI::fontHeight()});
-  DWINUI::Draw_CenteredString(Color_White, 220, F("Professional Firmware "));
-  for (uint16_t t = 15; t <= 257; t += 10) {
-    DWINUI::Draw_Icon(ICON_Bar, 15, 260);
-    DWIN_Draw_Rectangle(1, HMI_data.Background_Color, t, 260, 257, 280);
-    DWIN_UpdateLCD();
-    delay(50);
+  // Draws boot screen
+  void HMI_Init() {
+    DWINUI::Draw_Box(1, Color_Black, { 5, 220, DWIN_WIDTH - 5, DWINUI::fontHeight() });
+    DWINUI::Draw_CenteredString(Color_White, 220, F("Professional Firmware "));
+    for (uint16_t t = 15; t <= 257; t += 10) {
+      DWINUI::Draw_Icon(ICON_Bar, 15, 260);
+      DWIN_Draw_Rectangle(1, HMI_data.Background_Color, t, 260, 257, 280);
+      DWIN_UpdateLCD();
+      delay(50);
+    }
   }
-}
 #endif
 
 void EachMomentUpdate() {
@@ -1247,7 +1246,7 @@ void EachMomentUpdate() {
 
     if ((Printing() != HMI_flag.printing_flag) && !HMI_flag.home_flag) {
       HMI_flag.printing_flag = Printing();
-      TERN_(DEBUG_DWIN, SERIAL_ECHOLNPGM("printing_flag: ", HMI_flag.printing_flag));
+      DEBUG_ECHOLNPGM("printing_flag: ", HMI_flag.printing_flag);
       if (HMI_flag.printing_flag)
         DWIN_Print_Started();
       else if (HMI_flag.abort_flag)
@@ -1258,7 +1257,7 @@ void EachMomentUpdate() {
 
     if ((printingIsPaused() != HMI_flag.pause_flag) && !HMI_flag.home_flag) {
       HMI_flag.pause_flag = printingIsPaused();
-      TERN_(DEBUG_DWIN, SERIAL_ECHOLNPGM("pause_flag: ", HMI_flag.pause_flag));
+      DEBUG_ECHOLNPGM("pause_flag: ", HMI_flag.pause_flag);
       if (HMI_flag.pause_flag)
         DWIN_Print_Pause();
       else if (HMI_flag.abort_flag)
@@ -1391,7 +1390,7 @@ void HMI_SaveProcessID(const uint8_t id) {
 }
 
 void DWIN_HomingStart() {
-  TERN_(DEBUG_DWIN, SERIAL_ECHOLNPGM("DWIN_HomingStart"));
+  DEBUG_ECHOLNPGM("DWIN_HomingStart");
   HMI_flag.home_flag = true;
   HMI_SaveProcessID(Homing);
   Title.ShowCaption(GET_TEXT_F(MSG_HOMING));
@@ -1399,7 +1398,7 @@ void DWIN_HomingStart() {
 }
 
 void DWIN_HomingDone() {
-  TERN_(DEBUG_DWIN, SERIAL_ECHOLNPGM("DWIN_HomingDone"));
+  DEBUG_ECHOLNPGM("DWIN_HomingDone");
   HMI_flag.home_flag = false;
   #if DISABLED(HAS_BED_PROBE) && EITHER(BABYSTEP_ZPROBE_OFFSET, JUST_BABYSTEP)
     planner.synchronize();
@@ -1409,7 +1408,7 @@ void DWIN_HomingDone() {
 }
 
 void DWIN_LevelingStart() {
-  TERN_(DEBUG_DWIN, SERIAL_ECHOLNPGM("DWIN_LevelingStart"));
+  DEBUG_ECHOLNPGM("DWIN_LevelingStart");
   #if HAS_BED_PROBE
     HMI_SaveProcessID(Leveling);
     TERN_(ProUIex,HMI_flag.cancel_abl = 0);
@@ -1421,22 +1420,22 @@ void DWIN_LevelingStart() {
       DWIN_Show_Popup(ICON_AutoLeveling, GET_TEXT_F(MSG_BED_LEVELING), GET_TEXT_F(MSG_PLEASE_WAIT), TERN(ProUIex, BTN_Cancel, 0));
     #endif
     #if BOTH(AUTO_BED_LEVELING_UBL, PREHEAT_BEFORE_LEVELING)
-// Change to
-      // #if ENABLED(PREHEAT_BEFORE_LEVELING)
-      //   if (!abl.dryrun) probe.preheat_for_probing(LEVELING_NOZZLE_TEMP, LEVELING_BED_TEMP);
-      // #endif
-// and test.
-
-      #if HAS_HOTEND
-        if (thermalManager.degTargetHotend(0) < LEVELING_NOZZLE_TEMP)
-          thermalManager.setTargetHotend(LEVELING_NOZZLE_TEMP, 0);
+      #if HAS_BED_PROBE
+        probe.preheat_for_probing(LEVELING_NOZZLE_TEMP, HMI_data.BedLevT);
+      #else
+        #if HAS_HOTEND
+          if (thermalManager.degTargetHotend(0) < LEVELING_NOZZLE_TEMP) {
+            thermalManager.setTargetHotend(LEVELING_NOZZLE_TEMP, 0);
+            thermalManager.wait_for_hotend(0);
+          }
+        #endif
+        #if HAS_HEATED_BED
+          if (thermalManager.degTargetBed() < HMI_data.BedLevT) {
+            thermalManager.setTargetBed(HMI_data.BedLevT);
+            thermalManager.wait_for_bed_heating();
+          }
+        #endif
       #endif
-      #if HAS_HEATED_BED
-        if (thermalManager.degTargetBed() < HMI_data.BedLevT)
-          thermalManager.setTargetBed(HMI_data.BedLevT);
-      #endif
-      TERN_(HAS_HOTEND, thermalManager.wait_for_hotend(0));
-      TERN_(HAS_HEATED_BED, thermalManager.wait_for_bed_heating());
     #endif
   #elif ENABLED(MESH_BED_LEVELING)
     Draw_ManualMesh_Menu();
@@ -1444,7 +1443,7 @@ void DWIN_LevelingStart() {
 }
 
 void DWIN_LevelingDone() {
-  TERN_(DEBUG_DWIN, SERIAL_ECHOLNPGM("DWIN_LevelingDone"));
+  DEBUG_ECHOLNPGM("DWIN_LevelingDone");
   #if HAS_MESH
     #if ProUIex && HAS_BED_PROBE
       ProEx.LevelingDone();
@@ -1593,7 +1592,7 @@ void DWIN_LevelingDone() {
 
 // Started a Print Job
 void DWIN_Print_Started() {
-  TERN_(DEBUG_DWIN, SERIAL_ECHOLNPGM("DWIN_Print_Started: ", SD_Printing()));
+  DEBUG_ECHOLNPGM("DWIN_Print_Started: ", SD_Printing());
   TERN_(HAS_GCODE_PREVIEW, if (Host_Printing()) Preview_Invalidate());
   _percent_done = 0;
   _remain_time = 0;
@@ -1607,31 +1606,35 @@ void DWIN_Print_Started() {
 
 // Pause a print job
 void DWIN_Print_Pause() {
-  TERN_(DEBUG_DWIN, SERIAL_ECHOLNPGM("DWIN_Print_Pause"));
+  DEBUG_ECHOLNPGM("DWIN_Print_Pause");
   ICON_ResumeOrPause();
 }
 
 // Resume print job
 void DWIN_Print_Resume() {
-  TERN_(DEBUG_DWIN, SERIAL_ECHOLNPGM("DWIN_Print_Resume"));
+  DEBUG_ECHOLNPGM("DWIN_Print_Resume");
   ICON_ResumeOrPause();
   LCD_MESSAGE(MSG_RESUME_PRINT);
 }
 
 // Ended print job
 void DWIN_Print_Finished() {
-  TERN_(DEBUG_DWIN, SERIAL_ECHOLNPGM("DWIN_Print_Finished"));
+  DEBUG_ECHOLNPGM("DWIN_Print_Finished");
   TERN_(POWER_LOSS_RECOVERY, if (card.isPrinting()) recovery.cancel());
   HMI_flag.pause_flag = false;
   wait_for_heatup = false;
-  planner.finish_and_disable();
-  thermalManager.cooldown();
+  #if DISABLED(NOT_COOL_OR_DISABLE_AT_FINISH)
+    planner.finish_and_disable();
+    thermalManager.cooldown();
+  #else
+    planner.synchronize();
+  #endif
   if (!HMI_flag.config_flag) Goto_PrintDone(); else HMI_flag.config_flag = false;
 }
 
 // Print was aborted
 void DWIN_Print_Aborted() {
-  TERN_(DEBUG_DWIN, SERIAL_ECHOLNPGM("DWIN_Print_Aborted"));
+  DEBUG_ECHOLNPGM("DWIN_Print_Aborted");
   #if ProUIex
     char cmd[21] = "";
     sprintf_P(cmd, PSTR("G0 F3000 Y%i\nM84"), PRO_data.Park_point.y);
@@ -1664,16 +1667,16 @@ void DWIN_M73() {
 
 void DWIN_SetColorDefaults() {
   HMI_data.Background_Color = Def_Background_Color;
-  HMI_data.Cursor_color     = Def_Cursor_color;
-  HMI_data.TitleBg_color    = Def_TitleBg_color;
-  HMI_data.TitleTxt_color   = Def_TitleTxt_color;
+  HMI_data.Cursor_Color     = Def_Cursor_Color;
+  HMI_data.TitleBg_Color    = Def_TitleBg_Color;
+  HMI_data.TitleTxt_Color   = Def_TitleTxt_Color;
   HMI_data.Text_Color       = Def_Text_Color;
   HMI_data.Selected_Color   = Def_Selected_Color;
   HMI_data.SplitLine_Color  = Def_SplitLine_Color;
   HMI_data.Highlight_Color  = Def_Highlight_Color;
   HMI_data.StatusBg_Color   = Def_StatusBg_Color;
   HMI_data.StatusTxt_Color  = Def_StatusTxt_Color;
-  HMI_data.PopupBg_color    = Def_PopupBg_color;
+  HMI_data.PopupBg_Color    = Def_PopupBg_Color;
   HMI_data.PopupTxt_Color   = Def_PopupTxt_Color;
   HMI_data.AlertBg_Color    = Def_AlertBg_Color;
   HMI_data.AlertTxt_Color   = Def_AlertTxt_Color;
@@ -1684,7 +1687,7 @@ void DWIN_SetColorDefaults() {
 }
 
 void DWIN_SetDataDefaults() {
-  TERN_(DEBUG_DWIN, SERIAL_ECHOLNPGM("DWIN_SetDataDefaults"));
+  DEBUG_ECHOLNPGM("DWIN_SetDataDefaults");
   DWIN_SetColorDefaults();
   DWINUI::SetColors(HMI_data.Text_Color, HMI_data.Background_Color, HMI_data.StatusBg_Color);
   TERN_(PIDTEMP, HMI_data.HotendPidT = DEF_HOTENDPIDT);
@@ -1707,7 +1710,7 @@ void DWIN_SetDataDefaults() {
     HMI_data.ManualZOffset = 0;
   #endif
   #if BOTH(LED_CONTROL_MENU, HAS_COLOR_LEDS)
-    leds.set_default();
+    TERN_(LED_COLOR_PRESETS, leds.set_default());
     ApplyLEDColor();
   #endif
   #if ENABLED(ADAPTIVE_STEP_SMOOTHING)
@@ -1724,9 +1727,9 @@ void DWIN_SetDataDefaults() {
     #if HAS_MESH
       PRO_data.grid_max_points = DEF_GRID_MAX_POINTS;
       PRO_data.mesh_min_x = DEF_MESH_MIN_X;
-      PRO_data.mesh_max_x = DEF_MESH_MAX_Y;
+      PRO_data.mesh_max_x = DEF_MESH_MAX_X;
       PRO_data.mesh_min_y = DEF_MESH_MIN_Y;
-      PRO_data.mesh_max_y = DEF_MESH_MAX_X;
+      PRO_data.mesh_max_y = DEF_MESH_MAX_Y;
     #endif
     #if HAS_BED_PROBE
       PRO_data.zprobefeedslow = DEF_Z_PROBE_FEEDRATE_SLOW;
@@ -1750,17 +1753,17 @@ void DWIN_SetDataDefaults() {
 }
 
 void DWIN_CopySettingsTo(char * const buff) {
-  TERN_(DEBUG_DWIN, SERIAL_ECHOLNPGM("DWIN_CopySettingsTo"));
-  TERN_(DEBUG_DWIN, SERIAL_ECHOLNPGM("HMI_data: ", sizeof(HMI_data_t)));
+  DEBUG_ECHOLNPGM("DWIN_CopySettingsTo");
+  DEBUG_ECHOLNPGM("HMI_data: ", sizeof(HMI_data_t));
   memcpy(buff, &HMI_data, sizeof(HMI_data_t));
   #if ProUIex
-    TERN_(DEBUG_DWIN, SERIAL_ECHOLNPGM("PRO_data: ", sizeof(PRO_data_t)));
+    DEBUG_ECHOLNPGM("PRO_data: ", sizeof(PRO_data_t));
     memcpy(buff + sizeof(HMI_data_t), &PRO_data, sizeof(PRO_data_t));
   #endif
 }
 
 void DWIN_CopySettingsFrom(const char * const buff) {
-  TERN_(DEBUG_DWIN, SERIAL_ECHOLNPGM("DWIN_CopySettingsFrom"));
+  DEBUG_ECHOLNPGM("DWIN_CopySettingsFrom");
   memcpy(&HMI_data, buff, sizeof(HMI_data_t));
   TERN_(ProUIex, memcpy(&PRO_data, buff + sizeof(HMI_data_t), sizeof(PRO_data)));
   if (HMI_data.Text_Color == HMI_data.Background_Color) DWIN_SetColorDefaults();
@@ -1781,7 +1784,7 @@ void DWIN_CopySettingsFrom(const char * const buff) {
 
 // Initialize or re-initialize the LCD
 void MarlinUI::init_lcd() {
-  TERN_(DEBUG_DWIN, SERIAL_ECHOLNPGM("MarlinUI::init_lcd"));
+  DEBUG_ECHOLNPGM("MarlinUI::init_lcd");
   delay(750);   // wait to wakeup screen
   const bool hs = DWIN_Handshake(); UNUSED(hs);
   #if ENABLED(DEBUG_DWIN)
@@ -1793,7 +1796,7 @@ void MarlinUI::init_lcd() {
 }
 
 void DWIN_InitScreen() {
-  TERN_(DEBUG_DWIN, SERIAL_ECHOLNPGM("DWIN_InitScreen"));
+  DEBUG_ECHOLNPGM("DWIN_InitScreen");
   #if ProUIex
     ProEx.Init();
     safe_delay(2000);
@@ -1961,7 +1964,7 @@ void DWIN_RedrawScreen() {
 
 #else
   void Goto_ConfirmToPrint() {
-    // Start choice and print SD file
+    // Print SD file
     HMI_flag.heat_flag = true;
     HMI_flag.config_flag = false;
     card.openAndPrintFile(card.filename);
@@ -2041,7 +2044,7 @@ void AutoHome() { queue.inject_P(G28_STR); }
 #if HAS_HOME_OFFSET
   // Apply workspace offset, making the current position 0,0,0
   void SetHome() {
-  queue.inject(F("G92X0Y0Z0"));
+    queue.inject(F("G92X0Y0Z0"));
     DONE_BUZZ(true);
   }
 #endif
@@ -2086,7 +2089,7 @@ void AutoHome() { queue.inject_P(G28_STR); }
     }
   #endif
 
-#endif  // HAS_ZOFFSET_ITEM
+#endif // HAS_ZOFFSET_ITEM
 
 #if HAS_PREHEAT
   #define _DoPreheat(N) void DoPreheat##N() { ui.preheat_all(N-1); }\
@@ -2143,6 +2146,7 @@ void SetPID(celsius_t t, heater_id_t h) {
 #if ENABLED(POWER_LOSS_RECOVERY)
   void SetPwrLossr() {
     Toogle_Chkb_Line(recovery.enabled);
+    recovery.changed();
   }
 #endif
 
@@ -2310,16 +2314,16 @@ void DWIN_ApplyColor(const int8_t element, const bool ldef /* = false*/) {
   const uint16_t color = RGB(HMI_value.Color[0], HMI_value.Color[1], HMI_value.Color[2]);
   switch (element) {
     case  2: HMI_data.Background_Color = ldef ? Def_Background_Color : color; DWINUI::SetBackgroundColor(HMI_data.Background_Color); break;
-    case  3: HMI_data.Cursor_color     = ldef ? Def_Cursor_color     : color; break;
-    case  4: HMI_data.TitleBg_color    = ldef ? Def_TitleBg_color    : color; break;
-    case  5: HMI_data.TitleTxt_color   = ldef ? Def_TitleTxt_color   : color; break;
+    case  3: HMI_data.Cursor_Color     = ldef ? Def_Cursor_Color     : color; break;
+    case  4: HMI_data.TitleBg_Color    = ldef ? Def_TitleBg_Color    : color; break;
+    case  5: HMI_data.TitleTxt_Color   = ldef ? Def_TitleTxt_Color   : color; break;
     case  6: HMI_data.Text_Color       = ldef ? Def_Text_Color       : color; DWINUI::SetTextColor(HMI_data.Text_Color); break;
     case  7: HMI_data.Selected_Color   = ldef ? Def_Selected_Color   : color; break;
     case  8: HMI_data.SplitLine_Color  = ldef ? Def_SplitLine_Color  : color; break;
     case  9: HMI_data.Highlight_Color  = ldef ? Def_Highlight_Color  : color; break;
     case 10: HMI_data.StatusBg_Color   = ldef ? Def_StatusBg_Color   : color; break;
     case 11: HMI_data.StatusTxt_Color  = ldef ? Def_StatusTxt_Color  : color; break;
-    case 12: HMI_data.PopupBg_color    = ldef ? Def_PopupBg_color    : color; break;
+    case 12: HMI_data.PopupBg_Color    = ldef ? Def_PopupBg_Color    : color; break;
     case 13: HMI_data.PopupTxt_Color   = ldef ? Def_PopupTxt_Color   : color; break;
     case 14: HMI_data.AlertBg_Color    = ldef ? Def_AlertBg_Color    : color; break;
     case 15: HMI_data.AlertTxt_Color   = ldef ? Def_AlertTxt_Color   : color; break;
@@ -2419,7 +2423,7 @@ TERN(HAS_BED_PROBE, float, void) Tram(uint8_t point) {
 
     if (HMI_data.FullManualTramming) {
       set_bed_leveling_enabled(false);
-      sprintf_P(cmd, PSTR("G28O\nG90\nG0Z5F300\nG0X%sY%sF5000\nG0Z0F300"),
+      sprintf_P(cmd, PSTR("M420S0\nG28O\nG90\nG0Z5F300\nG0X%sY%sF5000\nG0Z0F300"),
         dtostrf(xpos, 1, 1, str_1),
         dtostrf(ypos, 1, 1, str_2)
       );
@@ -2610,9 +2614,11 @@ void SetStepsY() { HMI_value.axis = Y_AXIS, SetPFloatOnClick( MIN_STEP, MAX_STEP
 void SetStepsZ() { HMI_value.axis = Z_AXIS, SetPFloatOnClick( MIN_STEP, MAX_STEP, UNITFDIGITS); }
 #if HAS_HOTEND
   void SetStepsE() { HMI_value.axis = E_AXIS; SetPFloatOnClick( MIN_STEP, MAX_STEP, UNITFDIGITS); }
-  void SetHotendPidT() { SetPIntOnClick(MIN_ETEMP, MAX_ETEMP); }
+  #if ENABLED(PIDTEMP)
+    void SetHotendPidT() { SetPIntOnClick(MIN_ETEMP, MAX_ETEMP); }
+  #endif
 #endif
-#if HAS_HEATED_BED
+#if ENABLED(PIDTEMPBED)
   void SetBedPidT() { SetPIntOnClick(MIN_BEDTEMP, MAX_BEDTEMP); }
 #endif
 
@@ -2626,7 +2632,7 @@ void SetStepsZ() { HMI_value.axis = Z_AXIS, SetPFloatOnClick( MIN_STEP, MAX_STEP
   void SetMaxPosZ()  { HMI_value.axis = Z_AXIS,       SetPIntOnClick(      100,       999, ProEx.ApplyPhySet); }
 #endif
 
-#if (HAS_HOTEND || HAS_HEATED_BED)
+#if EITHER(PIDTEMP, PIDTEMPBED)
   void SetPidCycles() { SetPIntOnClick(3, 50); }
   void SetKp() { SetPFloatOnClick(0, 1000, 2); }
   void ApplyPIDi() {
@@ -2911,9 +2917,9 @@ void Draw_Move_Menu() {
     checkkey = Menu;
     if (SET_MENU(HomeOffMenu, MSG_SET_HOME_OFFSETS, 4)) {
       BACK_ITEM(Draw_PhySet_Menu);
-      EDIT_ITEM(ICON_HomeOffsetX, MSG_HOME_OFFSET_X, onDrawPFloatMenu, SetHomeOffsetX, &home_offset[X_AXIS]);
-      EDIT_ITEM(ICON_HomeOffsetY, MSG_HOME_OFFSET_Y, onDrawPFloatMenu, SetHomeOffsetY, &home_offset[Y_AXIS]);
-      EDIT_ITEM(ICON_HomeOffsetZ, MSG_HOME_OFFSET_Z, onDrawPFloatMenu, SetHomeOffsetZ, &home_offset[Z_AXIS]);
+      EDIT_ITEM(ICON_HomeOffsetX, MSG_HOME_OFFSET_X, onDrawPFloatMenu, SetHomeOffsetX, &home_offset.x);
+      EDIT_ITEM(ICON_HomeOffsetY, MSG_HOME_OFFSET_Y, onDrawPFloatMenu, SetHomeOffsetY, &home_offset.y);
+      EDIT_ITEM(ICON_HomeOffsetZ, MSG_HOME_OFFSET_Z, onDrawPFloatMenu, SetHomeOffsetZ, &home_offset.z);
     }
     UpdateMenu(HomeOffMenu);
   }
@@ -3017,16 +3023,16 @@ void Draw_SelectColors_Menu() {
     BACK_ITEM(Draw_AdvancedSettings_Menu);
     MENU_ITEM(ICON_StockConfiguration, MSG_RESTORE_DEFAULTS, onDrawMenuItem, RestoreDefaultsColors);
     EDIT_ITEM_F(0, "Screen Background", onDrawSelColorItem, SelColor, &HMI_data.Background_Color);
-    EDIT_ITEM_F(0, "Cursor", onDrawSelColorItem, SelColor, &HMI_data.Cursor_color);
-    EDIT_ITEM_F(0, "Title Background", onDrawSelColorItem, SelColor, &HMI_data.TitleBg_color);
-    EDIT_ITEM_F(0, "Title Text", onDrawSelColorItem, SelColor, &HMI_data.TitleTxt_color);
+    EDIT_ITEM_F(0, "Cursor", onDrawSelColorItem, SelColor, &HMI_data.Cursor_Color);
+    EDIT_ITEM_F(0, "Title Background", onDrawSelColorItem, SelColor, &HMI_data.TitleBg_Color);
+    EDIT_ITEM_F(0, "Title Text", onDrawSelColorItem, SelColor, &HMI_data.TitleTxt_Color);
     EDIT_ITEM_F(0, "Text", onDrawSelColorItem, SelColor, &HMI_data.Text_Color);
     EDIT_ITEM_F(0, "Selected", onDrawSelColorItem, SelColor, &HMI_data.Selected_Color);
     EDIT_ITEM_F(0, "Split Line", onDrawSelColorItem, SelColor, &HMI_data.SplitLine_Color);
     EDIT_ITEM_F(0, "Highlight", onDrawSelColorItem, SelColor, &HMI_data.Highlight_Color);
     EDIT_ITEM_F(0, "Status Background", onDrawSelColorItem, SelColor, &HMI_data.StatusBg_Color);
     EDIT_ITEM_F(0, "Status Text", onDrawSelColorItem, SelColor, &HMI_data.StatusTxt_Color);
-    EDIT_ITEM_F(0, "Popup Background", onDrawSelColorItem, SelColor, &HMI_data.PopupBg_color);
+    EDIT_ITEM_F(0, "Popup Background", onDrawSelColorItem, SelColor, &HMI_data.PopupBg_Color);
     EDIT_ITEM_F(0, "Popup Text", onDrawSelColorItem, SelColor, &HMI_data.PopupTxt_Color);
     EDIT_ITEM_F(0, "Alert Background", onDrawSelColorItem, SelColor, &HMI_data.AlertBg_Color);
     EDIT_ITEM_F(0, "Alert Text", onDrawSelColorItem, SelColor, &HMI_data.AlertTxt_Color);
@@ -3086,7 +3092,7 @@ void Draw_GetColor_Menu() {
           EDIT_ITEM(ICON_LedControl, MSG_COLORS_GREEN, onDrawPInt8Menu, SetLEDColorG, &leds.color.g);
           EDIT_ITEM(ICON_LedControl, MSG_COLORS_BLUE, onDrawPInt8Menu, SetLEDColorB, &leds.color.b);
           #if ENABLED(HAS_WHITE_LED)
-            EDIT_ITEM(ICON_LedControl, MSG_COLORS_WHITE, onDrawPInt8Menu, SetLedColorW, &leds.color.w);
+            EDIT_ITEM(ICON_LedControl, MSG_COLORS_WHITE, onDrawPInt8Menu, SetLEDColorW, &leds.color.w);
           #endif
         #endif
       #endif

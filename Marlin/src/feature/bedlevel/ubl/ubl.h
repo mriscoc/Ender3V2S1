@@ -293,6 +293,7 @@ public:
     return z0;
   }
   static float get_z_correction(const xy_pos_t &pos) { return get_z_correction(pos.x, pos.y); }
+
   static constexpr float get_z_offset() { return 0.0f; }
 
   #if ProUIex

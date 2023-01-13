@@ -5,7 +5,7 @@
  * Date: 2022/12/02
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as 
+ * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
@@ -41,11 +41,13 @@ extern MenuData_t MenuData;
 // Auxiliary Macros ===========================================================
 
 // Create and add a MenuItem object to the menu array
-#define SET_MENU(I,L,V...) SetMenu(I, GET_TEXT_F(L), V)
+#define SET_MENU(I,L,V) SetMenu(I, GET_TEXT_F(L), V)
+#define SET_MENU_F(I,L,V) SetMenu(I, F(L), V)
+#define SET_MENU_R(I,R,L,V) SetMenu(I, R, GET_TEXT_F(L), V)
+
 #define BACK_ITEM(H) MenuItemAdd(ICON_Back, GET_TEXT_F(MSG_BUTTON_BACK), onDrawMenuItem, H)
 #define MENU_ITEM(I,L,V...) MenuItemAdd(I, GET_TEXT_F(L), V)
 #define EDIT_ITEM(I,L,V...) EditItemAdd(I, GET_TEXT_F(L), V)
-#define SET_MENU_F(I,L,V...) SetMenu(I, F(L), V)
 #define MENU_ITEM_F(I,L,V...) MenuItemAdd(I, F(L), V)
 #define EDIT_ITEM_F(I,L,V...) EditItemAdd(I, F(L), V)
 
@@ -163,6 +165,7 @@ void InitMenu();
 
 // Create a new menu
 bool SetMenu(MenuClass* &menu, FSTR_P title, int8_t totalitems);
+bool SetMenu(MenuClass* &menu, frame_rect_t cn, FSTR_P title, int8_t totalitems);
 
 // Invalidate CurrentMenu to prepare for full menu drawing
 void InvalidateMenu();

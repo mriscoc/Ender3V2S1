@@ -1,8 +1,8 @@
 /**
  * Lock screen implementation for PRO UI
  * Author: Miguel A. Risco-Castillo (MRISCOC)
- * Version: 2.2.0
- * Date: 2022/04/11
+ * Version: 2.3.3
+ * Date: 2022/11/20
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

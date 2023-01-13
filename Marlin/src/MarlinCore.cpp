@@ -1195,8 +1195,8 @@ void setup() {
     #if FREEZE_STATE
       SET_INPUT_PULLDOWN(FREEZE_PIN);
     #else
-    SET_INPUT_PULLUP(FREEZE_PIN);
-  #endif
+      SET_INPUT_PULLUP(FREEZE_PIN);
+    #endif
   #endif
 
   #if HAS_SUICIDE

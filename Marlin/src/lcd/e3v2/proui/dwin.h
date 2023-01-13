@@ -1,8 +1,8 @@
 /**
  * DWIN Enhanced implementation for PRO UI
  * Author: Miguel A. Risco-Castillo (MRISCOC)
- * Version: 3.20.3
- * Date: 2022/10/26
+ * Version: 3.22.3
+ * Date: 2023/01/13
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -88,55 +88,37 @@ enum processID : uint8_t {
 #define DWIN_ENGLISH 0
 
 typedef struct {
-  // Color settings
-  uint16_t Background_Color = Def_Background_Color;
-  uint16_t Cursor_color = Def_Cursor_color;
-  uint16_t TitleBg_color = Def_TitleBg_color;
-  uint16_t TitleTxt_color = Def_TitleTxt_color;
-  uint16_t Text_Color = Def_Text_Color;
-  uint16_t Selected_Color = Def_Selected_Color;
-  uint16_t SplitLine_Color = Def_SplitLine_Color;
-  uint16_t Highlight_Color = Def_Highlight_Color;
-  uint16_t StatusBg_Color = Def_StatusBg_Color;
-  uint16_t StatusTxt_Color = Def_StatusTxt_Color;
-  uint16_t PopupBg_color = Def_PopupBg_color;
-  uint16_t PopupTxt_Color = Def_PopupTxt_Color;
-  uint16_t AlertBg_Color = Def_AlertBg_Color;
-  uint16_t AlertTxt_Color = Def_AlertTxt_Color;
-  uint16_t PercentTxt_Color = Def_PercentTxt_Color;
-  uint16_t Barfill_Color = Def_Barfill_Color;
-  uint16_t Indicator_Color = Def_Indicator_Color;
-  uint16_t Coordinate_Color = Def_Coordinate_Color;
-  // Temperatures
-  #if HAS_HOTEND && ENABLED(PIDTEMP)
-    int16_t HotendPidT = DEF_HOTENDPIDT;
-  #endif
-  #if HAS_HEATED_BED && ENABLED(PIDTEMPBED)
-    int16_t BedPidT = DEF_BEDPIDT;
-  #endif
-  #if (HAS_HOTEND || HAS_HEATED_BED) && HAS_PID_HEATING
-    int16_t PidCycles = DEF_PIDCYCLES;
-  #endif
-  #if ENABLED(PREVENT_COLD_EXTRUSION)
-    int16_t ExtMinT = EXTRUDE_MINTEMP;
-  #endif
+  uint16_t Background_Color;
+  uint16_t Cursor_Color;
+  uint16_t TitleBg_Color;
+  uint16_t TitleTxt_Color;
+  uint16_t Text_Color;
+  uint16_t Selected_Color;
+  uint16_t SplitLine_Color;
+  uint16_t Highlight_Color;
+  uint16_t StatusBg_Color;
+  uint16_t StatusTxt_Color;
+  uint16_t PopupBg_Color;
+  uint16_t PopupTxt_Color;
+  uint16_t AlertBg_Color;
+  uint16_t AlertTxt_Color;
+  uint16_t PercentTxt_Color;
+  uint16_t Barfill_Color;
+  uint16_t Indicator_Color;
+  uint16_t Coordinate_Color;
+  int16_t HotendPidT = DEF_HOTENDPIDT;
+  int16_t BedPidT = DEF_BEDPIDT;
+  int16_t PidCycles = DEF_PIDCYCLES;
+  int16_t ExtMinT = EXTRUDE_MINTEMP;
   int16_t BedLevT = LEVELING_BED_TEMP;
-  TERN_(BAUD_RATE_GCODE, bool Baud115K = (BAUDRATE == 115200));
+  bool Baud115K = ENABLED(BAUD_RATE_GCODE) ? (BAUDRATE == 115200) : false;
   bool FullManualTramming = false;
   bool MediaAutoMount = ENABLED(HAS_SD_EXTENDER);
-  #if BOTH(INDIVIDUAL_AXIS_HOMING_SUBMENU, MESH_BED_LEVELING)
-    uint8_t z_after_homing = DEF_Z_AFTER_HOMING;
-  #endif
-  #if DISABLED(HAS_BED_PROBE)
-    float ManualZOffset = 0;
-  #endif
-  // Led
-  #if BOTH(LED_CONTROL_MENU, HAS_COLOR_LEDS)
-    uint32_t LED_Color = Def_Leds_Color;
-  #endif
-  #if ENABLED(ADAPTIVE_STEP_SMOOTHING)
-    bool AdaptiveStepSmoothing = true;
-  #endif
+  uint8_t z_after_homing = DEF_Z_AFTER_HOMING;
+  float ManualZOffset = 0;
+  uint32_t LED_Color = Def_Leds_Color;
+  bool AdaptiveStepSmoothing = true;
+  bool haspreview = true;
 } HMI_data_t;
 
 extern HMI_data_t HMI_data;
@@ -144,7 +126,9 @@ static constexpr size_t eeprom_data_size = sizeof(HMI_data_t) + TERN0(ProUIex, s
 
 typedef struct {
   int8_t Color[3];                    // Color components
-  TERN_(HAS_PID_HEATING, tempcontrol_t pidresult   = PID_DONE);
+  #if HAS_PID_HEATING
+    tempcontrol_t pidresult = PID_DONE;
+  #endif
   uint8_t Select          = 0;        // Auxiliary selector variable
   AxisEnum axis           = X_AXIS;   // Axis Select
 } HMI_value_t;
@@ -196,10 +180,10 @@ void AutoHome();
   REPEAT_1(PREHEAT_COUNT, _DOPREHEAT)
 #endif
 void DoCoolDown();
-#if HAS_HOTEND  && ENABLED(PIDTEMP)
+#if ENABLED(PIDTEMP)
   void HotendPID();
 #endif
-#if HAS_HEATED_BED && ENABLED(PIDTEMPBED)
+#if ENABLED(PIDTEMPBED)
   void BedPID();
 #endif
 #if ENABLED(BAUD_RATE_GCODE)
@@ -239,8 +223,8 @@ void Goto_ConfirmToPrint();
 void DWIN_Draw_Dashboard(const bool with_update); // Status Area
 void Draw_Main_Area();      // Redraw main area
 void DWIN_DrawStatusLine(const char *text = ""); // Draw simple status text
-void DWIN_RedrawDash();    // Redraw Dash and Status line
-void DWIN_RedrawScreen();  // Redraw all screen elements
+void DWIN_RedrawDash();     // Redraw Dash and Status line
+void DWIN_RedrawScreen();   // Redraw all screen elements
 void HMI_MainMenu();        // Main process screen
 void HMI_SelectFile();      // File page
 void HMI_Printing();        // Print page
@@ -358,12 +342,15 @@ void Draw_Steps_Menu();
 #if HAS_MESH
   void Draw_MeshSet_Menu();
   void Draw_MeshInset_Menu();
-  void Draw_EditMesh_Menu();
+  #if ENABLED(MESH_EDIT_MENU)
+    void Draw_EditMesh_Menu();
+  #endif
 #endif
 #if HAS_TRINAMIC_CONFIG
   void Draw_TrinamicConfig_menu();
 #endif
-//PID
+
+// PID
 void DWIN_PidTuning(tempcontrol_t result);
 #if ENABLED(PIDTEMP)
   void Draw_HotendPID_Menu();
@@ -372,7 +359,7 @@ void DWIN_PidTuning(tempcontrol_t result);
   void Draw_BedPID_Menu();
 #endif
 
-//MPC
+// MPC
 #if ENABLED(MPCTEMP)
   void DWIN_MPCTuning(tempcontrol_t result);
   void Draw_HotendMPC_Menu();
