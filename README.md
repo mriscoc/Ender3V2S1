@@ -6,7 +6,17 @@
 
 ## Universal RET6/RCT6 chips: G32, N32, (working on H32), Creality 4.2.7 and 4.2.2 boards
 
-So when you start printing and it says Advance Pause with Runout enabled, you may have to change the pull-up to HIGH, or LOW (depending on what is previously selected). This is found in the Prepare menu/ Filament Management/ Filament Settings. 
+### - Please read this: -
+When you first turn on the printer and on the Main Menu, go to `Level / Mesh Settings / Mesh Inset`. You will see `Mesh X Maximum`,
+set this to the value that is `Mesh Y Maximum` (or another value as to not hit the bed clips).
+
+This next part may be optional, but its recommended to do anyway...
+Go back to the `Level` menu, look for `Load Bed Mesh` and select it. A status message should then confirm it's loaded. 
+(Before that, select which Mesh to load from the `Memory Slot`).
+
+***Mesh Inset doesnt actually save after restart, so it must be done after the printer is turned on every time (until the issue is fixed)*.***
+
+So when you start printing and it says Advance Pause with Runout enabled, you may have to change the pull-up to HIGH, or LOW (depending on what is already selected). This is found in the Prepare menu/ Filament Management/ Filament Settings. 
 If you encounter any issues please feel free to post it on the issues tab, or if anything is going well please leavd a comment. 
 
 
