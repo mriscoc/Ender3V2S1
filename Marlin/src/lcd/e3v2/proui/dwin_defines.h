@@ -41,16 +41,16 @@
 #endif
 
 #define Def_Background_Color  Color_Bg_Black //
-#define Def_Cursor_color      Color_Cyan //
-#define Def_TitleBg_color     Color_Voxelab_Red //
-#define Def_TitleTxt_color    Color_White
+#define Def_Cursor_Color      Color_Cyan //
+#define Def_TitleBg_Color     Color_Voxelab_Red //
+#define Def_TitleTxt_Color    Color_White
 #define Def_Text_Color        Color_White
 #define Def_Selected_Color    Select_Color
 #define Def_SplitLine_Color   Color_White //
 #define Def_Highlight_Color   Color_White
 #define Def_StatusBg_Color    Color_Bg_Black //
 #define Def_StatusTxt_Color   Color_Yellow
-#define Def_PopupBg_color     Color_Bg_Window
+#define Def_PopupBg_Color     Color_Bg_Window
 #define Def_PopupTxt_Color    Popup_Text_Color
 #define Def_AlertBg_Color     Color_Bg_Red
 #define Def_AlertTxt_Color    Color_Yellow

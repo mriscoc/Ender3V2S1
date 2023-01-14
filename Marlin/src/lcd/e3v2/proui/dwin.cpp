@@ -364,8 +364,8 @@ bool Host_Printing() {
 void ICON_Button(const bool selected, const int iconid, const frame_rect_t &ico, const frame_rect_t &ico2, FSTR_P caption) {
   DWINUI::Draw_IconWB(iconid + selected, ico.x, ico.y);
   if (selected) {
-    DWINUI::Draw_Box(0, HMI_data.Cursor_color, ico);
-    DWINUI::Draw_Box(0, HMI_data.Cursor_color, ico2);
+    DWINUI::Draw_Box(0, HMI_data.Cursor_Color, ico);
+    DWINUI::Draw_Box(0, HMI_data.Cursor_Color, ico2);
   }
   const uint16_t x = ico.x + (ico.w - strlen_P(FTOP(caption)) * DWINUI::fontWidth()) / 2,
                  y = (ico.y + ico.h - 20) - DWINUI::fontHeight() / 2;
@@ -1537,7 +1537,7 @@ void DWIN_LevelingDone() {
       }
     #endif
     Plot.Draw(gfrm, _maxtemp, _target);
-    DWINUI::Draw_Int(false, 2, HMI_data.StatusTxt_Color, HMI_data.PopupBg_color, 3, gfrm.x + 92, gfrm.y - DWINUI::fontHeight() - 6, _target);
+    DWINUI::Draw_Int(false, 2, HMI_data.StatusTxt_Color, HMI_data.PopupBg_Color, 3, gfrm.x + 92, gfrm.y - DWINUI::fontHeight() - 6, _target);
   }
 #endif
 
@@ -1629,11 +1629,11 @@ void DWIN_LevelingDone() {
     DWINUI::ClearMainArea();
     Draw_Popup_Bkgd();
     DWINUI::Draw_CenteredString(3, HMI_data.PopupTxt_Color, 75, F("Nozzle Temperature"));
-    DWIN_Draw_String(false, 2, HMI_data.PopupTxt_Color, HMI_data.PopupBg_color, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, F("Target:     Celsius"));
+    DWIN_Draw_String(false, 2, HMI_data.PopupTxt_Color, HMI_data.PopupBg_Color, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, F("Target:     Celsius"));
     _maxtemp = thermalManager.hotend_maxtemp[0];
     _target = thermalManager.temp_hotend[0].target;
     Plot.Draw(gfrm, _maxtemp, _target);
-    DWINUI::Draw_Int(false, 2, HMI_data.StatusTxt_Color, HMI_data.PopupBg_color, 3, gfrm.x + 80, gfrm.y - DWINUI::fontHeight() - 4, _target);
+    DWINUI::Draw_Int(false, 2, HMI_data.StatusTxt_Color, HMI_data.PopupBg_Color, 3, gfrm.x + 80, gfrm.y - DWINUI::fontHeight() - 4, _target);
     DWINUI::Draw_Button(BTN_Continue, 86, 305);
     Draw_Select_Box(86, 305);
     DWIN_UpdateLCD();
@@ -1648,11 +1648,11 @@ void DWIN_LevelingDone() {
     DWINUI::ClearMainArea();
     Draw_Popup_Bkgd();
     DWINUI::Draw_CenteredString(3, HMI_data.PopupTxt_Color, 75, F("Bed Temperature"));
-    DWIN_Draw_String(false, 2, HMI_data.PopupTxt_Color, HMI_data.PopupBg_color, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, F("Target:     Celsius"));
+    DWIN_Draw_String(false, 2, HMI_data.PopupTxt_Color, HMI_data.PopupBg_Color, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, F("Target:     Celsius"));
     _maxtemp = BED_MAXTEMP;
     _target = thermalManager.temp_bed.target;
     Plot.Draw(gfrm, _maxtemp, _target);
-    DWINUI::Draw_Int(false, 2, HMI_data.StatusTxt_Color, HMI_data.PopupBg_color, 3, gfrm.x + 80, gfrm.y - DWINUI::fontHeight() - 4, _target);
+    DWINUI::Draw_Int(false, 2, HMI_data.StatusTxt_Color, HMI_data.PopupBg_Color, 3, gfrm.x + 80, gfrm.y - DWINUI::fontHeight() - 4, _target);
     DWINUI::Draw_Button(BTN_Continue, 86, 305);
     Draw_Select_Box(86, 305);
     DWIN_UpdateLCD();
@@ -1732,38 +1732,38 @@ void DWIN_M73() {
 
 void DWIN_SetColorDefaults() {
   HMI_data.Background_Color = Def_Background_Color;
-  HMI_data.Cursor_color     = Def_Text_Color; //Def_Cursor_color;
-  HMI_data.TitleBg_color    = Def_TitleBg_color;
-  HMI_data.TitleTxt_color   = Def_TitleTxt_color;
+  HMI_data.Cursor_Color     = Def_Text_Color;
+  HMI_data.TitleBg_Color    = Def_TitleBg_Color;
+  HMI_data.TitleTxt_Color   = Def_TitleTxt_Color;
   HMI_data.Text_Color       = Def_Text_Color;
   HMI_data.Selected_Color   = Def_Selected_Color;
   HMI_data.SplitLine_Color  = Def_SplitLine_Color;
   HMI_data.Highlight_Color  = Def_Highlight_Color;
   HMI_data.StatusBg_Color   = Def_StatusBg_Color;
   HMI_data.StatusTxt_Color  = Def_StatusTxt_Color;
-  HMI_data.PopupBg_color    = Def_PopupBg_color;
+  HMI_data.PopupBg_Color    = Def_PopupBg_Color;
   HMI_data.PopupTxt_Color   = Def_PopupTxt_Color;
   HMI_data.AlertBg_Color    = Def_AlertBg_Color;
   HMI_data.AlertTxt_Color   = Def_AlertTxt_Color;
   HMI_data.PercentTxt_Color = Def_PercentTxt_Color;
   HMI_data.Barfill_Color    = Def_Barfill_Color;
-  HMI_data.Indicator_Color  = Def_Text_Color;//Def_Indicator_Color;
-  HMI_data.Coordinate_Color = Def_Text_Color;//Def_Coordinate_Color;
-  HMI_data.Bottom_Color     = Def_TitleBg_color;//Def_Bottom_Color;
+  HMI_data.Indicator_Color  = Def_Text_Color;
+  HMI_data.Coordinate_Color = Def_Text_Color;
+  HMI_data.Bottom_Color     = Def_TitleBg_Color;
 }
 
 void DWIN_SetAltColor() {
   HMI_data.Background_Color = Def_Background_Color;
-  HMI_data.Cursor_color     = Def_Cursor_color;
-  HMI_data.TitleBg_color    = Def_TitleBg_color;
-  HMI_data.TitleTxt_color   = Def_TitleTxt_color;
+  HMI_data.Cursor_Color     = Def_Cursor_Color;
+  HMI_data.TitleBg_Color    = Def_TitleBg_Color;
+  HMI_data.TitleTxt_Color   = Def_TitleTxt_Color;
   HMI_data.Text_Color       = Def_Text_Color;
   HMI_data.Selected_Color   = Def_Selected_Color;
   HMI_data.SplitLine_Color  = Def_SplitLine_Color;
   HMI_data.Highlight_Color  = Def_Highlight_Color;
   HMI_data.StatusBg_Color   = Def_StatusBg_Color;
   HMI_data.StatusTxt_Color  = Def_StatusTxt_Color;
-  HMI_data.PopupBg_color    = Def_PopupBg_color;
+  HMI_data.PopupBg_Color    = Def_PopupBg_Color;
   HMI_data.PopupTxt_Color   = Def_PopupTxt_Color;
   HMI_data.AlertBg_Color    = Def_AlertBg_Color;
   HMI_data.AlertTxt_Color   = Def_AlertTxt_Color;
@@ -1782,7 +1782,7 @@ void SetAltColor(){
 void DWIN_SetDataDefaults() {
   TERN_(DEBUG_DWIN, SERIAL_ECHOLNPGM("DWIN_SetDataDefaults"));
   DWIN_SetColorDefaults();
-  DWINUI::SetColors(HMI_data.Text_Color, HMI_data.Background_Color, HMI_data.TitleBg_color);
+  DWINUI::SetColors(HMI_data.Text_Color, HMI_data.Background_Color, HMI_data.TitleBg_Color);
   TERN_(PIDTEMP, HMI_data.HotendPidT = DEF_HOTENDPIDT);
   TERN_(PIDTEMPBED, HMI_data.BedPidT = DEF_BEDPIDT);
   TERN_(HAS_PID_HEATING, HMI_data.PidCycles = DEF_PIDCYCLES);
@@ -1861,7 +1861,7 @@ void DWIN_CopySettingsFrom(const char * const buff) {
   memcpy(&HMI_data, buff, sizeof(HMI_data_t));
   TERN_(ProUIex, memcpy(&PRO_data, buff + sizeof(HMI_data_t), sizeof(PRO_data)));
   if (HMI_data.Text_Color == HMI_data.Background_Color) DWIN_SetColorDefaults();
-  DWINUI::SetColors(HMI_data.Text_Color, HMI_data.Background_Color, HMI_data.TitleBg_color);
+  DWINUI::SetColors(HMI_data.Text_Color, HMI_data.Background_Color, HMI_data.TitleBg_Color);
   TERN_(PREVENT_COLD_EXTRUSION, ApplyExtMinT());
   feedrate_percentage = 100;
   TERN_(BAUD_RATE_GCODE, if (HMI_data.Baud250K) SetBaud250K(); else SetBaud115K());
@@ -1899,7 +1899,7 @@ void DWIN_InitScreen() {
   #endif
 
   DWINUI::init();
-  DWINUI::SetColors(HMI_data.Text_Color, HMI_data.Background_Color, HMI_data.TitleBg_color);
+  DWINUI::SetColors(HMI_data.Text_Color, HMI_data.Background_Color, HMI_data.TitleBg_Color);
   DWINUI::onTitleDraw = Draw_Title;
   InitMenu();
   checkkey = 255;
@@ -2394,7 +2394,7 @@ void SetPID(celsius_t t, heater_id_t h) {
 
 void RestoreDefaultsColors() {
   DWIN_SetColorDefaults();
-  DWINUI::SetColors(HMI_data.Text_Color, HMI_data.Background_Color, HMI_data.TitleBg_color);
+  DWINUI::SetColors(HMI_data.Text_Color, HMI_data.Background_Color, HMI_data.TitleBg_Color);
   DWIN_RedrawScreen();
 }
 
@@ -2418,7 +2418,7 @@ void SetRGBColor() {
 
 void DWIN_ApplyColor() {
   *MenuData.P_Int = RGB(HMI_value.Color[0], HMI_value.Color[1], HMI_value.Color[2]);
-  DWINUI::SetColors(HMI_data.Text_Color, HMI_data.Background_Color, HMI_data.TitleBg_color);
+  DWINUI::SetColors(HMI_data.Text_Color, HMI_data.Background_Color, HMI_data.TitleBg_Color);
   Draw_SelectColors_Menu();
   hash_changed = true;
   LCD_MESSAGE(MSG_COLORS_APPLIED);
@@ -2429,16 +2429,16 @@ void DWIN_ApplyColor(const int8_t element, const bool ldef /* = false*/) {
   const uint16_t color = RGB(HMI_value.Color[0], HMI_value.Color[1], HMI_value.Color[2]);
   switch (element) {
     case  2: HMI_data.Background_Color = ldef ? Def_Background_Color : color; DWINUI::SetBackgroundColor(HMI_data.Background_Color); break;
-    case  3: HMI_data.Cursor_color     = ldef ? Def_Cursor_color     : color; break;
-    case  4: HMI_data.TitleBg_color    = ldef ? Def_TitleBg_color    : color; break;
-    case  5: HMI_data.TitleTxt_color   = ldef ? Def_TitleTxt_color   : color; break;
+    case  3: HMI_data.Cursor_Color     = ldef ? Def_Cursor_Color     : color; break;
+    case  4: HMI_data.TitleBg_Color    = ldef ? Def_TitleBg_Color    : color; break;
+    case  5: HMI_data.TitleTxt_Color   = ldef ? Def_TitleTxt_Color   : color; break;
     case  6: HMI_data.Text_Color       = ldef ? Def_Text_Color       : color; DWINUI::SetTextColor(HMI_data.Text_Color); break;
     case  7: HMI_data.Selected_Color   = ldef ? Def_Selected_Color   : color; break;
     case  8: HMI_data.SplitLine_Color  = ldef ? Def_SplitLine_Color  : color; break;
     case  9: HMI_data.Highlight_Color  = ldef ? Def_Highlight_Color  : color; break;
     case 10: HMI_data.StatusBg_Color   = ldef ? Def_StatusBg_Color   : color; break;
     case 11: HMI_data.StatusTxt_Color  = ldef ? Def_StatusTxt_Color  : color; break;
-    case 12: HMI_data.PopupBg_color    = ldef ? Def_PopupBg_color    : color; break;
+    case 12: HMI_data.PopupBg_Color    = ldef ? Def_PopupBg_Color    : color; break;
     case 13: HMI_data.PopupTxt_Color   = ldef ? Def_PopupTxt_Color   : color; break;
     case 14: HMI_data.AlertBg_Color    = ldef ? Def_AlertBg_Color    : color; break;
     case 15: HMI_data.AlertTxt_Color   = ldef ? Def_AlertTxt_Color   : color; break;
@@ -3130,16 +3130,16 @@ void Draw_SelectColors_Menu() {
     MENU_ITEM_F(ICON_ResumeEEPROM, "Set Alt Colors", onDrawMenuItem, SetAltColor);
     MENU_ITEM(ICON_ResumeEEPROM, MSG_RESTORE_DEFAULTS, onDrawMenuItem, RestoreDefaultsColors);
     EDIT_ITEM_F(0, "Screen Background", onDrawSelColorItem, SelColor, &HMI_data.Background_Color);
-    EDIT_ITEM_F(0, "Cursor", onDrawSelColorItem, SelColor, &HMI_data.Cursor_color);
-    EDIT_ITEM_F(0, "Title Background", onDrawSelColorItem, SelColor, &HMI_data.TitleBg_color);
-    EDIT_ITEM_F(0, "Title Text", onDrawSelColorItem, SelColor, &HMI_data.TitleTxt_color);
+    EDIT_ITEM_F(0, "Cursor", onDrawSelColorItem, SelColor, &HMI_data.Cursor_Color);
+    EDIT_ITEM_F(0, "Title Background", onDrawSelColorItem, SelColor, &HMI_data.TitleBg_Color);
+    EDIT_ITEM_F(0, "Title Text", onDrawSelColorItem, SelColor, &HMI_data.TitleTxt_Color);
     EDIT_ITEM_F(0, "Text", onDrawSelColorItem, SelColor, &HMI_data.Text_Color);
     EDIT_ITEM_F(0, "Selected", onDrawSelColorItem, SelColor, &HMI_data.Selected_Color);
     EDIT_ITEM_F(0, "Split Line", onDrawSelColorItem, SelColor, &HMI_data.SplitLine_Color);
     EDIT_ITEM_F(0, "Highlight", onDrawSelColorItem, SelColor, &HMI_data.Highlight_Color);
     EDIT_ITEM_F(0, "Status Background", onDrawSelColorItem, SelColor, &HMI_data.StatusBg_Color);
     EDIT_ITEM_F(0, "Status Text", onDrawSelColorItem, SelColor, &HMI_data.StatusTxt_Color);
-    EDIT_ITEM_F(0, "Popup Background", onDrawSelColorItem, SelColor, &HMI_data.PopupBg_color);
+    EDIT_ITEM_F(0, "Popup Background", onDrawSelColorItem, SelColor, &HMI_data.PopupBg_Color);
     EDIT_ITEM_F(0, "Popup Text", onDrawSelColorItem, SelColor, &HMI_data.PopupTxt_Color);
     EDIT_ITEM_F(0, "Alert Background", onDrawSelColorItem, SelColor, &HMI_data.AlertBg_Color);
     EDIT_ITEM_F(0, "Alert Text", onDrawSelColorItem, SelColor, &HMI_data.AlertTxt_Color);
@@ -3779,7 +3779,8 @@ void Draw_Steps_Menu() {
   void UBLLoadMesh() {
     if (bedlevel.storage_slot < 0) bedlevel.storage_slot = 0;
     settings.load_mesh(bedlevel.storage_slot);
-    ui.status_printf(0, GET_TEXT_F(MSG_MESH_LOADED), bedlevel.storage_slot);
+    LCD_MESSAGE(MSG_UBL_LOAD_MESH);
+    //ui.status_printf(0, GET_TEXT_F(MSG_MESH_LOADED), bedlevel.storage_slot);
   }
 
 #endif  // AUTO_BED_LEVELING_UBL

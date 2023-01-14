@@ -34,7 +34,7 @@ xy_int_t DWINUI::cursor = { 0 };
 uint16_t DWINUI::pencolor = Color_White;
 uint16_t DWINUI::textcolor = Def_Text_Color;
 uint16_t DWINUI::backcolor = Def_Background_Color;
-uint16_t DWINUI::buttoncolor = Def_TitleBg_color;
+uint16_t DWINUI::buttoncolor = Def_TitleBg_Color;
 uint8_t  DWINUI::font = font8x16;
 FSTR_P const DWINUI::Author = F(STRING_CONFIG_H_AUTHOR);
 
@@ -45,7 +45,7 @@ void DWINUI::init() {
   pencolor = Color_White;
   textcolor = Def_Text_Color;
   backcolor = Def_Background_Color;
-  buttoncolor = Def_TitleBg_color;
+  buttoncolor = Def_TitleBg_Color;
   font = font8x16;
 }
 

@@ -35,8 +35,8 @@ uint16_t HighlightYPos = 280;
 void Draw_Select_Highlight(const bool sel, const uint16_t ypos) {
   HighlightYPos = ypos;
   HMI_flag.select_flag = sel;
-  const uint16_t c1 = sel ? HMI_data.Cursor_color : HMI_data.PopupBg_color,
-                 c2 = sel ? HMI_data.PopupBg_color : HMI_data.Cursor_color;
+  const uint16_t c1 = sel ? HMI_data.Cursor_Color : HMI_data.PopupBg_Color,
+                 c2 = sel ? HMI_data.PopupBg_Color : HMI_data.Cursor_Color;
   DWIN_Draw_Rectangle(0, c1, 25, ypos - 1, 126, ypos + 38);
   DWIN_Draw_Rectangle(0, c1, 24, ypos - 2, 127, ypos + 39);
   DWIN_Draw_Rectangle(0, c2, 145, ypos - 1, 246, ypos + 38);
@@ -44,7 +44,7 @@ void Draw_Select_Highlight(const bool sel, const uint16_t ypos) {
 }
 
 void Draw_Select_Box(const uint16_t xpos, const uint16_t ypos) {
-  const uint16_t c1 = HMI_data.Cursor_color;
+  const uint16_t c1 = HMI_data.Cursor_Color;
   DWIN_Draw_Rectangle(0, c1, xpos - 1, ypos - 1, xpos + 100, ypos + 38);
   DWIN_Draw_Rectangle(0, c1, xpos - 2, ypos - 2, xpos + 101, ypos + 39);
 }
