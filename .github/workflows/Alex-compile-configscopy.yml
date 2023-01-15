@@ -1,0 +1,29 @@
+name: Build Configs
+
+on:
+  release:
+    types: [created]
+
+  workflow_dispatch:
+
+jobs:
+  Build-Default:
+    name: Build Default Files
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        chip: [G32,N32]
+    steps:
+    - name: Run PlatformIO
+      id: build_configs
+      run: |
+        if [ "$AQUILA_" = G32 ]; then AVTMP="GD32"; else AVTMP="N32"; fi;
+        echo "::set-output name=filename::Default-NoProbe-${AVTMP}.bin"
+        cp configurations/Aquila/MM/Configuration.h Marlin/Configuration.h
+        cp configurations/Aquila/UBL/Configuration_adv.h Marlin/Configuration_adv.h
+        sed -i "s/default_envs =.*/default_envs = $AQUILA_F103RE_voxelab_maple/g" platformio.ini
+        pio run
+        mkdir temp
+        mv .pio/build/$AQUILA_F103RE_voxelab_maple/*.bin temp/build.bin
+      env:
+        AQUILA_: ${{ matrix.chip }}
