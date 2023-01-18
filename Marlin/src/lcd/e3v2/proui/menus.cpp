@@ -160,7 +160,7 @@ void DrawItemEdit(const bool selected) {
   const uint16_t bcolor = selected ? HMI_data.Selected_Color : HMI_data.Background_Color;
   const uint8_t iNum = 4 - ((MenuData.dp > 0) ? (MenuData.dp - 1) : 0);
   switch (checkkey) {
-    case SetIntNoDraw:  if(MenuData.LiveUpdate) MenuData.LiveUpdate(); break;
+    case SetIntNoDraw:  if (MenuData.LiveUpdate) MenuData.LiveUpdate(); break;
     case SetInt:
     case SetPInt:       DWINUI::Draw_Signed_Int(HMI_data.Text_Color, bcolor, iNum , VALX, MBASE(CurrentMenu->line()) - 1, MenuData.Value); break;
     case SetFloat:
@@ -508,6 +508,19 @@ bool SetMenu(MenuClass* &menu, FSTR_P title, int8_t totalitems) {
   const bool NotCurrent = (CurrentMenu != menu);
   if (NotCurrent) {
     menu->MenuTitle.SetCaption(title);
+    MenuItemsPrepare(totalitems);
+  }
+  return NotCurrent;
+}
+
+bool SetMenu(MenuClass* &menu, frame_rect_t cn, FSTR_P title, int8_t totalitems) {
+  if (!menu) menu = new MenuClass();
+  const bool NotCurrent = (CurrentMenu != menu);
+  if (NotCurrent) {
+    if (cn.w != 0)
+      menu->MenuTitle.SetFrame(cn.x, cn.y, cn.w, cn.h);
+    else
+      menu->MenuTitle.SetCaption(title);
     MenuItemsPrepare(totalitems);
   }
   return NotCurrent;

@@ -34,7 +34,7 @@
  * Verbose version identifier which should contain a reference to the location
  * from where the binary was downloaded or the source code was compiled.
  */
-#define DETAILED_BUILD_VERSION SHORT_BUILD_VERSION " Ender3V2-422-MM, based on bugfix-2.1.x"
+#define DETAILED_BUILD_VERSION SHORT_BUILD_VERSION "Aquila-UBL"
 
 /**
  * The STRING_DISTRIBUTION_DATE represents when the binary file was built,
@@ -49,7 +49,7 @@
 /**
  * Defines a generic printer name to be output to the LCD after booting Marlin.
  */
-#define MACHINE_NAME "Ender 3V2"
+#define BOOT_MACHINE_NAME "Aquila"
 
 /**
  * The SOURCE_CODE_URL is the location where users will find the Marlin Source
@@ -57,7 +57,7 @@
  * has a distinct Github fork— the Source Code URL should just be the main
  * Marlin repository.
  */
-#define SOURCE_CODE_URL "github.com/mriscoc/Ender3V2S1"
+#define SOURCE_CODE_URL "github.com/classicrocker883/MriscocProUI"
 
 /**
  * Default generic printer UUID.
@@ -68,7 +68,7 @@
  * The WEBSITE_URL is the location where users can get more information such as
  * documentation about a specific Marlin release.
  */
-#define WEBSITE_URL "github.com/mriscoc/Ender3V2S1/wiki"
+#define WEBSITE_URL "github.com/classicrocker883/MriscocProUI"
 
 /**
  * Set the vendor info the serial USB interface, if changable

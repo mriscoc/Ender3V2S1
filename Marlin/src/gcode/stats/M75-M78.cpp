@@ -65,8 +65,8 @@ void GcodeSuite::M77() {
 #if ENABLED(PRINTCOUNTER)
 
   /**
- * M78: Show print statistics
- */
+   * M78: Show print statistics
+   */
   void GcodeSuite::M78() {
     if (parser.intval('S') == 78) {  // "M78 S78" will reset the statistics
       print_job_timer.initStats();

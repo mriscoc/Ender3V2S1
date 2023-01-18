@@ -257,20 +257,20 @@ public:
   // Float removes 'E' to prevent scientific notation interpretation
   static float value_float() {
     if (!value_ptr) return 0;
-      char *e = value_ptr;
-      for (;;) {
-        const char c = *e;
-        if (c == '\0' || c == ' ') break;
-        if (c == 'E' || c == 'e' || c == 'X' || c == 'x') {
-          *e = '\0';
-          const float ret = strtof(value_ptr, nullptr);
-          *e = c;
-          return ret;
-        }
-        ++e;
+    char *e = value_ptr;
+    for (;;) {
+      const char c = *e;
+      if (c == '\0' || c == ' ') break;
+      if (c == 'E' || c == 'e' || c == 'X' || c == 'x') {
+        *e = '\0';
+        const float ret = strtof(value_ptr, nullptr);
+        *e = c;
+        return ret;
       }
-      return strtof(value_ptr, nullptr);
+      ++e;
     }
+    return strtof(value_ptr, nullptr);
+  }
 
   // Code value as a long or ulong
   static int32_t value_long() { return value_ptr ? strtol(value_ptr, nullptr, 10) : 0L; }

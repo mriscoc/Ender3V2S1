@@ -59,16 +59,11 @@
 #define Def_Indicator_Color   Color_Cyan //
 #define Def_Coordinate_Color  Color_Brown //
 #define Def_Bottom_Color      Color_Silver //
-
-#if BOTH(LED_CONTROL_MENU, HAS_COLOR_LEDS)
-  #define Def_Leds_Color      0xFFFFFFFF
-#endif
-#if ENABLED(CASELIGHT_USES_BRIGHTNESS)
-  #define Def_CaseLight_Brightness 255
-#endif
+#define Def_Leds_Color      0xFFFFFFFF
+#define Def_CaseLight_Brightness 255
 #ifdef Z_AFTER_HOMING
   #define DEF_Z_AFTER_HOMING Z_AFTER_HOMING
-#elif MESH_BED_LEVELING
+#else
   #define DEF_Z_AFTER_HOMING 0
 #endif
 #define DEF_HOTENDPIDT TERN(PREHEAT_1_TEMP_BED, PREHEAT_1_TEMP_HOTEND, 200)

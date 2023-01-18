@@ -51,7 +51,6 @@ ENCODER_Rate EncoderRate;
 // TODO: Replace with ui.quick_feedback
 void Encoder_tick() {
   TERN_(HAS_BEEPER, if (ui.no_tick) buzzer.click(10));
-   //changed
 }
 
 // Encoder initialization
