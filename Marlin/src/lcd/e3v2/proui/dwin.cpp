@@ -819,7 +819,7 @@ void update_variable() {
 
 bool DWIN_lcd_sd_status = false;
 
-void SetMediaAutoMount() { Toogle_Chkb_Line(HMI_data.MediaAutoMount); }
+void SetMediaAutoMount() { Toggle_Chkb_Line(HMI_data.MediaAutoMount); }
 
 inline uint16_t nr_sd_menu_items() {
   return _MIN(card.get_num_Files() + !card.flag.workDirIsRoot, MENU_MAX_ITEMS);
@@ -2205,7 +2205,7 @@ void DoCoolDown() { thermalManager.cooldown(); }
 
 
 bool EnableLiveMove = false;
-void SetLiveMove() { Toogle_Chkb_Line(EnableLiveMove); }
+void SetLiveMove() { Toggle_Chkb_Line(EnableLiveMove); }
 void LiveMove() {
   planner.synchronize();
   if (!EnableLiveMove) return;
@@ -2249,14 +2249,14 @@ void SetPID(celsius_t t, heater_id_t h) {
 
 #if ENABLED(POWER_LOSS_RECOVERY)
   void SetPwrLossr() {
-    Toogle_Chkb_Line(recovery.enabled);
+    Toggle_Chkb_Line(recovery.enabled);
     recovery.changed();
   }
 #endif
 
 #if ENABLED(BAUD_RATE_GCODE)
   void SetBaudRate() {
-    Toogle_Chkb_Line(HMI_data.Baud250K);
+    Toggle_Chkb_Line(HMI_data.Baud250K);
     if (HMI_data.Baud250K) SetBaud250K(); else SetBaud115K();
   }
   void SetBaud115K() { queue.inject(F("M575B115")); }
@@ -2272,7 +2272,7 @@ void SetPID(celsius_t t, heater_id_t h) {
 
 #if ENABLED(CASE_LIGHT_MENU)
   void SetCaseLight() {
-    Toogle_Chkb_Line(caselight.on);
+    Toggle_Chkb_Line(caselight.on);
     caselight.update_enabled();
   }
   #if ENABLED(CASELIGHT_USES_BRIGHTNESS)
@@ -2306,17 +2306,17 @@ void SetPID(celsius_t t, heater_id_t h) {
 
 #if ENABLED(SOUND_MENU_ITEM)
   void SetEnableSound() {
-    Toogle_Chkb_Line(ui.sound_on);
+    Toggle_Chkb_Line(ui.sound_on);
   }
  //changed
   void SetEnableTick() {
-    Toogle_Chkb_Line(ui.no_tick);
+    Toggle_Chkb_Line(ui.no_tick);
   }
 #endif
 
 #if ENABLED(USE_UBL_VIEWER) //changed
   void SetViewMesh() {
-    Toogle_Chkb_Line(BedLevelTools.view_mesh);
+    Toggle_Chkb_Line(BedLevelTools.view_mesh);
   }
 #endif
 
@@ -2347,7 +2347,7 @@ void SetPID(celsius_t t, heater_id_t h) {
 
   #if ENABLED(BLTOUCH_HS_MODE)
     void SetHSMode() {
-      Toogle_Chkb_Line(bltouch.high_speed_mode);
+      Toggle_Chkb_Line(bltouch.high_speed_mode);
     }
   #endif
 
@@ -2367,7 +2367,7 @@ void SetPID(celsius_t t, heater_id_t h) {
 #if HAS_FILAMENT_SENSOR
   void SetRunoutEnable() {
     runout.reset();
-    Toogle_Chkb_Line(runout.enabled);
+    Toggle_Chkb_Line(runout.enabled);
   }
 
   #if ProUIex
@@ -2651,11 +2651,11 @@ void TramC () { Tram(4); }
   }
 
   void SetManualTramming() {
-    Toogle_Chkb_Line(HMI_data.FullManualTramming);
+    Toggle_Chkb_Line(HMI_data.FullManualTramming);
   }
 
   void SetCalcAvg() {
-    Toogle_Chkb_Line(HMI_data.CalcAvg);
+    Toggle_Chkb_Line(HMI_data.CalcAvg);
   }
 
 #endif // HAS_BED_PROBE
@@ -2786,7 +2786,7 @@ void SetStepsZ() { HMI_value.axis = Z_AXIS, SetPFloatOnClick( MIN_STEP, MAX_STEP
 #if BOTH(ProUIex, HAS_EXTRUDERS)
   void SetInvertE0() {
     stepper.disable_e_steppers();
-    Toogle_Chkb_Line(PRO_data.Invert_E0);
+    Toggle_Chkb_Line(PRO_data.Invert_E0);
     current_position.e = 0;
     sync_plan_position_e();
   }
@@ -3273,7 +3273,7 @@ void Draw_Tune_Menu() {
 
 #if ENABLED(ADAPTIVE_STEP_SMOOTHING)
   void SetAdaptiveStepSmoothing() {
-    Toogle_Chkb_Line(HMI_data.AdaptiveStepSmoothing);
+    Toggle_Chkb_Line(HMI_data.AdaptiveStepSmoothing);
   }
 #endif
 
@@ -3738,7 +3738,7 @@ void Draw_Steps_Menu() {
     void SetEditZValue() { SetPFloatOnClick(Z_OFFSET_MIN, Z_OFFSET_MAX, 3, nullptr, LiveEditMeshZ); if (AutoMovToMesh) BedLevelTools.MoveToXYZ(); }
 
     void SetAutoMovToMesh() {
-      Toogle_Chkb_Line(AutoMovToMesh);
+      Toggle_Chkb_Line(AutoMovToMesh);
     }
   #endif
 

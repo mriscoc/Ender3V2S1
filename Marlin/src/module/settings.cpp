@@ -2894,23 +2894,12 @@ void MarlinSettings::postprocess() {
         #endif
 
         #if ENABLED(DWIN_LCD_PROUI)
-/*           if (!BedLevelTools.meshvalidate()) {
+          if (!BedLevelTools.meshvalidate()) {
             status = true;
             bedlevel.invalidate();
             LCD_MESSAGE(MSG_UBL_MESH_INVALID);
             DONE_BUZZ(false);
           }
-        #endif   */
-          if (BedLevelTools.meshvalidate()) {
-            ui.status_printf(0, GET_TEXT_F(MSG_MESH_LOADED), bedlevel.storage_slot);
-          }
-          else {
-            status = true;
-            bedlevel.invalidate();
-            LCD_MESSAGE(MSG_UBL_MESH_INVALID);
-            DONE_BUZZ(false);
-          }
-            //ui.status_printf(0, GET_TEXT_F(MSG_MESH_LOADED), bedlevel.storage_slot);
         #endif
 
         if (status) SERIAL_ECHOLNPGM("?Unable to load mesh data.");
