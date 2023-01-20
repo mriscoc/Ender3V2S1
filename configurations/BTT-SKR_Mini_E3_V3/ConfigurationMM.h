@@ -1987,12 +1987,13 @@
   //===========================================================================
 
   //#define MESH_EDIT_GFX_OVERLAY   // Display a graphics overlay while editing the mesh
+  #define MESH_EDIT_MENU            // Add a menu to edit mesh points
 
-  #define MESH_INSET 10              // Set Mesh bounds as an inset region of the bed  // MRiscoC Center mesh
-  #define GRID_MAX_POINTS_X 7      // Don't use more than 15 points per axis, implementation limited.  // MRiscoC Customizable by menu
+  #define MESH_INSET 10             // Set Mesh bounds as an inset region of the bed  // MRiscoC Center mesh
+  #define GRID_MAX_POINTS_X 7       // Don't use more than 15 points per axis, implementation limited.  // MRiscoC Customizable by menu
   #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
 
-  #define UBL_HILBERT_CURVE       // Use Hilbert distribution for less travel when probing multiple points
+  #define UBL_HILBERT_CURVE         // Use Hilbert distribution for less travel when probing multiple points
 
   #define UBL_MESH_EDIT_MOVES_Z     // Sophisticated users prefer no movement of nozzle
   #define UBL_SAVE_ACTIVE_ON_M500   // Save the currently active mesh in the current slot on M500
@@ -2007,6 +2008,7 @@
   //===========================================================================
   //=================================== Mesh ==================================
   //===========================================================================
+  #define MESH_EDIT_MENU         // Add a menu to edit mesh points
 
   #define MESH_INSET 10          // Set Mesh bounds as an inset region of the bed  // MRiscoC Center mesh
   #define GRID_MAX_POINTS_X 5    // Don't use more than 7 points per axis, implementation limited.  // MRiscoC Customizable by menu
@@ -3184,21 +3186,21 @@
 // Professional firmware features:    // Undefine all except SD Extender
 #define ProUIex 1
 #ifdef ProUIex
-#define HAS_GCODE_PREVIEW 1
-#define HAS_TOOLBAR 1
-#define HAS_PIDPLOT 1
-#define HAS_ESDIAG 1
-#define HAS_CGCODE 1
-#define HAS_LOCKSCREEN 1
-#define MESH_EDIT_MENU
-#define USE_STOCK_DWIN_SET
-//#define HAS_SD_EXTENDER 1  // Enable it to support SD card extender cables
+  #define HAS_GCODE_PREVIEW 1
+  #define HAS_TOOLBAR 1
+  #define HAS_PIDPLOT 1
+  #define HAS_ESDIAG 1
+  #define HAS_CGCODE 1
+  #define HAS_LOCKSCREEN 1
+  #define SHOW_REAL_POS 1
+  //#define HAS_SD_EXTENDER 1  // Enable it to support SD card extender cables
 #elif ENABLED(DWIN_LCD_PROUI)
-#define HAS_GCODE_PREVIEW 1
-#define HAS_PIDPLOT 1
-#define HAS_ESDIAG 1
-#define HAS_LOCKSCREEN 1
-#define MESH_EDIT_MENU
+  //#define HAS_GCODE_PREVIEW 1
+  #define HAS_PIDPLOT 1
+  #define HAS_ESDIAG 1
+  #define HAS_CGCODE 1
+  #define HAS_LOCKSCREEN 1
+  #define SHOW_REAL_POS 1
 #endif
 
 //#define DWIN_CREALITY_LCD_JYERSUI   // Jyers UI by Jacob Myers (not working) *** use DWIN_CREALITY_LCD instead ***
