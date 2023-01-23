@@ -110,7 +110,7 @@ typedef struct {
   int16_t BedPidT = DEF_BEDPIDT;
   int16_t PidCycles = DEF_PIDCYCLES;
   int16_t ExtMinT = EXTRUDE_MINTEMP;
-  int16_t BedLevT = LEVELING_BED_TEMP;
+  # int16_t BedLevT = LEVELING_BED_TEMP; # I commented this line out, after commenting this out I can succesfully compile without errors.
   bool Baud115K = ENABLED(BAUD_RATE_GCODE) ? (BAUDRATE == 115200) : false;
   bool FullManualTramming = false;
   bool MediaAutoMount = ENABLED(HAS_SD_EXTENDER);
