@@ -2863,7 +2863,7 @@
 // (For CR-10 owners who want to replace the Melzi Creality board but retain the display)
 //
 //#define CR10_STOCKDISPLAY    //For DWIN LCD Ender 3 V2 / Voxelab Aquila line --> 3170
-#if CR10_STOCKDISPLAY 
+#ifdef CR10_STOCKDISPLAY 
   #define RET6_12864_LCD
 #endif
 //

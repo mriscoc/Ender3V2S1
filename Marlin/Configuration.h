@@ -1,4 +1,4 @@
-/** Andrew Aquila 427 Mriscoc
+/** Aquila UBL Mriscoc
  * Marlin 3D Printer Firmware
  * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
@@ -81,7 +81,7 @@
 #define SHOW_BOOTSCREEN
 
 // Show the bitmap in Marlin/_Bootscreen.h on startup.
-//#define SHOW_CUSTOM_BOOTSCREEN
+#define SHOW_CUSTOM_BOOTSCREEN
 
 // Show the bitmap in Marlin/_Statusscreen.h on the status screen.
 //#define CUSTOM_STATUS_SCREEN_IMAGE
@@ -138,7 +138,7 @@
 //#define BLUETOOTH
 
 // Name displayed in the LCD "Ready" message and Info menu
-#define CUSTOM_MACHINE_NAME "Andrew's Aquila"
+#define CUSTOM_MACHINE_NAME "Aquila"
 
 // Printer's unique ID, used by some programs to differentiate between machines.
 // Choose your own or use a service like https://www.uuidgenerator.net/version4
@@ -539,7 +539,7 @@
  *   999 : Dummy Table that ALWAYS reads 100°C or the temperature defined below.
  *
  */
-#define TEMP_SENSOR_0 98
+#define TEMP_SENSOR_0 1
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
 #define TEMP_SENSOR_3 0
@@ -756,10 +756,10 @@
 
   // 120V 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
   // from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
-  // Aquila old: P-128.06, I-24.95, D-438.07
-  #define DEFAULT_bedKp 58.34
-  #define DEFAULT_bedKi 11.05
-  #define DEFAULT_bedKd 205.36
+  // Aquila
+  #define DEFAULT_bedKp 128.06
+  #define DEFAULT_bedKi 24.95
+  #define DEFAULT_bedKd 438.07
 
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
 #endif // PIDTEMPBED
@@ -1173,7 +1173,7 @@
  * Override with M92
  *                                      X, Y, Z [, I [, J [, K...]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80.05, 79.90, 399.45, 97.90 }
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 98 }
 
 /**
  * Default Max Feed Rate (linear=mm/s, rotational=°/s)
@@ -1279,10 +1279,10 @@
  * The probe replaces the Z-MIN endstop and is used for Z homing.
  * (Automatically enables USE_PROBE_FOR_Z_HOMING.)
  */
-//#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN  // Probe connected to BLTouch port
+#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN  // Probe connected to BLTouch port
 
 // Force the use of the probe for Z-axis homing
-#define USE_PROBE_FOR_Z_HOMING
+//#define USE_PROBE_FOR_Z_HOMING
 
 /**
  * Z_MIN_PROBE_PIN
@@ -1313,7 +1313,7 @@
  * Use G29 repeatedly, adjusting the Z height at each point with movement commands
  * or (with LCD_BED_LEVELING) the LCD controller.
  */
-//#define PROBE_MANUALLY
+#define PROBE_MANUALLY
 
 /**
  * A Fix-Mounted Probe either doesn't deploy or needs manual deployment.
@@ -1336,7 +1336,7 @@
 /**
  * The BLTouch probe uses a Hall effect sensor and emulates a servo.
  */
-#define BLTOUCH  // 3D/CR/BLTouch version
+//#define BLTOUCH  // 3D/CR/BLTouch version
 
 /**
  * MagLev V4 probe by MDD
@@ -1488,7 +1488,7 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
-#define NOZZLE_TO_PROBE_OFFSET { -45.0, -7.0, -0.60 }
+#define NOZZLE_TO_PROBE_OFFSET { -45.0, -7.0, 0 }
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
@@ -1548,7 +1548,7 @@
  * A total of 2 does fast/slow probes with a weighted average.
  * A total of 3 or more adds more slow probes, taking the average.
  */
-#define MULTIPLE_PROBING 1
+#define MULTIPLE_PROBING 2
 //#define EXTRA_PROBING    1
 
 /**
@@ -1577,7 +1577,7 @@
 #define Z_PROBE_OFFSET_RANGE_MAX 20
 
 // Enable the M48 repeatability test to test probe accuracy
-#define Z_MIN_PROBE_REPEATABILITY_TEST
+//#define Z_MIN_PROBE_REPEATABILITY_TEST
 
 // Before deploy/stow pause for user confirmation
 //#define PAUSE_BEFORE_DEPLOY_STOW
@@ -1677,12 +1677,12 @@
  *  - Use a low value (i.e., Z_MIN_POS) if the nozzle falls down to the bed.
  *  - Use a large value (i.e., Z_MAX_POS) if the bed falls down, away from the nozzle.
  */
-#define Z_IDLE_HEIGHT Z_MIN_POS
+//#define Z_IDLE_HEIGHT Z_MIN_POS
 
-#define Z_HOMING_HEIGHT  5        // (mm) Minimal Z height before homing (G28) for Z clearance above the bed, clamps, ...
+//#define Z_HOMING_HEIGHT  5        // (mm) Minimal Z height before homing (G28) for Z clearance above the bed, clamps, ...
                                   // Be sure to have this much clearance over your Z_MAX_POS to prevent grinding.
 
-//#define Z_AFTER_HOMING  10      // (mm) Height to move to after homing Z
+#define Z_AFTER_HOMING  5      // (mm) Height to move to after homing Z
 
 // Direction of endstops when homing; 1=MAX, -1=MIN
 // :[-1,1]
@@ -1778,7 +1778,7 @@
  */
 #define FILAMENT_RUNOUT_SENSOR  // MRiscoC Enabled runout sensor support
 #if ENABLED(FILAMENT_RUNOUT_SENSOR)
-  #define FIL_RUNOUT_ENABLED_DEFAULT true // Enable the sensor on startup. Override with M412 followed by M500.
+  #define FIL_RUNOUT_ENABLED_DEFAULT false // Enable the sensor on startup. Override with M412 followed by M500.
   #define NUM_RUNOUT_SENSORS   1          // Number of sensors, up to one per extruder. Define a FIL_RUNOUT#_PIN for each.
 
   #define FIL_RUNOUT_STATE     HIGH        // Pin state indicating that filament is NOT present.
@@ -2862,8 +2862,8 @@
 // This is RAMPS-compatible using a single 10-pin connector.
 // (For CR-10 owners who want to replace the Melzi Creality board but retain the display)
 //
-//#define CR10_STOCKDISPLAY    //For DWIN LCD Ender 3 V2 / Voxelab Aquila line --> 3170
-#if CR10_STOCKDISPLAY 
+#define CR10_STOCKDISPLAY    //For DWIN LCD Ender 3 V2 / Voxelab Aquila --> line 3188
+#ifdef CR10_STOCKDISPLAY
   #define RET6_12864_LCD
 #endif
 //
@@ -3185,10 +3185,10 @@
 // LCD-12864 Ender 3 / CR-10_STOCKDISPLAY line --> 2852
 
 //#define DWIN_CREALITY_LCD           // Creality UI
-#define DWIN_LCD_PROUI              // Pro UI by MRiscoC
+//#define DWIN_LCD_PROUI              // Pro UI by MRiscoC
 
 // Professional firmware features:    // Undefine all except SD Extender
-#define ProUIex 1
+//#define ProUIex 1
 #ifdef ProUIex
   #define HAS_GCODE_PREVIEW 1
   #define HAS_TOOLBAR 1
