@@ -620,10 +620,6 @@
 #elif MB(VOXELAB_AQUILA)
   #include "stm32f1/pins_CREALITY_V4.h"         // STM32F1                                env:GD32F103RE_voxelab env:GD32F103RC_voxelab env:STM32F103RE_voxelab_maple_GD32 env:STM32F103RC_voxelab_maple_GD32 env:STM32F103RE_voxelab_maple_N32 env:STM32F103RC_voxelab_maple_N32
 
-
-
-//env:GD32F103RE_voxelab env:GD32F103RC_voxelab env:GD32F103RE_voxelab_maple env:GD32F103RC_voxelab_maple env:N32F103RE_voxelab_maple env:N32F103RC_voxelab_maple
-
 //
 // ARM Cortex-M4F
 //

@@ -1413,7 +1413,7 @@
   #endif
 
   // Include a page of printer information in the LCD Main Menu
-  //#define LCD_INFO_MENU
+  #define LCD_INFO_MENU
   #if ENABLED(LCD_INFO_MENU)
     //#define LCD_PRINTER_INFO_IS_BOOTSCREEN // Show bootscreen(s) instead of Printer Info pages
   #endif
@@ -1432,8 +1432,7 @@
   //#define TICK_ON_DEFAULT    // Beep/Tick default enabled state
 #endif
 
-#if EITHER(HAS_DISPLAY, DWIN_LCD_PROUI)
-  // The timeout to return to the status screen from sub-menus
+#if HAS_DISPLAY  // The timeout to return to the status screen from sub-menus
   //#define LCD_TIMEOUT_TO_STATUS 15000   // (ms)
 
   #if ENABLED(SHOW_BOOTSCREEN)
@@ -2089,7 +2088,7 @@
 
   //#define BABYSTEP_DISPLAY_TOTAL          // Display total babysteps since last G28
   #ifndef MESH_BED_LEVELING
-    #define BABYSTEP_ZPROBE_OFFSET          // Combine M851 Z and Babystepping
+   //#define BABYSTEP_ZPROBE_OFFSET          // Combine M851 Z and Babystepping
     #if ENABLED(BABYSTEP_ZPROBE_OFFSET)
       //#define BABYSTEP_HOTEND_Z_OFFSET      // For multiple hotends, babystep relative Z offsets
       //#define BABYSTEP_ZPROBE_GFX_OVERLAY   // Enable graphical overlay on Z-offset editor
