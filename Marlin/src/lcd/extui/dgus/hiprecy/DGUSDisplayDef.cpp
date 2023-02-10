@@ -24,7 +24,7 @@
 
 #include "../../../../inc/MarlinConfigPre.h"
 
-#if DGUS_LCD_UI_HIPRECY
+#if ENABLED(DGUS_LCD_UI_HIPRECY)
 
 #include "DGUSDisplayDef.h"
 #include "../DGUSDisplay.h"

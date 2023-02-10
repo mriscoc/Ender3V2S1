@@ -22,7 +22,7 @@
 
 #include "../../../../inc/MarlinConfigPre.h"
 
-#if DGUS_LCD_UI_ORIGIN
+#if ENABLED(DGUS_LCD_UI_ORIGIN)
 
 #include "../DGUSScreenHandler.h"
 
