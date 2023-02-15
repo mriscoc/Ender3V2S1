@@ -46,9 +46,11 @@ Thank you for your support, I receive donations through [Paypal](https://www.pay
  - [How to use with Octoprint](https://github.com/mriscoc/Ender3V2S1/wiki/Octoprint)
   
 ## Community links
+* [Voxelab Aquila Facebook Group](https://www.facebook.com/groups/voxelabaquila/?ref=share&mibextid=NSMWBT) 
 * [Telegram](https://t.me/ender3v2s1firmware)
-* [Aquila Reddit](https://www.reddit.com/r/VoxelabAquila) 
-* [E3V2 Reddit](https://www.reddit.com/r/Ender3v2Firmware) 
+* [r/VoxelabAquila on Reddit](https://www.reddit.com/r/VoxelabAquila)
+* [r/ender3V2 on Reddit](https://www.reddit.com/r/e3v2) 
+* [r/E3V2 on Reddit](https://www.reddit.com/r/Ender3v2Firmware) 
 * [E3V2 Facebook](https://www.facebook.com/groups/ender3v2firmware)
 * [E3S1 Facebook](https://www.facebook.com/groups/ender3s1printer)
 
@@ -67,7 +69,9 @@ The Issue Queue is reserved for Bug Reports and Feature Requests. To get help wi
 
 ## Credits
 
-Honor_Bond on Reddit
+My Reddit u/[TBA]
+
+Find me on (Facebook](https://www.facebook.com/groups/voxelabaquila/?ref=share&mibextid=NSMWBT) 
 
 This fork of Mriscoc's ProUI firmware is maintained by [@classicrocker883](https://github.com/classicrocker883) (yours truly)
 
