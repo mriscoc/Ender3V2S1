@@ -71,7 +71,10 @@ The Issue Queue is reserved for Bug Reports and Feature Requests. To get help wi
 
 My Reddit u/[TBA]
 
-Find me on [Facebook](https://www.facebook.com/groups/voxelabaquila/) 
+
+Find me on [Facebook](https://www.facebook.com/yoboyyy) 
+
+Join the Voxelab Aquila [Facebook Group](https://www.facebook.com/groups/voxelabaquila/)
 
 This fork of Mriscoc's ProUI firmware is maintained by [@classicrocker883](https://github.com/classicrocker883) (yours truly)
 
