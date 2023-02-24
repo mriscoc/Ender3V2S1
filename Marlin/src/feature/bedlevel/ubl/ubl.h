@@ -38,8 +38,8 @@ enum MeshPointType : char { INVALID, REAL, SET_IN_BITMAP, CLOSEST };
 
 struct mesh_index_pair;
 
-#define MESH_X_DIST (float(MESH_MAX_X - (MESH_MIN_X)) / (GRID_MAX_CELLS_X))
-#define MESH_Y_DIST (float(MESH_MAX_Y - (MESH_MIN_Y)) / (GRID_MAX_CELLS_Y))
+#define MESH_X_DIST (float((MESH_MAX_X) - (MESH_MIN_X)) / (GRID_MAX_CELLS_X))
+#define MESH_Y_DIST (float((MESH_MAX_Y) - (MESH_MIN_Y)) / (GRID_MAX_CELLS_Y))
 
 #if ENABLED(OPTIMIZED_MESH_STORAGE)
   #if ProUIex

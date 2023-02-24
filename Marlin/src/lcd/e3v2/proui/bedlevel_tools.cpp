@@ -147,6 +147,7 @@ void BedLevelToolsClass::manual_move(const uint8_t mesh_x, const uint8_t mesh_y,
   }
 }
 
+// Move / Probe methods. As examples, not yet used.
 void BedLevelToolsClass::MoveToXYZ() {
   BedLevelTools.goto_mesh_value = true;
   BedLevelTools.manual_move(BedLevelTools.mesh_x, BedLevelTools.mesh_y, false);
@@ -169,6 +170,7 @@ void BedLevelToolsClass::ProbeXY() {
   gcode.process_subcommands_now(cmd);
 }
 
+// Accessors
 float BedLevelToolsClass::get_max_value() {
   float max = __FLT_MAX__ * -1;
   GRID_LOOP(x, y) {
@@ -187,6 +189,7 @@ float BedLevelToolsClass::get_min_value() {
   return min;
 }
 
+// Return 'true' if mesh is good and within LCD limits
 bool BedLevelToolsClass::meshvalidate() {
   float min = __FLT_MAX__, max = __FLT_MAX__ * -1;
 
@@ -199,6 +202,7 @@ bool BedLevelToolsClass::meshvalidate() {
 }
 
 #if ENABLED(USE_UBL_VIEWER)
+
   void BedLevelToolsClass::Draw_Bed_Mesh(int16_t selected /*= -1*/, uint8_t gridline_width /*= 1*/, uint16_t padding_x /*= 8*/, uint16_t padding_y_top /*= 40 + 53 - 7*/) {
     drawing_mesh = true;
     const uint16_t total_width_px = DWIN_WIDTH - padding_x - padding_x;
@@ -275,6 +279,7 @@ bool BedLevelToolsClass::meshvalidate() {
     ui.set_status(msg);
     drawing_mesh = false;
   }
+
 #endif // USE_UBL_VIEWER
 
 #endif // DWIN_LCD_PROUI && HAS_LEVELING

@@ -85,7 +85,7 @@ void GcodeSuite::G30() {
         sprintf_P(msg, PSTR("X:%s, Y:%s, Z:%s"),
           dtostrf(pos.x, 1, 1, str_1),
           dtostrf(pos.y, 1, 1, str_2),
-          dtostrf(measured_z, 1, 3, str_3)
+          dtostrf(measured_z, 1, 2, str_3)
         );
         ui.set_status(msg);
       #endif

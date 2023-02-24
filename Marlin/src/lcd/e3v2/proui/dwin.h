@@ -71,7 +71,7 @@ enum processID : uint8_t {
   #if HAS_PID_HEATING
     PID_EXTR_START = 0,
     PID_BED_START,
-    PID_BAD_EXTRUDER_NUM,
+    PID_BAD_HEATER_ID,
     PID_TEMP_TOO_HIGH,
     PID_TUNING_TIMEOUT,
     PID_DONE,
@@ -355,12 +355,16 @@ void Draw_Steps_Menu();
 #endif
 
 // PID
-void DWIN_PidTuning(tempcontrol_t result);
+#if HAS_PIDPLOT
+  #include "../../../module/temperature.h"
+  void DWIN_StartM303(const bool seenC, const int c, const bool seenS, const heater_id_t hid, const celsius_t temp);
+  void DWIN_PidTuning(tempcontrol_t result);
 #if ENABLED(PIDTEMP)
   void Draw_HotendPID_Menu();
 #endif
 #if ENABLED(PIDTEMPBED)
   void Draw_BedPID_Menu();
+#endif
 #endif
 
 // MPC

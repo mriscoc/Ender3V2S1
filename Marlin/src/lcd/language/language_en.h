@@ -107,6 +107,7 @@ namespace Language_en {
   LSTR MSG_HOME_OFFSET_Y                  = _UxGT("Home Offset Y");
   LSTR MSG_HOME_OFFSET_Z                  = _UxGT("Home Offset Z");
   LSTR MSG_HOME_OFFSETS_APPLIED           = _UxGT("Offsets Applied");
+  LSTR MSG_ERR_M428_TOO_FAR               = _UxGT("Err: Too far!");
   LSTR MSG_TRAMMING_WIZARD                = _UxGT("Tramming Wizard");
   LSTR MSG_SELECT_ORIGIN                  = _UxGT("Select Origin");
   LSTR MSG_LAST_VALUE_SP                  = _UxGT("Last value ");
@@ -328,7 +329,7 @@ namespace Language_en {
   LSTR MSG_MOVE_1IN                       = _UxGT("Move 1.0in");
   LSTR MSG_LIVE_MOVE                      = _UxGT("Live Move");
   LSTR MSG_SPEED                          = _UxGT("Speed");
-  LSTR MSG_BED_Z                          = _UxGT("Bed Z");
+  LSTR MSG_MESH_Z_OFFSET                  = _UxGT("Bed Z");
   LSTR MSG_NOZZLE                         = _UxGT("Nozzle");
   LSTR MSG_NOZZLE_N                       = _UxGT("Nozzle ~");
   LSTR MSG_NOZZLE_PARKED                  = _UxGT("Nozzle Parked");
@@ -365,25 +366,27 @@ namespace Language_en {
   LSTR MSG_PID_CYCLE                      = _UxGT("PID Cycles");
   LSTR MSG_PID_AUTOTUNE_DONE              = _UxGT("PID tuning done");
   LSTR MSG_PID_AUTOTUNE_FAILED            = _UxGT("PID Autotune failed!");
-  LSTR MSG_BAD_EXTRUDER_NUM               = _UxGT("Bad extruder.");
+  LSTR MSG_BAD_HEATER_ID                  = _UxGT("Bad extruder.");
   LSTR MSG_TEMP_TOO_HIGH                  = _UxGT("Temperature too high.");
   LSTR MSG_TIMEOUT                        = _UxGT("Timeout.");
-  LSTR MSG_PID_BAD_EXTRUDER_NUM           = _UxGT("Autotune failed! Bad extruder.");
+  LSTR MSG_PID_BAD_HEATER_ID              = _UxGT("Autotune failed! Bad extruder.");
   LSTR MSG_PID_TEMP_TOO_HIGH              = _UxGT("Autotune failed! Temperature too high.");
   LSTR MSG_PID_TIMEOUT                    = _UxGT("Autotune failed! Timeout.");
   LSTR MSG_MPC_MEASURING_AMBIENT          = _UxGT("Testing heat loss");
+  LSTR MSG_MPC_HEATING_PAST_200           = _UxGT("Heating to >200C");
+  LSTR MSG_MPC_COOLING_TO_AMBIENT         = _UxGT("Cooling to ambient");
   LSTR MSG_MPC_AUTOTUNE                   = _UxGT("MPC Autotune");
   LSTR MSG_MPC_EDIT                       = _UxGT("Edit * MPC");
   LSTR MSG_MPC_POWER                      = _UxGT("Heater Power");
   LSTR MSG_MPC_POWER_E                    = _UxGT("Power *");
-  LSTR MSG_MPC_BLOCK_HEAT_CAPACITY        = _UxGT("Block Capacity");
-  LSTR MSG_MPC_BLOCK_HEAT_CAPACITY_E      = _UxGT("Block C *");
-  LSTR MSG_SENSOR_RESPONSIVENESS          = _UxGT("Sensor respons.");
-  LSTR MSG_SENSOR_RESPONSIVENESS_E        = _UxGT("Sensor res *");
-  LSTR MSG_MPC_AMBIENT_XFER_COEFF         = _UxGT("Ambient xfer c.");
-  LSTR MSG_MPC_AMBIENT_XFER_COEFF_E       = _UxGT("Ambient h *");
-  LSTR MSG_MPC_AMBIENT_XFER_COEFF_FAN     = _UxGT("Amb. fan xfer c.");
-  LSTR MSG_MPC_AMBIENT_XFER_COEFF_FAN_E   = _UxGT("Amb. h fan *");
+  LSTR MSG_MPC_BLOCK_HEAT_CAPACITY        = _UxGT("Heat Capacity");
+  LSTR MSG_MPC_BLOCK_HEAT_CAPACITY_E      = _UxGT("Heat Cap. *");
+  LSTR MSG_SENSOR_RESPONSIVENESS          = _UxGT("Sensor Resp.");
+  LSTR MSG_SENSOR_RESPONSIVENESS_E        = _UxGT("Sensor Resp. *");
+  LSTR MSG_MPC_AMBIENT_XFER_COEFF         = _UxGT("Ambient Coeff.");
+  LSTR MSG_MPC_AMBIENT_XFER_COEFF_E       = _UxGT("Ambient Co. *");
+  LSTR MSG_MPC_AMBIENT_XFER_COEFF_FAN     = _UxGT("Fan coeff.");
+  LSTR MSG_MPC_AMBIENT_XFER_COEFF_FAN_E   = _UxGT("Fan coeff. *");
   LSTR MSG_SELECT                         = _UxGT("Select");
   LSTR MSG_SELECT_E                       = _UxGT("Select *");
   LSTR MSG_ACC                            = _UxGT("Accel");
@@ -584,7 +587,12 @@ namespace Language_en {
   LSTR MSG_FILAMENTUNLOAD                 = _UxGT("Unload Filament");
   LSTR MSG_FILAMENTUNLOAD_E               = _UxGT("Unload *");
   LSTR MSG_FILAMENTUNLOAD_ALL             = _UxGT("Unload All");
-  LSTR MSG_ATTACH_MEDIA                   = _UxGT("Attach ") MEDIA_TYPE_EN;
+  #if ENABLED(MULTI_VOLUME)
+    LSTR MSG_ATTACH_MEDIA                 = _UxGT("Attach SD Card");
+    LSTR MSG_ATTACH_USB_MEDIA             = _UxGT("Attach USB Drive");
+  #else
+    LSTR MSG_ATTACH_MEDIA                 = _UxGT("Attach ") MEDIA_TYPE_EN;
+  #endif
   LSTR MSG_CHANGE_MEDIA                   = _UxGT("Change ") MEDIA_TYPE_EN;
   LSTR MSG_RELEASE_MEDIA                  = _UxGT("Release ") MEDIA_TYPE_EN;
   LSTR MSG_ZPROBE_OUT                     = _UxGT("Z Probe Past Bed");
@@ -609,6 +617,8 @@ namespace Language_en {
   LSTR MSG_TOUCHMI_SAVE                   = _UxGT("Save");
   LSTR MSG_MANUAL_DEPLOY_TOUCHMI          = _UxGT("Deploy TouchMI");
   LSTR MSG_MANUAL_DEPLOY                  = _UxGT("Deploy Z-Probe");
+  LSTR MSG_MANUAL_PENUP                   = _UxGT("Pen up");
+  LSTR MSG_MANUAL_PENDOWN                 = _UxGT("Pen down");
   LSTR MSG_MANUAL_STOW                    = _UxGT("Stow Z-Probe");
   LSTR MSG_HOME_FIRST                     = _UxGT("Home %s%s%s First");
   LSTR MSG_ZPROBE_SETTINGS                = _UxGT("Probe Settings");

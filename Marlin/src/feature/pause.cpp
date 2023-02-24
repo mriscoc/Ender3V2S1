@@ -211,7 +211,7 @@ bool load_filament(const_float_t slow_load_length/*=0*/, const_float_t fast_load
     while (wait_for_user) {
       impatient_beep(max_beep_count);
       #if BOTH(FILAMENT_CHANGE_RESUME_ON_INSERT, FILAMENT_RUNOUT_SENSOR)
-        #if ENABLED(MULTI_FILAMENT_SENSOR)
+        #if MULTI_FILAMENT_SENSOR
           #define _CASE_INSERTED(N) case N-1: if (READ(FIL_RUNOUT##N##_PIN) != FIL_RUNOUT##N##_STATE) wait_for_user = false; break;
           switch (active_extruder) {
             REPEAT_1(NUM_RUNOUT_SENSORS, _CASE_INSERTED)
@@ -460,7 +460,7 @@ bool pause_print(const_float_t retract, const xyz_pos_t &park_point, const bool 
 
   // If axes don't need to home then the nozzle can park
   if (do_park) nozzle.park(0, park_point); // Park the nozzle by doing a Minimum Z Raise followed by an XY Move
-  TERN_(DWIN_LCD_PROUI, else ui.set_status(GET_TEXT_F(MSG_PARK_FAILED)));
+  TERN_(DWIN_LCD_PROUI, if (!do_park) ui.set_status(GET_TEXT_F(MSG_PARK_FAILED)));
 
   #if ENABLED(DUAL_X_CARRIAGE)
     const int8_t saved_ext        = active_extruder;
