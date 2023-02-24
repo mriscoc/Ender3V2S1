@@ -3304,7 +3304,7 @@ void Draw_Tune_Menu() {
         MENU_ITEM(ICON_ShapingX, MSG_SHAPING_A_ZETA, onDrawShapingXZeta, SetShapingXZeta);
       #endif
       #if ENABLED(INPUT_SHAPING_Y)
-        MENU_ITEM(ICON_ShapingY, MSG_SHAPING_B_FREQ, onDrawShapingXFreq, SetShapingYFreq);
+        MENU_ITEM(ICON_ShapingY, MSG_SHAPING_B_FREQ, onDrawShapingYFreq, SetShapingYFreq);
         MENU_ITEM(ICON_ShapingY, MSG_SHAPING_B_ZETA, onDrawShapingYZeta, SetShapingYZeta);
       #endif
     }
