@@ -574,13 +574,6 @@ void PrintJobRecovery::resume() {
     PROCESS_SUBCOMMANDS_NOW(F("G12"));
   #endif
 
-  #if ENABLED(DWIN_LCD_PROUI) && DISABLED(NOZZLE_CLEAN_FEATURE)
-    // Parking head to allow clean
-    PROCESS_SUBCOMMANDS_NOW(F("G27"));
-    DWIN_Popup_Continue(ICON_BLTouch, GET_TEXT_F(MSG_NOZZLE_PARKED), GET_TEXT_F(MSG_NOZZLE_CLEAN));
-    wait_for_user_response();
-  #endif
-
   // Move back over to the saved XY
   sprintf_P(cmd, PSTR("G1X%sY%sF3000"),
     dtostrf(info.current_position.x, 1, 3, str_1),

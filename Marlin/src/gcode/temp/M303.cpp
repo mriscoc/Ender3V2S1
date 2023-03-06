@@ -68,7 +68,7 @@ void GcodeSuite::M303() {
       SERIAL_ECHOPGM(STR_PID_AUTOTUNE);
       SERIAL_ECHOLNPGM(STR_PID_BAD_HEATER_ID);
       TERN_(EXTENSIBLE_UI, ExtUI::onPidTuning(ExtUI::result_t::PID_BAD_HEATER_ID));
-      TERN_(DWIN_LCD_PROUI, DWIN_PidTuning(PID_BAD_HEATER_ID));
+      TERN_(DWIN_PID_TUNE, DWIN_PidTuning(PID_BAD_HEATER_ID));
       return;
   }
 
@@ -81,7 +81,9 @@ void GcodeSuite::M303() {
   #if ENABLED(DWIN_LCD_PROUI)
     if (seenC) HMI_data.PidCycles = c;
     if (seenS) { if (hid == H_BED) HMI_data.BedPidT = temp; else TERN_(PIDTEMP, HMI_data.HotendPidT = temp); }
-  #endif
+  #else
+  TERN_(DWIN_PID_TUNE, DWIN_StartM303(seenC, c, seenS, hid, temp));
+  #endif	
 
   IF_DISABLED(BUSY_WHILE_HEATING, KEEPALIVE_STATE(NOT_BUSY));
 

@@ -191,12 +191,15 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
 #if LCD_BACKLIGHT_TIMEOUT_MINS
 
   constexpr uint8_t MarlinUI::backlight_timeout_min, MarlinUI::backlight_timeout_max;
-
   uint8_t MarlinUI::backlight_timeout_minutes; // Initialized by settings.load()
   millis_t MarlinUI::backlight_off_ms = 0;
+
   void MarlinUI::refresh_backlight_timeout() {
     backlight_off_ms = backlight_timeout_minutes ? millis() + backlight_timeout_minutes * 60UL * 1000UL : 0;
-    #if PIN_EXISTS(LCD_BACKLIGHT)
+    #ifdef NEOPIXEL_BKGD_INDEX_FIRST
+      neo.reset_background_color();
+      neo.show();
+    #elif PIN_EXISTS(LCD_BACKLIGHT)
       WRITE(LCD_BACKLIGHT_PIN, HIGH);
     #endif
   }
@@ -1204,10 +1207,13 @@ void MarlinUI::init() {
       #endif
 
       #if LCD_BACKLIGHT_TIMEOUT_MINS
+
         if (backlight_off_ms && ELAPSED(ms, backlight_off_ms)) {
-	  #if PIN_EXISTS(LCD_BACKLIGHT)
-          WRITE(LCD_BACKLIGHT_PIN, LOW); // Backlight off
-          backlight_off_ms = 0;
+          #ifdef NEOPIXEL_BKGD_INDEX_FIRST
+            neo.set_background_off();
+            neo.show();
+          #elif PIN_EXIST(LCD_BACKLIGHT)
+            WRITE(LCD_BACKLIGHT_PIN, LOW); // Backlight off
 	  #else
           // Backlight off (add function to turn off backlight for LCD-12864)
           backlight_off_ms = 0;
