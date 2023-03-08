@@ -38,7 +38,7 @@
  *
  * Advanced settings can be found in Configuration_adv.h
  */
-#define CONFIGURATION_H_VERSION 02010200
+#define CONFIGURATION_H_VERSION 02010300
 
 //===========================================================================
 //============================= Getting Started =============================
@@ -1247,7 +1247,7 @@
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
-  #define MAX_FEEDRATE_EDIT_VALUES    { 600, 600, 10, 50 } // ...or, set your own edit limits
+  #define MAX_FEEDRATE_EDIT_VALUES    { 1000, 1000, 40, 200 } // ...or, set your own edit limits  // MRiscoC allows higher limits
 #endif
 
 /**
@@ -1260,7 +1260,7 @@
 
 //#define LIMITED_MAX_ACCEL_EDITING     // Limit edit via M201 or LCD to DEFAULT_MAX_ACCELERATION * 2
 #if ENABLED(LIMITED_MAX_ACCEL_EDITING)
-  #define MAX_ACCEL_EDIT_VALUES       { 6000, 6000, 300, 20000 } // ...or, set your own edit limits
+  #define MAX_ACCEL_EDIT_VALUES       { 6000, 6000, 300, 9000 } // ...or, set your own edit limits
 #endif
 
 /**
@@ -2955,7 +2955,7 @@
 // This is RAMPS-compatible using a single 10-pin connector.
 // (For CR-10 owners who want to replace the Melzi Creality board but retain the display)
 //
-//#define CR10_STOCKDISPLAY    //For DWIN LCD Ender 3 V2 / Voxelab Aquila line --> 3170
+//#define CR10_STOCKDISPLAY    //For DWIN LCD Ender 3 V2 / Voxelab Aquila line --> 3298
 #ifdef CR10_STOCKDISPLAY 
   #define RET6_12864_LCD
 #endif
@@ -3295,7 +3295,7 @@
 //
 // Ender-3 v2 OEM display. A DWIN display with Rotary Encoder.
 //
-// LCD-12864 Ender 3 / CR-10_STOCKDISPLAY line --> 2852
+// LCD-12864 Ender 3 / CR10_STOCKDISPLAY line --> 2958
 
 //#define DWIN_CREALITY_LCD           // Creality UI
 #define DWIN_LCD_PROUI              // Pro UI by MRiscoC

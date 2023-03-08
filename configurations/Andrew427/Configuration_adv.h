@@ -33,7 +33,7 @@
  *
  * Basic settings can be found in Configuration.h
  */
-#define CONFIGURATION_ADV_H_VERSION 02010200
+#define CONFIGURATION_ADV_H_VERSION 02010300
 
 // @section develop
 
@@ -374,7 +374,7 @@
    * Thermal Protection Variance Monitor - EXPERIMENTAL.
    * Kill the machine on a stuck temperature sensor. Disable if you get false positives.
    */
-  //#define THERMAL_PROTECTION_VARIANCE_MONITOR   // Detect a sensor malfunction preventing temperature updates  // MRiscoC disabled because it gives false positives
+  //#define THERMAL_PROTECTION_VARIANCE_MONITOR   // Detect a sensor malfunction preventing temperature updates
 #endif
 
 #if ENABLED(PIDTEMP)
@@ -453,6 +453,9 @@
 #define AUTOTEMP
 #if ENABLED(AUTOTEMP)
   #define AUTOTEMP_OLDWEIGHT    0.98  // Factor used to weight previous readings (0.0 < value < 1.0)
+  #define AUTOTEMP_MIN          210
+  #define AUTOTEMP_MAX          250
+  #define AUTOTEMP_FACTOR       0.1f
   // Turn on AUTOTEMP on M104/M109 by default using proportions set here
   //#define AUTOTEMP_PROPORTIONAL
   #if ENABLED(AUTOTEMP_PROPORTIONAL)
@@ -493,7 +496,8 @@
  * the minimum temperature your thermistor can read. The lower the better/safer.
  * This shouldn't need to be more than 30 seconds (30000)
  */
-//#define MILLISECONDS_PREHEAT_TIME 0
+//#define PREHEAT_TIME_HOTEND_MS 0
+//#define PREHEAT_TIME_BED_MS 0
 
 // @section extruder
 
@@ -911,7 +915,7 @@
 
   // Safety: The probe needs time to recognize the command.
   //         Minimum command delay (ms). Enable and increase if needed.
-  //#define BLTOUCH_DELAY 500
+  //#define BLTOUCH_DELAY 200
 
   /**
    * Settings for BLTOUCH Classic 1.2, 1.3 or BLTouch Smart 1.0, 2.0, 2.2, 3.0, 3.1, and most clones:
@@ -1103,17 +1107,17 @@
 // Add a Duplicate option for well-separated conjoined nozzles
 //#define MULTI_NOZZLE_DUPLICATION
 
-// By default pololu step drivers require an active high signal. However, some high power drivers require an active low signal as step.
-#define INVERT_X_STEP_PIN false
-#define INVERT_Y_STEP_PIN false
-#define INVERT_Z_STEP_PIN false
-#define INVERT_I_STEP_PIN false
-#define INVERT_J_STEP_PIN false
-#define INVERT_K_STEP_PIN false
-#define INVERT_U_STEP_PIN false
-#define INVERT_V_STEP_PIN false
-#define INVERT_W_STEP_PIN false
-#define INVERT_E_STEP_PIN false
+// By default stepper drivers require an active-HIGH signal but some high-power drivers require an active-LOW signal to step.
+#define STEP_STATE_X HIGH
+#define STEP_STATE_Y HIGH
+#define STEP_STATE_Z HIGH
+#define STEP_STATE_I HIGH
+#define STEP_STATE_J HIGH
+#define STEP_STATE_K HIGH
+#define STEP_STATE_U HIGH
+#define STEP_STATE_V HIGH
+#define STEP_STATE_W HIGH
+#define STEP_STATE_E HIGH
 
 /**
  * Idle Stepper Shutdown
@@ -1121,16 +1125,15 @@
  * The Deactive Time can be overridden with M18 and M84. Set to 0 for No Timeout.
  */
 #define DEFAULT_STEPPER_DEACTIVE_TIME 360
-#define DISABLE_INACTIVE_X true
-#define DISABLE_INACTIVE_Y true
-#define DISABLE_INACTIVE_Z true  // Set 'false' if the nozzle could fall onto your printed part!
-#define DISABLE_INACTIVE_I true
-#define DISABLE_INACTIVE_J true
-#define DISABLE_INACTIVE_K true
-#define DISABLE_INACTIVE_U true
-#define DISABLE_INACTIVE_V true
-#define DISABLE_INACTIVE_W true
-#define DISABLE_INACTIVE_E true
+#define DISABLE_INACTIVE_X
+#define DISABLE_INACTIVE_Y
+#define DISABLE_INACTIVE_Z  // Disable if the nozzle could fall onto your printed part!
+//#define DISABLE_INACTIVE_I
+//#define DISABLE_INACTIVE_J
+//#define DISABLE_INACTIVE_K
+//#define DISABLE_INACTIVE_U
+//#define DISABLE_INACTIVE_V
+//#define DISABLE_INACTIVE_W
 
 // Default Minimum Feedrates for printing and travel moves
 #define DEFAULT_MINIMUMFEEDRATE       0.0     // (mm/s. °/s for rotational-only moves) Minimum feedrate. Set with M205 S.
@@ -1433,9 +1436,7 @@
   #define SOUND_MENU_ITEM    // Add a mute option to the LCD menu  // MRiscoC Enable Sound Menu Item
   #define SOUND_ON_DEFAULT    // Buzzer/speaker default enabled state
   //#define TICK_ON_DEFAULT    // Beep/Tick default enabled state
-#endif
 
-#if EITHER(HAS_DISPLAY, DWIN_LCD_PROUI)
   // The timeout to return to the status screen from sub-menus
   //#define LCD_TIMEOUT_TO_STATUS 15000   // (ms)
 
@@ -1457,6 +1458,9 @@
 
   // Show the E position (filament used) during printing
   //#define LCD_SHOW_E_TOTAL
+
+  // Display a negative temperature instead of "err"
+  //#define SHOW_TEMPERATURE_BELOW_ZERO
 
   // Change Title Menu Text to Centered
   #define TITLE_CENTERED 
@@ -2560,9 +2564,17 @@
    * Extra G-code to run while executing tool-change commands. Can be used to use an additional
    * stepper motor (e.g., I axis in Configuration.h) to drive the tool-changer.
    */
-  //#define EVENT_GCODE_TOOLCHANGE_T0 "G28 A\nG1 A0" // Extra G-code to run while executing tool-change command T0
-  //#define EVENT_GCODE_TOOLCHANGE_T1 "G1 A10"       // Extra G-code to run while executing tool-change command T1
-  //#define EVENT_GCODE_TOOLCHANGE_ALWAYS_RUN        // Always execute above G-code sequences. Use with caution!
+  //#define EVENT_GCODE_TOOLCHANGE_T0 "G28 A\nG1 A0"  // Extra G-code to run while executing tool-change command T0
+  //#define EVENT_GCODE_TOOLCHANGE_T1 "G1 A10"        // Extra G-code to run while executing tool-change command T1
+  //#define EVENT_GCODE_TOOLCHANGE_ALWAYS_RUN         // Always execute above G-code sequences. Use with caution!
+
+  /**
+   * Consider coordinates for EVENT_GCODE_TOOLCHANGE_Tx as relative to T0
+   * so that moves in the specified axes are the same for all tools.
+   */
+  //#define TC_GCODE_USE_GLOBAL_X   // Use X position relative to Tool 0
+  //#define TC_GCODE_USE_GLOBAL_Y   // Use Y position relative to Tool 0
+  //#define TC_GCODE_USE_GLOBAL_Z   // Use Z position relative to Tool 0
 
   /**
    * Tool Sensors detect when tools have been picked up or dropped.
