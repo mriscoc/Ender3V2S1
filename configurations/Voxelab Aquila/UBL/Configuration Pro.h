@@ -3308,7 +3308,7 @@
   #define HAS_PIDPLOT 1
   //#define HAS_ESDIAG 1
   #define HAS_CGCODE 1
-  #define HAS_LOCKSCREEN 1
+  //#define HAS_LOCKSCREEN 1
   #define SHOW_REAL_POS 1
   //#define HAS_SD_EXTENDER 1  // Enable it to support SD card extender cables
 #elif ENABLED(DWIN_LCD_PROUI)
