@@ -1368,7 +1368,7 @@
  *      - normally-closed switches to GND and D32.
  *      - normally-open switches to 5V and D32.
  */
-//#define Z_MIN_PROBE_PIN 32 // Pin 32 is the RAMPS default
+//#define Z_MIN_PROBE_PIN PC14 // PC14 for V3_0 PA1 for V3_0_1 BTT SKR MINI E3
 
 /**
  * Probe Type
