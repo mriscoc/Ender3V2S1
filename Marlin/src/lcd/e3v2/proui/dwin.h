@@ -130,7 +130,7 @@ static constexpr size_t eeprom_data_size = sizeof(HMI_data_t) + TERN0(ProUIex, s
 
 typedef struct {
   int8_t Color[3];                    // Color components
-  #if HAS_PID_HEATING
+  #if EITHER(SHOW_TUNING_GRAPH, HAS_PID_HEATING)
     tempcontrol_t pidresult = PID_DONE;
   #endif
   uint8_t Select          = 0;        // Auxiliary selector variable
