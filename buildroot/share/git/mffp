@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+#
+# mffp [1|2] [ref]
+#
+# Push the given commit (or HEAD) upstream immediately.
+# By default: `git push upstream HEAD:bugfix-2.1.x`
+#
+
+usage() { echo "usage: `basename $0` [1|2] [ref]" 1>&2 ; }
+
+[[ $# < 3 && $1 != "-h" && $1 != "--help" ]] || { usage ; exit 1; }
+
+if [[ $1 == '1' || $1 == '2' ]]; then
+  MFINFO=$(mfinfo "$1") || exit 1
+  REF=${2:-HEAD}
+elif [[ $# == 1 ]]; then
+  MFINFO=$(mfinfo) || exit 1
+  REF=${1:-HEAD}
+else
+  usage ; exit 1
+fi
+
+IFS=' ' read -a INFO <<< "$MFINFO"
+ORG=${INFO[0]}
+TARG=${INFO[3]}
+
+if [[ $ORG == "MarlinFirmware" ]]; then
+  git push upstream $REF:$TARG
+else
+  echo "Not a MarlinFirmware working copy."; exit 1
+fi

@@ -33,15 +33,11 @@ If you want to change only the icons, then you can leave only the **9.ICO** file
 inside of the DWIN_SET folder.  
 If you weren't able to update the display, verify the format of the µSD Card
 (MBR, FAT32 and allocation unit of 4096 bytes) and the CRC of the files.
-
   
 <img src="https://raw.githubusercontent.com/mriscoc/Ender3V2S1/Ender3V2S1-Released/display%20assets/DWIN_SET-folder.jpg" height="350" />  
 
 Be sure to leave **only** the `DWIN_SET` or `private` folder at the root of the card.  
-
-### DACAI firmware update
-In order to use all the features of this firmware with DACAI screens it has to be updated.
-If you can't see preview images with this [g-code test file](https://github.com/mriscoc/Ender3V2S1/raw/Ender3V2S1-Released/slicer%20scripts/cura/SimpleCuraTest.gcode) update your [DACAI screen firmware](dacai_update.zip).
+  
 <br>
   
 ---
