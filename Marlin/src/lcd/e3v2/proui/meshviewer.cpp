@@ -1,8 +1,8 @@
 /**
  * Mesh Viewer for PRO UI
  * Author: Miguel A. Risco-Castillo (MRISCOC)
- * version: 3.15.1
- * Date: 2022/10/25
+ * version: 4.1.1
+ * Date: 2023/03/21
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -48,6 +48,12 @@ uint8_t rmax;                               // Maximum radius
 #define px(xp) (margin + (xp)*(width)/(sizex - 1))
 #define py(yp) (30 + DWIN_WIDTH - margin - (yp)*(width)/(sizey - 1))
 
+#if ENABLED(TJC_DISPLAY)
+  #define meshfont font8x16
+#else
+  #define meshfont font6x12
+#endif
+
 void MeshViewerClass::DrawMeshGrid(const uint8_t csizex, const uint8_t csizey) {
   sizex = csizex;
   sizey = csizey;
@@ -61,41 +67,40 @@ void MeshViewerClass::DrawMeshGrid(const uint8_t csizex, const uint8_t csizey) {
 }
 
 void MeshViewerClass::DrawMeshPoint(const uint8_t x, const uint8_t y, const float z) {
+  const uint8_t fs = DWINUI::fontWidth(meshfont);
   int16_t v = isnan(z) ? 0 : round(z * 100);
   LIMIT(v, zmin, zmax);
   NOLESS(max, z);
   NOMORE(min, z);
-
-  const int8_t radio = r(v);
   const uint16_t color = DWINUI::RainbowInt(v, zmin, zmax);
-  DWINUI::Draw_FillCircle(color, px(x), py(y), radio);
-
-  if (sizex < 9) {
-    if (v == 0) DWINUI::Draw_Float(font6x12, 1, 2, px(x) - 12, py(y) - 6, 0);
-    else DWINUI::Draw_Signed_Float(font6x12, 1, 2, px(x) - 18, py(y) - 6, z);
+  DWINUI::Draw_FillCircle(color, px(x), py(y), r(v));
+  TERN_(TJC_DISPLAY, delay(100));
+  if (sizex < (ENABLED(TJC_DISPLAY) ? 8 : 9)) {
+    if (v == 0) DWINUI::Draw_Float(meshfont, 1, 2, px(x) - 2*fs, py(y) - fs, 0);
+    else DWINUI::Draw_Signed_Float(meshfont, 1, 2, px(x) - 3*fs, py(y) - fs, z);
   }
   else {
     char str_1[9];
     str_1[0] = 0;
     switch (v) {
       case -999 ... -100:
-        DWINUI::Draw_Signed_Float(font6x12, 1, 1, px(x) - 18, py(y) - 6, z);
+        DWINUI::Draw_Signed_Float(meshfont, 1, 1, px(x) - 3*fs, py(y) - fs, z);
         break;
       case -99 ... -1:
         sprintf_P(str_1, PSTR("-.%02i"), -v);
         break;
       case 0:
-        DWIN_Draw_String(false, font6x12, DWINUI::textcolor, DWINUI::backcolor, px(x) - 4, py(y) - 6, "0");
+        DWIN_Draw_String(false, meshfont, DWINUI::textcolor, DWINUI::backcolor, px(x) - 4, py(y) - fs, "0");
         break;
       case 1 ... 99:
         sprintf_P(str_1, PSTR(".%02i"), v);
         break;
       case 100 ... 999:
-        DWINUI::Draw_Signed_Float(font6x12, 1, 1, px(x) - 18, py(y) - 6, z);
+        DWINUI::Draw_Signed_Float(meshfont, 1, 1, px(x) - 3*fs, py(y) - fs, z);
         break;
     }
     if (str_1[0])
-      DWIN_Draw_String(false, font6x12, DWINUI::textcolor, DWINUI::backcolor, px(x) - 12, py(y) - 6, str_1);
+      DWIN_Draw_String(false, meshfont, DWINUI::textcolor, DWINUI::backcolor, px(x) - 2*fs, py(y) - fs, str_1);
   }
 }
 

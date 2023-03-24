@@ -126,12 +126,13 @@ void DWIN_Frame_Clear(const uint16_t color) {
   DWIN_Send(i);
 }
 
-// Draw a point
-//  color: point color
-//  width: point width   0x01-0x0F
-//  height: point height 0x01-0x0F
-//  x,y: upper left point
-void DWIN_Draw_Point(uint16_t color, uint8_t width, uint8_t height, uint16_t x, uint16_t y) {
+#if DISABLED(TJC_DISPLAY)
+  // Draw a point
+  //  color: point color
+  //  width: point width   0x01-0x0F
+  //  height: point height 0x01-0x0F
+  //  x,y: upper left point
+  void DWIN_Draw_Point(uint16_t color, uint8_t width, uint8_t height, uint16_t x, uint16_t y) {
   size_t i = 0;
   DWIN_Byte(i, 0x02);
   DWIN_Word(i, color);
@@ -140,7 +141,8 @@ void DWIN_Draw_Point(uint16_t color, uint8_t width, uint8_t height, uint16_t x, 
   DWIN_Word(i, x);
   DWIN_Word(i, y);
   DWIN_Send(i);
-}
+  }
+#endif
 
 // Draw a line
 //  color: Line segment color

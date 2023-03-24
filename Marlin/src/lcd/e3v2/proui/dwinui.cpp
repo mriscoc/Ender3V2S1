@@ -1,8 +1,8 @@
 /**
  * DWIN Enhanced implementation for PRO UI
  * Author: Miguel A. Risco-Castillo (MRISCOC)
- * Version: 3.20.1
- * Date: 2022/10/25
+ * Version: 3.21.1
+ * Date: 2023/03/21
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -51,16 +51,18 @@ void DWINUI::setFont(fontid_t fid) { fontid = fid; }
 // Get font character width
 uint8_t DWINUI::fontWidth(fontid_t fid) {
   switch (fid) {
+    #if DISABLED(TJC_DISPLAY)
     case font6x12 : return 6;
+      case font20x40: return 20;
+      case font24x48: return 24;
+      case font28x56: return 28;
+      case font32x64: return 32;
+    #endif
     case font8x16 : return 8;
     case font10x20: return 10;
     case font12x24: return 12;
     case font14x28: return 14;
     case font16x32: return 16;
-    case font20x40: return 20;
-    case font24x48: return 24;
-    case font28x56: return 28;
-    case font32x64: return 32;
     default: return 0;
   }
 }
@@ -68,16 +70,18 @@ uint8_t DWINUI::fontWidth(fontid_t fid) {
 // Get font character height
 uint8_t DWINUI::fontHeight(fontid_t fid) {
   switch (fid) {
+    #if DISABLED(TJC_DISPLAY)
     case font6x12 : return 12;
+      case font20x40: return 40;
+      case font24x48: return 48;
+      case font28x56: return 56;
+      case font32x64: return 64;
+    #endif
     case font8x16 : return 16;
     case font10x20: return 20;
     case font12x24: return 24;
     case font14x28: return 28;
     case font16x32: return 32;
-    case font20x40: return 40;
-    case font24x48: return 48;
-    case font28x56: return 56;
-    case font32x64: return 64;
     default: return 0;
   }
 }
@@ -252,15 +256,13 @@ void DWINUI::Draw_Circle(uint16_t color, uint16_t x, uint16_t y, uint8_t r) {
 //  y: ordinate of the center of the circle
 //  r: circle radius
 void DWINUI::Draw_FillCircle(uint16_t bcolor, uint16_t x,uint16_t y,uint8_t r) {
-  int a = 0, b = 0;
-  while (a <= b) {
-    b = SQRT(sq(r) - sq(a)); // b=sqrt(r*r-a*a);
-    if (a == 0) b--;
-    DWIN_Draw_Line(bcolor, x-b,y-a,x+b,y-a);
-    DWIN_Draw_Line(bcolor, x-a,y-b,x+a,y-b);
-    DWIN_Draw_Line(bcolor, x-b,y+a,x+b,y+a);
+  DWIN_Draw_Line(bcolor, x-r,y,x+r,y);
+  uint16_t b = 1;
+  while (b <= r) {
+    uint16_t a = SQRT(sq(r) - sq(b));
     DWIN_Draw_Line(bcolor, x-a,y+b,x+a,y+b);
-    a++;
+    DWIN_Draw_Line(bcolor, x-a,y-b,x+a,y-b);
+    b+=TERN(TJC_DISPLAY,2,1);
   }
 }
 

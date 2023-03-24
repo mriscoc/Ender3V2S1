@@ -1,8 +1,8 @@
 /**
  * Mesh Viewer for PRO UI
  * Author: Miguel A. Risco-Castillo (MRISCOC)
- * version: 3.15.1
- * Date: 2022/10/25
+ * version: 4.1.1
+ * Date: 2023/03/21
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as

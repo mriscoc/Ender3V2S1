@@ -131,10 +131,10 @@ void DACAI_ICON_Show(uint16_t x, uint16_t y, uint16_t addr) {
 }
 
 void DWIN_ICON_Show(uint16_t x, uint16_t y, uint16_t addr) {
-  #if ENABLED(HAS_DACAI) || DISABLED(HAS_DWIN)
+  #if ENABLED(DACAI_DISPLAY) || DISABLED(DWIN_DISPLAY)
     DACAI_ICON_Show(x, y, addr);
   #endif
-  #if ENABLED(HAS_DWIN) || DISABLED(HAS_DACAI)
+  #if ENABLED(DWIN_DISPLAY) || DISABLED(DACAI_DISPLAY)
     DWIN_ICON_Show(0, 0, 1, x, y, addr);
   #endif
 }

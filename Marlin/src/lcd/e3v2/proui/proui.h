@@ -1,8 +1,8 @@
 /**
  * Professional Firmware UI extensions
  * Author: Miguel A. Risco-Castillo
- * Version: 1.8.0
- * Date: 2022/12/30
+ * Version: 1.9.0
+ * Date: 2023/03/21
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
