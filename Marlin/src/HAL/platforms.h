@@ -35,6 +35,11 @@
   #define HAL_PATH(PATH, NAME) XSTR(PATH/TEENSY40_41/NAME)
 #elif defined(TARGET_LPC1768)
   #define HAL_PATH(PATH, NAME) XSTR(PATH/LPC1768/NAME)
+#elif defined(TARGET_HC32F46x)
+  // the HC32F46x is very similar to the STM32F1, so the HAL
+  // sometimes piggy-backs on the STM32F1 HAL.
+  // because of this, HC32F46x is included first
+  #define HAL_PATH(PATH, NAME) XSTR(PATH/HC32F46x/NAME)
 #elif defined(__STM32F1__) || defined(TARGET_STM32F1)
   #define HAL_PATH(PATH, NAME) XSTR(PATH/STM32F1/NAME)
 #elif defined(ARDUINO_ARCH_STM32)

@@ -373,6 +373,7 @@
 #define BOARD_ERYONE_ERY32_MINI       4068  // Eryone Ery32 mini (STM32F103VE)
 #define BOARD_PANDA_PI_V29            4069  // Panda Pi V2.9 - Standalone (STM32F103RC)
 #define BOARD_VOXELAB_AQUILA          4070  // Voxelab Aquila (GD32F103Rx)
+#define BOARD_AQUILA_X2_H32           4099  // Voxlab Aquila X2 H32 (HC32F46x)
 
 //
 // ARM Cortex-M4F
