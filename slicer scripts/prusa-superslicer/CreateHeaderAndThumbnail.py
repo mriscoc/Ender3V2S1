@@ -29,7 +29,7 @@ def install(package):
 
 # Get the g-code source file name
 if os.getenv("FLATPAK") == "true":
-    sourceFile = f"{os.getenv("XDG_RUNTIME_DIR")}/.flatpak/com.prusa3d.PrusaSlicer" + sys.argv[1]
+    sourceFile = os.getenv("XDG_RUNTIME_DIR") + "/.flatpak/com.prusa3d.PrusaSlicer" + sys.argv[1]
 else:
     sourceFile = sys.argv[1]
 
