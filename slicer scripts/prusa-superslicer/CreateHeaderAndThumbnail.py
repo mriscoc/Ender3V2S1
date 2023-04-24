@@ -28,7 +28,10 @@ def install(package):
     subprocess.check_call([sys.executable, "-m", "pip3", "install", package])
 
 # Get the g-code source file name
-sourceFile = sys.argv[1]
+if os.getenv("FLATPAK") == "true":
+    sourceFile = "/run/user/1000/.flatpak/com.prusa3d.PrusaSlicer" + sys.argv[1]
+else:
+    sourceFile = sys.argv[1]
 
 # Read the ENTIRE g-code file into memory
 with open(sourceFile, "r") as f:
