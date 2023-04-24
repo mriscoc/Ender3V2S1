@@ -29,7 +29,8 @@ def install(package):
 
 # Get the g-code source file name
 if os.getenv("FLATPAK") == "true":
-    sourceFile = "/run/user/1000/.flatpak/com.prusa3d.PrusaSlicer" + sys.argv[1]
+    userid = subprocess.run(["id", "-u"], stdout=subprocess.PIPE)
+    sourceFile = f"/run/user/{userid.stdout.decode()}/.flatpak/com.prusa3d.PrusaSlicer" + sys.argv[1]
 else:
     sourceFile = sys.argv[1]
 
