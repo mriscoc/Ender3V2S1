@@ -72,7 +72,7 @@ void GcodeSuite::M593() {
 
   if (parser.seen('F')) {
     const float freq = parser.value_float();
-    constexpr float min_freq = float(uint32_t(STEPPER_TIMER_RATE) / 2) / shaping_time_t(-2);
+    TERN(TARGET_HC32F46x, const, constexpr) float min_freq = float(uint32_t(STEPPER_TIMER_RATE) / 2) / shaping_time_t(-2);
     if (freq == 0.0f || freq > min_freq) {
       if (for_X) stepper.set_shaping_frequency(X_AXIS, freq);
       if (for_Y) stepper.set_shaping_frequency(Y_AXIS, freq);
