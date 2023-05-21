@@ -1717,7 +1717,7 @@ void DWIN_SetDataDefaults() {
   #endif
   #if BOTH(LED_CONTROL_MENU, HAS_COLOR_LEDS)
     #if ENABLED(LED_COLOR_PRESETS)
-      leds.set_default());
+      leds.set_default();
       ApplyLEDColor();
     #else
       HMI_data.Led_Color = Def_Leds_Color;
