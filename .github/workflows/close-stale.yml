@@ -12,7 +12,7 @@ on:
 jobs:
   stale:
     name: Close Stale Issues
-    if: github.repository == 'MarlinFirmware/Marlin'
+    if: github.repository == 'mriscoc/Ender3V2S1'
 
     runs-on: ubuntu-latest
 
