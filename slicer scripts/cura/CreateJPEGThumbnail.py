@@ -2,8 +2,8 @@
 # Cura JPEG Thumbnail creator
 # Professional firmware for Ender3v2
 # Miguel A. Risco-Castillo
-# version: 1.4
-# date: 2022-05-18
+# version: 1.5
+# date: 2023-05-23
 #
 # Contains code from:
 # https://github.com/Ultimaker/Cura/blob/master/plugins/PostProcessingPlugin/scripts/CreateThumbnail.py
@@ -92,7 +92,7 @@ class CreateJPEGThumbnail(Script):
                     "description": "Width of the generated thumbnail",
                     "unit": "px",
                     "type": "int",
-                    "default_value": 230,
+                    "default_value": 200,
                     "minimum_value": "0",
                     "minimum_value_warning": "12",
                     "maximum_value_warning": "800"
@@ -103,7 +103,7 @@ class CreateJPEGThumbnail(Script):
                     "description": "Height of the generated thumbnail",
                     "unit": "px",
                     "type": "int",
-                    "default_value": 180,
+                    "default_value": 200,
                     "minimum_value": "0",
                     "minimum_value_warning": "12",
                     "maximum_value_warning": "600"
