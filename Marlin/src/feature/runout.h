@@ -191,7 +191,7 @@ class FilamentSensorBase {
         #define INIT_RUNOUT_PIN(N) ProEx.SetRunoutState(FIL_RUNOUT##N##_PIN);
       #else
         #define  INIT_RUNOUT_PIN(N) _INIT_RUNOUT_PIN(FIL_RUNOUT##N##_PIN, FIL_RUNOUT##N##_STATE, FIL_RUNOUT##N##_PULLUP, FIL_RUNOUT##N##_PULLDOWN);
-      #endif  
+      #endif
       REPEAT_1(NUM_RUNOUT_SENSORS, INIT_RUNOUT_PIN)
       #undef INIT_RUNOUT_PIN
 
@@ -378,7 +378,6 @@ class FilamentSensorBase {
         if (b->steps.x || b->steps.y || b->steps.z || did_pause_print) { // Allow pause purge move to re-trigger runout state
           // Only trigger on extrusion with XYZ movement to allow filament change and retract/recover.
           const uint8_t e = b->extruder;
-
           const int32_t steps = b->steps.e;
           const float mm = (b->direction_bits.e ? steps : -steps) * planner.mm_per_step[E_AXIS_N(e)];
           if (e < NUM_RUNOUT_SENSORS) runout_mm_countdown[e] -= mm;

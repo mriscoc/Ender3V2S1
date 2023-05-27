@@ -3828,7 +3828,6 @@ void Draw_Steps_Menu() {
       SetOnClick(SetIntNoDraw, GRID_MIN, GRID_LIMIT, 0, PRO_data.grid_max_points, ApplyMeshPoints, LiveMeshPoints);
       ProEx.DrawMeshPoints(true, CurrentMenu->line(), PRO_data.grid_max_points);
     }
-    void ApplyMeshLimits() { ProEx.CheckMeshInsets(); ProEx.ApplyMeshLimits(); ReDrawItem(); }
     void SetMeshInset() { SetPFloatOnClick(MIN_MESH_INSET, MAX_MESH_INSET, UNITFDIGITS, ApplyMeshLimits); }
     void MaxMeshArea() {
       #if HAS_BED_PROBE

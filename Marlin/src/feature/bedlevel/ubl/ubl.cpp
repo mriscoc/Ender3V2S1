@@ -71,7 +71,6 @@ int8_t unified_bed_leveling::storage_slot;
   float unified_bed_leveling::z_values[GRID_MAX_POINTS_X][GRID_MAX_POINTS_Y];
 #endif
 
-
 #if DISABLED(PROUI_EX)
   #define _GRIDPOS(A,N) (MESH_MIN_##A + N * (MESH_##A##_DIST))
 

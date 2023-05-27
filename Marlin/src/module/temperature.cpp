@@ -1793,7 +1793,6 @@ void Temperature::mintemp_error(const heater_id_t heater_id) {
         if (watch_bed.check(degBed()))          // Increased enough?
           start_watching_bed();                 // If temp reached, turn off elapsed check
         else {
-          _temp_error(H_BED, FPSTR(str_t_heating_failed), GET_TEXT_F(MSG_HEATING_FAILED_LCD));
           TERN_(HAS_DWIN_E3V2_BASIC, DWIN_Popup_Temperature(H_BED, 0));
           _temp_error(H_BED, FPSTR(str_t_heating_failed), GET_TEXT_F(MSG_HEATING_FAILED_LCD));
         }

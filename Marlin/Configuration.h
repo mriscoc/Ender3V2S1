@@ -3337,7 +3337,7 @@
 // Ender-3 v2 OEM display. A DWIN display with Rotary Encoder.
 //
 //#define DWIN_CREALITY_LCD           // Creality UI
-#define DWIN_LCD_PROUI              // Pro UI by MRiscoC
+#define DWIN_LCD_PROUI                // Pro UI by MRiscoC
 #define USE_STOCK_DWIN_SET
 
 // Professional firmware features:
@@ -3351,20 +3351,21 @@
 #define HAS_ESDIAG 1
 #define HAS_CGCODE 1
 #define HAS_LOCKSCREEN 1
-//#define HAS_SD_EXTENDER 1  // Enable to support SD card extender cables
+//#define HAS_SD_EXTENDER 1           // Enable to support SD card extender cables
 #define MESH_EDIT_MENU
 #define SHOW_REAL_POS
-//#define ACTIVATE_MESH_ITEM  // Allows temporary enabling of mesh leveling
+//#define ACTIVATE_MESH_ITEM          // Allows temporary enabling of mesh leveling
 #define RUNOUT_TUNE_ITEM
 #define PLR_TUNE_ITEM
-//#define JD_TUNE_ITEM  // Enable only if Juntion Deviation is enabled
-//#define ADVK_TUNE_ITEM  // Enable only if Linear Advance is enabled
-//#define MEDIASORT_MENU_ITEM  // Allows enable/disable file list sorting
-//#define CCLOUD_PRINT_SUPPORT  // Allows enable/disable Creality Cloud Print Support
+//#define JD_TUNE_ITEM                // Enable only if Juntion Deviation is enabled
+//#define ADVK_TUNE_ITEM              // Enable only if Linear Advance is enabled
+//#define MEDIASORT_MENU_ITEM         // Allows enable/disable file list sorting
+//#define CCLOUD_PRINT_SUPPORT        // Allows enable/disable Creality Cloud Print Support
 #define ZHOME_BEFORE_LEVELING
-//#define SMOOTH_ENCODER_MENUITEMS  // Menu items value faster/smooth change rate
-#define SHOW_SPEED_IND // Show the axes speed in mm/s intermittently with the speed percentage
-//#define NO_BLINK_IND  // Disables dashboard icon background blink indicator
+//#define SMOOTH_ENCODER_MENUITEMS    // Menu items value faster/smooth change rate
+#define SHOW_SPEED_IND                // Show the axes speed in mm/s intermittently with the speed percentage
+//#define NO_BLINK_IND                // Disables dashboard icon background blink indicator
+//#define USE_GRID_MESHVIEWER         // Enable second type of Mesh Viewer
 
 //#define DWIN_CREALITY_LCD_JYERSUI   // Jyers UI by Jacob Myers
 //#define DWIN_MARLINUI_PORTRAIT      // MarlinUI (portrait orientation)

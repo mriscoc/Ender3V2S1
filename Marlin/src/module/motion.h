@@ -30,6 +30,10 @@
 
 #include "../inc/MarlinConfig.h"
 
+#if ALL(DWIN_LCD_PROUI, INDIVIDUAL_AXIS_HOMING_SUBMENU, MESH_BED_LEVELING)
+  #include "../lcd/e3v2/proui/dwin.h"
+#endif
+
 #if IS_SCARA
   #include "scara.h"
 #elif ENABLED(POLAR)
@@ -367,7 +371,7 @@ void do_blocking_move_to(const xyz_pos_t &raw, const_feedRate_t fr_mm_s=0.0f);
 void do_blocking_move_to(const xyze_pos_t &raw, const_feedRate_t fr_mm_s=0.0f);
 
 #if HAS_X_AXIS
-    void do_blocking_move_to_x(const_float_t rx, const_feedRate_t fr_mm_s=0.0f);
+  void do_blocking_move_to_x(const_float_t rx, const_feedRate_t fr_mm_s=0.0f);
 #endif
 #if HAS_Y_AXIS
   void do_blocking_move_to_y(const_float_t ry, const_feedRate_t fr_mm_s=0.0f);
@@ -418,7 +422,6 @@ void restore_feedrate_and_scaling();
 
 #if HAS_Z_AXIS
   #if ALL(DWIN_LCD_PROUI, INDIVIDUAL_AXIS_HOMING_SUBMENU, MESH_BED_LEVELING)
-    #include "../lcd/e3v2/proui/dwin.h"
     #define Z_POST_CLEARANCE HMI_data.z_after_homing
   #elif defined(Z_AFTER_HOMING)
     #define Z_POST_CLEARANCE Z_AFTER_HOMING
