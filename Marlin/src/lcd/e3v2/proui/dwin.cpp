@@ -23,17 +23,21 @@
 
 #if ENABLED(DWIN_LCD_PROUI)
 
+#include "dwin.h"
+#include "dwin_popup.h"
+#include "menus.h"
 #include "../../utf8.h"
 #include "../../marlinui.h"
 #include "../../../MarlinCore.h"
-#include "../../../core/serial.h"
 #include "../../../core/macros.h"
-#include "../../../module/temperature.h"
-#include "../../../module/printcounter.h"
-#include "../../../module/motion.h"
-#include "../../../module/planner.h"
+#include "../../../core/serial.h"
 #include "../../../gcode/gcode.h"
 #include "../../../gcode/queue.h"
+#include "../../../module/motion.h"
+#include "../../../module/planner.h"
+#include "../../../module/printcounter.h"
+#include "../../../module/stepper.h"
+#include "../../../module/temperature.h"
 
 #if HAS_MEDIA
   #include "../../../sd/cardreader.h"
@@ -92,10 +96,6 @@
 #if HAS_TRINAMIC_CONFIG
   #include "../../../feature/tmc_util.h"
 #endif
-
-#include "dwin.h"
-#include "menus.h"
-#include "dwin_popup.h"
 
 #if HAS_GCODE_PREVIEW
   #include "gcode_preview.h"
