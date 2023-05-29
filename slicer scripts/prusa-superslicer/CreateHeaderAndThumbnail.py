@@ -4,8 +4,8 @@
 # Prusa / Super Slicer post-processor script for the Professional Firmware
 # URL: https://github.com/mriscoc/Ender3V2S1
 # Miguel A. Risco-Castillo
-# version: 1.5
-# date: 2022/05/29
+# version: 1.6
+# date: 2023/05/28
 #
 # Contains code from the jpg re-encoder thumbnail post processor script:
 # github.com/alexqzd/Marlin/blob/Gcode-preview/Display%20firmware/gcode_thumb_to_jpg.py
@@ -81,7 +81,7 @@ if match is not None :
   s = int(s[1]) if s is not None else 0
   time = h*3600+m*60+s
 
-match = re.search('; filament used \[mm\] = (.*)\n', lines)
+match = re.search('; filament used \[mm\] = ([0-9.]+)', lines)
 filament = float(match[1])/1000 if match is not None else 0
 
 match = os.getenv('SLIC3R_LAYER_HEIGHT')
