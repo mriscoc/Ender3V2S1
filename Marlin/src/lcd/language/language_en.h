@@ -520,7 +520,7 @@ namespace Language_en {
     LSTR MSG_CANCEL_OBJECT                = _UxGT("Cancel Object");
     LSTR MSG_CANCEL_OBJECT_N              = _UxGT("Cancel Object {");
     LSTR MSG_CONTINUE_PRINT_JOB           = _UxGT("Continue Print Job");
-    LSTR MSG_MEDIA_MENU                   = _UxGT("Print from ") MEDIA_TYPE_EN;
+    LSTR MSG_MEDIA_MENU                   = _UxGT("Select from ") MEDIA_TYPE_EN;
     LSTR MSG_TURN_OFF                     = _UxGT("Turn off the printer");
     LSTR MSG_END_LOOPS                    = _UxGT("End Repeat Loops");
   #else

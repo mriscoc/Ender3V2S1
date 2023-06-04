@@ -191,7 +191,7 @@ class FilamentSensorBase {
         #define INIT_RUNOUT_PIN(N) ProEx.SetRunoutState(FIL_RUNOUT##N##_PIN);
       #else
         #define  INIT_RUNOUT_PIN(N) _INIT_RUNOUT_PIN(FIL_RUNOUT##N##_PIN, FIL_RUNOUT##N##_STATE, FIL_RUNOUT##N##_PULLUP, FIL_RUNOUT##N##_PULLDOWN);
-      #endif  
+      #endif
       REPEAT_1(NUM_RUNOUT_SENSORS, INIT_RUNOUT_PIN)
       #undef INIT_RUNOUT_PIN
 
@@ -210,14 +210,18 @@ class FilamentSensorBase {
       #undef _OR_RUNOUT
     }
 
-    #if DISABLED(PROUI_EX)
-      // Return a bitmask of runout flag states (1 bits always indicates runout)
-      static uint8_t poll_runout_states() {
+    // Return a bitmask of runout flag states (1 bits always indicates runout)
+    static uint8_t poll_runout_states() {
+      #if ENABLED(PROUI_EX)
+        #define _INVERT_BIT(N) | (PRO_data.Runout_active_state ? 0 : _BV(N - 1))
+      #else
         #define _INVERT_BIT(N) | (FIL_RUNOUT##N##_STATE ? 0 : _BV(N - 1))
-        return poll_runout_pins() ^ uint8_t(0 REPEAT_1(NUM_RUNOUT_SENSORS, _INVERT_BIT));
-        #undef _INVERT_BIT
-      }
+      #endif
+      return poll_runout_pins() ^ uint8_t(0 REPEAT_1(NUM_RUNOUT_SENSORS, _INVERT_BIT));
+      #undef _INVERT_BIT
+    }
 
+    #if DISABLED(PROUI_EX)
       #if ENABLED(FILAMENT_SWITCH_AND_MOTION)
         // Return a bitmask of motion pin states
         static uint8_t poll_motion_pins() {
@@ -243,10 +247,20 @@ class FilamentSensorBase {
     static uint8_t motion_detected;
     static void poll_motion_sensor();
   public:
-    static bool poll_runout_state(const uint8_t extruder);
     static void block_completed(const block_t * const b);
     static void run();
-  };  
+    static bool poll_runout_state(const uint8_t extruder) {
+      const uint8_t runout_states = poll_runout_states();
+      #if MULTI_FILAMENT_SENSOR
+        if ( !TERN0(DUAL_X_CARRIAGE, idex_is_duplicating())
+          && !TERN0(MULTI_NOZZLE_DUPLICATION, extruder_duplication_enabled)
+        ) return TEST(runout_states, extruder); // A specific extruder ran out
+      #else
+        UNUSED(extruder);
+      #endif
+      return !!runout_states;                   // Any extruder ran out
+    }
+  };
 
 #elif ENABLED(FILAMENT_MOTION_SENSOR)
 
