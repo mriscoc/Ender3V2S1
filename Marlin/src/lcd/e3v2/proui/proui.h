@@ -77,6 +77,9 @@ constexpr int16_t DEF_Z_PROBE_FEEDRATE_SLOW = (Z_PROBE_FEEDRATE_FAST / 2);
   #define MULTIPLE_PROBING 0
 #endif
 #define DEF_FIL_MOTION_SENSOR ENABLED(FILAMENT_MOTION_SENSOR)
+#if DISABLED(FILAMENT_RUNOUT_SENSOR)
+  #define FIL_RUNOUT_STATE LOW
+#endif
 
 typedef struct {
   int16_t x_bed_size = DEF_X_BED_SIZE;
@@ -98,9 +101,7 @@ typedef struct {
   bool Runout_active_state = FIL_RUNOUT_STATE;
   bool FilamentMotionSensor = DEF_FIL_MOTION_SENSOR;
   celsius_t hotend_maxtemp = HEATER_0_MAXTEMP;
-  #if HAS_TOOLBAR
-    uint8_t TBopt[TBMaxOpt] = DEF_TBOPT;
-  #endif
+  uint8_t TBopt[TBMaxOpt] = DEF_TBOPT;
 } PRO_data_t;
 extern PRO_data_t PRO_data;
 

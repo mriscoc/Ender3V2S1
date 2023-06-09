@@ -30,7 +30,11 @@
 #include "../../marlinui.h"
 #include "../../../MarlinCore.h"
 #include "../../../core/macros.h"
-#include "../../../core/serial.h"
+#include "../../../module/temperature.h"
+#include "../../../module/printcounter.h"
+#include "../../../module/motion.h"
+#include "../../../module/planner.h"
+#include "../../../module/stepper.h"
 #include "../../../gcode/gcode.h"
 #include "../../../gcode/queue.h"
 #include "../../../module/motion.h"
@@ -137,12 +141,7 @@
 // Load and Unload limits
 #define MAX_LOAD_UNLOAD  500
 
-// Feedspeed limit (max feedspeed = MAX_FEEDRATE_EDIT_VALUES)
-// #define MIN_MAXFEEDSPEED      1
-// #define MIN_MAXACCELERATION   1
-// #define MIN_MAXJERK           0.1
-// #define MIN_STEP              1
-// #define MAX_STEP              1999.9
+// Juntion deviation limits
 #define MIN_JD_MM             0.001
 #define MAX_JD_MM             TERN(LIN_ADVANCE, 0.3f, 0.5f)
 
@@ -212,32 +211,6 @@ typedef struct {
   bool inc(uint8_t v) { if (now < (v - 1)) now++; else now = (v - 1); return changed(); }
 } select_t;
 select_t select_page{0}, select_print{0};
-
-// constexpr float max_feedrate_edit_values[] =
-//   #ifdef MAX_FEEDRATE_EDIT_VALUES
-//     MAX_FEEDRATE_EDIT_VALUES
-//   #else
-//     { 1000, 1000, 10, 50 }
-//   #endif
-// ;
-
-// constexpr float max_acceleration_edit_values[] =
-//   #ifdef MAX_ACCEL_EDIT_VALUES
-//     MAX_ACCEL_EDIT_VALUES
-//   #else
-//     { 1000, 1000, 200, 2000 }
-//   #endif
-// ;
-
-// #if HAS_CLASSIC_JERK
-//   constexpr float max_jerk_edit_values[] =
-//     #ifdef MAX_JERK_EDIT_VALUES
-//       MAX_JERK_EDIT_VALUES
-//     #else
-//       { DEFAULT_XJERK * 2, DEFAULT_YJERK * 2, DEFAULT_ZJERK * 2, DEFAULT_EJERK * 2 }
-//     #endif
-//   ;
-// #endif
 
 #if ENABLED(LCD_BED_TRAMMING)
   constexpr float bed_tramming_inset_lfbr[] = BED_TRAMMING_INSET_LFRB;
@@ -687,7 +660,7 @@ void _update_axis_value(const AxisEnum axis, const uint16_t x, const uint16_t y,
   #if BOTH(IS_FULL_CARTESIAN, SHOW_REAL_POS)
     const float p = planner.get_axis_position_mm(axis);
   #else
-    const float p = current_position[axis]);
+    const float p = current_position[axis];
   #endif
 
   const bool changed = oldpos[axis] != p;
@@ -1736,10 +1709,12 @@ void DWIN_Print_Finished() {
 void DWIN_Print_Aborted() {
   DEBUG_ECHOLNPGM("DWIN_Print_Aborted");
   #if PROUI_EX
-    char cmd[25] = "";
-    const int16_t zpos = current_position.z + PRO_data.Park_point.z;
-    sprintf_P(cmd, PSTR("G0Z%i\nG0F2000Y%i"), zpos, PRO_data.Park_point.y);
-    queue.inject(cmd);
+    if (all_axes_homed()) {
+      char cmd[25] = "";
+      const int16_t zpos = current_position.z + PRO_data.Park_point.z;
+      sprintf_P(cmd, PSTR("G0Z%i\nG0F2000Y%i"), zpos, PRO_data.Park_point.y);
+      queue.inject(cmd);
+    }
   #endif
   hostui.notify("Print Aborted");
   DWIN_Print_Finished();
@@ -2879,7 +2854,7 @@ void Draw_Control_Menu() {
       #if ENABLED(CASELIGHT_USES_BRIGHTNESS)
         MENU_ITEM(ICON_CaseLight, MSG_CASE_LIGHT, onDrawSubMenu, Draw_CaseLight_Menu);
       #else
-        MENU_ITEM(ICON_CaseLight, MSG_CASE_LIGHT, onDrawChkbMenu, SetCaseLight, &caselight.on);
+        EDIT_ITEM(ICON_CaseLight, MSG_CASE_LIGHT, onDrawChkbMenu, SetCaseLight, &caselight.on);
       #endif
     #endif
     #if ENABLED(LED_CONTROL_MENU)
