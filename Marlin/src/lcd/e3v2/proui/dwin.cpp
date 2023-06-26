@@ -2306,7 +2306,7 @@ void ApplyMove() {
 
   void ProbeTest() {
     LCD_MESSAGE(MSG_M48_TEST);
-    queue.inject(F("G28O\nM48 P10"));
+    queue.inject(F("G28XYO\nG28Z\nM48 P5"));
   }
   void ProbeStow() { probe.stow(); }
   void ProbeDeploy() { probe.deploy(); }
