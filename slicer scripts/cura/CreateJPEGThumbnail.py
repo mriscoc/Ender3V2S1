@@ -2,8 +2,8 @@
 # Cura JPEG Thumbnail creator
 # Professional firmware for Ender3v2
 # Miguel A. Risco-Castillo
-# version: 1.5
-# date: 2023-05-23
+# version: 1.6
+# date: 2023-07-23
 #
 # Contains code from:
 # https://github.com/Ultimaker/Cura/blob/master/plugins/PostProcessingPlugin/scripts/CreateThumbnail.py
@@ -29,7 +29,7 @@ class CreateJPEGThumbnail(Script):
         except Exception:
             Logger.logException("w", "Failed to create snapshot image")
 
-    def _encodeSnapshot(self, snapshot):
+    def _encodeSnapshot(self, snapshot, quality=-1):
 
         Major=0
         Minor=0
@@ -38,7 +38,7 @@ class CreateJPEGThumbnail(Script):
           Minor = int(CuraVersion.split(".")[1])
         except:
           pass
-        
+
         if Major < 5 :
           from PyQt5.QtCore import QByteArray, QIODevice, QBuffer
         else :
@@ -52,7 +52,7 @@ class CreateJPEGThumbnail(Script):
             else:
               thumbnail_buffer.open(QBuffer.OpenModeFlag.ReadWrite)
             thumbnail_image = snapshot
-            thumbnail_image.save(thumbnail_buffer, "JPG")
+            thumbnail_image.save(thumbnail_buffer, "JPG", quality=quality)
             base64_bytes = base64.b64encode(thumbnail_buffer.data())
             base64_message = base64_bytes.decode('ascii')
             thumbnail_buffer.close()
@@ -107,6 +107,24 @@ class CreateJPEGThumbnail(Script):
                     "minimum_value": "0",
                     "minimum_value_warning": "12",
                     "maximum_value_warning": "600"
+                },
+                "change_size":
+                {
+                    "label": "Show extra options?",
+                    "description": "Enables extra options to change the quality of the produced image",
+                    "type": "bool",
+                    "default_value": false
+                },
+                "max_size":
+                {
+                    "label": "Max Size",
+                    "description": "The maximum size of the thumbnail in bytes. This is useful for displays like TJC where thumbnails must be smaller than 20kbytes in size.",
+                    "unit": "byte",
+                    "type": "int",
+                    "default_value": 15000,
+                    "minimum_value": "100",
+                    "minimum_value_warning": "1000",
+                    "enabled": "change_size"
                 }
             }
         }"""
@@ -114,10 +132,27 @@ class CreateJPEGThumbnail(Script):
     def execute(self, data):
         width = self.getSettingValueByKey("width")
         height = self.getSettingValueByKey("height")
+        should_change_size = self.getSettingValueByKey("change_size")
+        max_size = -1
+        if should_change_size:
+           max_size = self.getSettingValueByKey("max_size")
+
+        Logger.log("d", f"Options: width={width}, height={height}, should_change_size={should_change_size}, max_size={max_size}")
 
         snapshot = self._createSnapshot(width, height)
         if snapshot:
             encoded_snapshot = self._encodeSnapshot(snapshot)
+            # reduce the quality of the image until the size is below max_size
+            # this option is necessary for some displays like TJC where the image must be smaller than 20kb
+            if should_change_size:
+                # quality ranges from 95 (best) to 1 (worst)
+                quality = 95
+                while len(encoded_snapshot) >= max_size:
+                    if quality == 0:
+                        Logger.log("e", f"Failed to reduce image size to at most {max_size} bytes")
+                        break
+                    encoded_snapshot = self._encodeSnapshot(snapshot, quality=quality)
+                    quality -= 1
             snapshot_gcode = self._convertSnapshotToGcode(
                 encoded_snapshot, width, height)
 
