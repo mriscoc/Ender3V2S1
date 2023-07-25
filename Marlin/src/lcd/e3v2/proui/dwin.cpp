@@ -2496,7 +2496,7 @@ void SetFlow() { SetPIntOnClick(MIN_PRINT_FLOW, MAX_PRINT_FLOW, []{ planner.refr
       } else LCD_MESSAGE_F("Bed tramming wizard");
       DWINUI::ClearMainArea();
       MeshViewer.DrawMeshGrid(2, 2);
-      bed_mesh_t zval = {0};
+      static bed_mesh_t zval = {0};
       probe.stow();
       zval[0][0] = Tram(0, false);  // First tram point can do Homing
       checkkey = NothingToDo;       // After home disable user input
