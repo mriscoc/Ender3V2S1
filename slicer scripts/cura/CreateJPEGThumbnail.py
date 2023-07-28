@@ -10,6 +10,7 @@
 #------------------------------------------------------------------------------
 
 import base64
+import json
 
 from UM.Logger import Logger
 from cura.Snapshot import Snapshot
@@ -79,7 +80,7 @@ class CreateJPEGThumbnail(Script):
         return gcode
 
     def getSettingDataString(self):
-        return """{
+        return json.dumps({
             "name": "Create JPEG Thumbnail",
             "key": "CreateJPEGThumbnail",
             "metadata": {},
@@ -108,43 +109,31 @@ class CreateJPEGThumbnail(Script):
                     "minimum_value_warning": "12",
                     "maximum_value_warning": "600"
                 },
-                "change_size":
-                {
-                    "label": "Show extra options?",
-                    "description": "Enables extra options to change the quality of the produced image",
-                    "type": "bool",
-                    "default_value": false
-                },
                 "max_size":
                 {
-                    "label": "Max Size",
-                    "description": "The maximum size of the thumbnail in bytes. This is useful for displays like TJC where thumbnails must be smaller than 20kbytes in size.",
+                    "label": "Maximum Thumbnail Size",
+                    "description": "The maximum size of the thumbnail in bytes. Thumbnails must be smaller than 20 kbytes for TJC displays. If the thumbnail size should not be changed, write -1.",
                     "unit": "byte",
                     "type": "int",
                     "default_value": 15000,
-                    "minimum_value": "100",
-                    "minimum_value_warning": "1000",
-                    "enabled": "change_size"
+                    "minimum_value": "-1"
                 }
             }
-        }"""
+        }, indent=4)
 
     def execute(self, data):
         width = self.getSettingValueByKey("width")
         height = self.getSettingValueByKey("height")
-        should_change_size = self.getSettingValueByKey("change_size")
-        max_size = -1
-        if should_change_size:
-           max_size = self.getSettingValueByKey("max_size")
+        max_size = self.getSettingValueByKey("max_size")
 
-        Logger.log("d", f"Options: width={width}, height={height}, should_change_size={should_change_size}, max_size={max_size}")
+        Logger.log("d", f"Options: width={width}, height={height}, max_size={max_size}")
 
         snapshot = self._createSnapshot(width, height)
         if snapshot:
             encoded_snapshot = self._encodeSnapshot(snapshot)
             # reduce the quality of the image until the size is below max_size
             # this option is necessary for some displays like TJC where the image must be smaller than 20kb
-            if should_change_size:
+            if max_size != -1:
                 # quality ranges from 95 (best) to 1 (worst)
                 quality = 95
                 while len(encoded_snapshot) >= max_size:
