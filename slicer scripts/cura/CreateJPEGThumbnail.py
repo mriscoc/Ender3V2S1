@@ -11,6 +11,8 @@
 
 import base64
 import json
+from typing import Callable, TypeVar, Optional
+from enum import Enum, auto
 
 from UM.Logger import Logger
 from cura.Snapshot import Snapshot
@@ -18,6 +20,79 @@ from cura.CuraVersion import CuraVersion
 
 from ..Script import Script
 
+T = TypeVar("T")
+
+class Ordering(Enum):
+    LESS = auto()
+    EQUAL = auto()
+    GREATER = auto()
+
+def binary_search(list: list[T], compare: Callable[[T], Ordering]) -> Optional[T]:
+    left: int = 0
+    right: int = len(list) - 1
+    while left <= right:
+        middle: int = (left + right) // 2
+
+        comparison = compare(list[middle])
+        if comparison == Ordering.LESS:
+            left = middle + 1
+        elif comparison == Ordering.GREATER:
+            right = middle - 1
+        else:
+            return middle
+    return None
+
+class QualityFinder:
+    compute_image_size: Callable[[int], int]
+    # Keep track of which quality value produced the closest match to the target_size
+    closest_match: Optional[tuple[int, float]]
+    # The size that the image should have
+    target_size: int
+    # A lower bound for the acceptable image size in percent
+    # For example when the acceptable_bound is 0.9 and a value produces an image that
+    # has a size of target_size * 94%, then the value is accepted, because 0.94 >= 0.9
+    acceptable_bound: float
+
+    def __init__(self, compute_image_size: Callable[[int], int], target_size: int, acceptable_bound: float = 0.9) -> None:
+        self.compute_image_size = compute_image_size
+        self.closest_match = None
+        self.target_size = target_size
+        self.acceptable_bound = acceptable_bound
+
+    def __get_ratio(self, quality: int) -> float:
+        # calculate the size of the image with the specified quality:
+        current_size: int = self.compute_image_size(quality)
+
+        # check if the new image size is closer to 100% than the previous one (but ideally less than 1.0)
+        ratio = float(current_size) / float(self.target_size)
+        if self.closest_match is None:
+            self.closest_match = (quality, ratio)
+        else:
+            (_, best_ratio) = self.closest_match
+            if best_ratio > 1.0 and ratio <= 1.0:
+                self.closest_match = (quality, ratio)
+            elif ratio >= self.acceptable_bound and abs(1.0 - ratio) < abs(1.0 - best_ratio):
+                self.closest_match = (quality, ratio)
+
+        return ratio
+
+    def compare_quality(self, value: int) -> Ordering:
+        ratio = self.__get_ratio(value)
+        Logger.log("d", f"Trying quality {value}, which is {ratio * 100.0:.2f}% of {self.target_size}")
+
+        # check if the image is too large
+        if ratio > 1.0:
+            return Ordering.GREATER
+
+        if ratio >= self.acceptable_bound:
+            # check if the next quality would produce an even better result
+            next_ratio: float = self.__get_ratio(value + 1)
+            if next_ratio <= 1.0 and next_ratio > ratio:
+                return Ordering.LESS
+
+            return Ordering.EQUAL
+        else:
+            return Ordering.LESS
 
 class CreateJPEGThumbnail(Script):
     def __init__(self):
@@ -134,14 +209,17 @@ class CreateJPEGThumbnail(Script):
             # reduce the quality of the image until the size is below max_size
             # this option is necessary for some displays like TJC where the image must be smaller than 20kb
             if max_size != -1:
+                finder = QualityFinder(lambda quality: len(self._encodeSnapshot(snapshot, quality=quality)), target_size=max_size)
                 # quality ranges from 95 (best) to 1 (worst)
-                quality = 95
-                while len(encoded_snapshot) >= max_size:
-                    if quality == 0:
-                        Logger.log("e", f"Failed to reduce image size to at most {max_size} bytes")
-                        break
-                    encoded_snapshot = self._encodeSnapshot(snapshot, quality=quality)
-                    quality -= 1
+                qualities = list(range(1, 95 + 1))
+                index = binary_search(qualities, finder.compare_quality)
+                quality = finder.closest_match[0]
+                if index is not None:
+                    quality = qualities[index]
+                else:
+                    Logger.log("e", f"Failed to reduce image size to at most {max_size} bytes")
+                encoded_snapshot = self._encodeSnapshot(snapshot, quality=quality)
+
             snapshot_gcode = self._convertSnapshotToGcode(
                 encoded_snapshot, width, height)
 
