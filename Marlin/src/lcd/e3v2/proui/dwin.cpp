@@ -1710,11 +1710,6 @@ void dwinPrintAborted() {
   dwinPrintFinished();
 }
 
-#if HAS_FILAMENT_SENSOR
-  // Filament Runout process
-  void dwinFilamentRunout(const uint8_t extruder) { LCD_MESSAGE(MSG_RUNOUT_SENSOR); }
-#endif
-
 void dwinSetColorDefaults() {
   hmiData.colorBackground = defColorBackground;
   hmiData.colorCursor     = defColorCursor;
@@ -2150,7 +2145,7 @@ void autoHome() { queue.inject_P(G28_STR); }
 
   void setMoveZto0() {
     #if HAS_LEVELING && ANY(RESTORE_LEVELING_AFTER_G28, ENABLE_LEVELING_AFTER_G28)
-      set_bed_leveling_enabled(false));
+      set_bed_leveling_enabled(false);
     #endif
     #if ENABLED(Z_SAFE_HOMING)
       gcode.process_subcommands_now(TS(F("G28Z\nG0F5000X"), Z_SAFE_HOMING_X_POINT, F("Y"), Z_SAFE_HOMING_Y_POINT, F("\nG0Z0F300\nM400")));
@@ -2346,8 +2341,13 @@ void applyMove() {
     void liveRunoutActive() { proUIEx.drawRunoutActive(true); }
     void setRunoutActive() {
       uint8_t val;
-      val = PRO_data.FilamentMotionSensor ? 2 : PRO_data.Runout_active_state ? 1 : 0;
-      setOnClick(ID_SetIntNoDraw, 0, 2, 0, val, proUIEx.applyRunoutActive, liveRunoutActive);
+      #if ENABLED(FILAMENT_MOTION_SENSOR)
+        val = PRO_data.FilamentMotionSensor ? 2 : PRO_data.Runout_active_state ? 1 : 0;
+        setOnClick(ID_SetIntNoDraw, 0, 2, 0, val, proUIEx.applyRunoutActive, liveRunoutActive);
+      #else
+        val = PRO_data.Runout_active_state ? 1 : 0;
+        setOnClick(ID_SetIntNoDraw, 0, 1, 0, val, proUIEx.applyRunoutActive, liveRunoutActive);
+      #endif
       proUIEx.drawRunoutActive(true);
     }
   #endif
@@ -2607,9 +2607,11 @@ void onDrawGetColorItem(MenuItem* menuitem, int8_t line) {
 #if ALL(HAS_FILAMENT_SENSOR, PROUI_EX)
   void ondrawRunoutActive(MenuItem* menuitem, int8_t line) {
     onDrawMenuItem(menuitem, line);
-    if (PRO_data.FilamentMotionSensor)
-      DWINUI::drawString(VALX - 8, MBASE(line), GET_TEXT_F(MSG_MOTION));
-    else
+    #if ENABLED(FILAMENT_MOTION_SENSOR)
+      if (PRO_data.FilamentMotionSensor)
+        DWINUI::drawString(VALX - 8, MBASE(line), GET_TEXT_F(MSG_MOTION));
+      else
+    #endif
       DWINUI::drawString(VALX + 8, MBASE(line), PRO_data.Runout_active_state ? GET_TEXT_F(MSG_HIGH) : GET_TEXT_F(MSG_LOW));
   }
 #endif
@@ -2893,9 +2895,9 @@ void drawFilSetMenu() {
       #if PROUI_EX
         MENU_ITEM(ICON_Runout, MSG_RUNOUT_ACTIVE, ondrawRunoutActive, setRunoutActive);
       #endif
-    #endif
-    #if HAS_FILAMENT_RUNOUT_DISTANCE
-      EDIT_ITEM(ICON_Runout, MSG_RUNOUT_DISTANCE_MM, onDrawPFloatMenu, setRunoutDistance, &runout.runout_distance());
+      #if HAS_FILAMENT_RUNOUT_DISTANCE
+        EDIT_ITEM(ICON_Runout, MSG_RUNOUT_DISTANCE_MM, onDrawPFloatMenu, setRunoutDistance, &runout.runout_distance());
+      #endif
     #endif
     #if ALL(PROUI_EX, HAS_EXTRUDERS)
       EDIT_ITEM(ICON_InvertE0, MSG_INVERT_EXTRUDER, onDrawChkbMenu, setInvertE0, &PRO_data.Invert_E0);
@@ -3062,8 +3064,8 @@ void drawTuneMenu() {
 #endif
 
 #if ENABLED(SHAPING_MENU)
-  void applyShapingFreq() { stepper.set_shaping_frequency(hmiValue.axis, menuData.value / 100); }
-  void applyShapingZeta() { stepper.set_shaping_damping_ratio(hmiValue.axis, menuData.value / 100); }
+  void applyShapingFreq() { stepper.set_shaping_frequency(hmiValue.axis, menuData.value * 0.01); }
+  void applyShapingZeta() { stepper.set_shaping_damping_ratio(hmiValue.axis, menuData.value * 0.01); }
 
   #if ENABLED(INPUT_SHAPING_X)
     void onDrawShapingXFreq(MenuItem* menuitem, int8_t line) { onDrawFloatMenu(menuitem, line, 2, stepper.get_shaping_frequency(X_AXIS)); }

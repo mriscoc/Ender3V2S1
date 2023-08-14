@@ -1130,7 +1130,6 @@ void setup() {
 
   // Check startup - does nothing if bootloader sets MCUSR to 0
   const byte mcu = hal.get_reset_source();
-  TERN_(PROUI_EX, if (mcu & RST_EXTERNAL) hal.reboot());
   hal.clear_reset_source();
 
   #if ENABLED(MARLIN_DEV_MODE)

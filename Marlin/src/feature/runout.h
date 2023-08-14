@@ -195,7 +195,7 @@ class FilamentSensorBase {
   public:
     static void setup() {
       #define _INIT_RUNOUT_PIN(P,S,U,D) do{ if (ENABLED(U)) SET_INPUT_PULLUP(P); else if (ENABLED(D)) SET_INPUT_PULLDOWN(P); else SET_INPUT(P); }while(0);
-      #if PROUI_EX
+      #if ENABLED(PROUI_EX)
         #define INIT_RUNOUT_PIN(N) proUIEx.setRunoutState(FIL_RUNOUT##N##_PIN);
       #else
         #define  INIT_RUNOUT_PIN(N) _INIT_RUNOUT_PIN(FIL_RUNOUT##N##_PIN, FIL_RUNOUT##N##_STATE, FIL_RUNOUT##N##_PULLUP, FIL_RUNOUT##N##_PULLDOWN);
@@ -230,9 +230,13 @@ class FilamentSensorBase {
     }
 
     #if ENABLED(PROUI_EX)
-      static uint8_t motion_detected;
-      static void poll_motion_sensor();
-      static void block_completed(const block_t * const b);
+      #if HAS_FILAMENT_MOTION
+        static uint8_t motion_detected;
+        static void poll_motion_sensor();
+      #endif
+      #if HAS_FILAMENT_RUNOUT_DISTANCE
+        static void block_completed(const block_t * const b);
+      #endif
       static void run();
     #elif ENABLED(FILAMENT_SWITCH_AND_MOTION)
       // Return a bitmask of motion pin states
@@ -251,7 +255,7 @@ class FilamentSensorBase {
     #endif
 };
 
-#if HAS_FILAMENT_MOTION
+#if HAS_FILAMENT_MOTION && DISABLED(PROUI_EX)
 
   /**
    * This sensor uses a magnetic encoder disc and a Hall effect

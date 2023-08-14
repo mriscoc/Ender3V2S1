@@ -200,7 +200,7 @@
 #define COLOR_LIGHT_BLUE      0x3A6A
 #define COLOR_MAGENTA         0xF81F
 #define COLOR_LIGHT_MAGENTA   0x9813
-#define COLOR_LIGHT_RED       0x8800
+#define COLOR_LIGHT_RED       RGB(31,31,15)
 #define COLOR_ORANGE          0xFA20
 #define COLOR_LIGHT_ORANGE    0xFBC0
 #define COLOR_LIGHT_YELLOW    0x8BE0

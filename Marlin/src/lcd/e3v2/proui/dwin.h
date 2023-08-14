@@ -242,9 +242,6 @@ void dwinPrintPause();
 void dwinPrintResume();
 void dwinPrintFinished();
 void dwinPrintAborted();
-#if HAS_FILAMENT_SENSOR
-  void dwinFilamentRunout(const uint8_t extruder);
-#endif
 void dwinPrintHeader(const char *text);
 void dwinSetColorDefaults();
 void dwinCopySettingsTo(char * const buff);
