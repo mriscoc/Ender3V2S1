@@ -230,15 +230,17 @@ class FilamentSensorBase {
     }
 
     #if ENABLED(PROUI_EX)
+      static uint8_t motion_detected;
       #if HAS_FILAMENT_MOTION
-        static uint8_t motion_detected;
         static void poll_motion_sensor();
       #endif
       #if HAS_FILAMENT_RUNOUT_DISTANCE
         static void block_completed(const block_t * const b);
       #endif
       static void run();
-    #elif ENABLED(FILAMENT_SWITCH_AND_MOTION)
+    #endif
+
+    #if ENABLED(FILAMENT_SWITCH_AND_MOTION) && DISABLED(PROUI_EX)
       // Return a bitmask of motion pin states
       static uint8_t poll_motion_pins() {
         #define _OR_MOTION(N) | (READ(FIL_MOTION##N##_PIN) ? _BV((N) - 1) : 0)
