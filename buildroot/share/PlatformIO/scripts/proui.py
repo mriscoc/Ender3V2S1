@@ -42,8 +42,7 @@ if "MARLIN_FEATURES" in env:
          arch = 'stm32g0/'
          print ('STM32G0 Architecture detected')
       else:
-         print("Error: can't detect the correct architecture")
-         exit()
+         exit(KeyError("Error: can't detect the correct architecture"))
 
       if (marlin_manualmesh):
          print("Manual Mesh Bed Leveling detected")
@@ -55,5 +54,4 @@ if "MARLIN_FEATURES" in env:
          print("Unified Mesh Bed Leveling detected")
          shutil.copy(libpath+arch+'libproui_ubl.a', libfile)
       else:
-         print("Error: can't detect a supported leveling system")
-         exit()
+         exit(KeyError("Error: can't detect a supported leveling system"))
