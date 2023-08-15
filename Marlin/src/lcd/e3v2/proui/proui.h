@@ -120,7 +120,7 @@ public:
 #if HAS_MEDIA
   static void C10();
 #endif
-#if HAS_FILAMENT_SENSOR
+#if HAS_PROUI_RUNOUT_SENSOR
   static void setRunoutState(uint32_t ulPin);
   static void drawRunoutActive(bool selected);
   static void applyRunoutActive();

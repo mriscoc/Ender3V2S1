@@ -681,7 +681,7 @@ void _drawZOffsetIcon() {
   #endif
 }
 
-#if HAS_FILAMENT_SENSOR && PROUI_EX
+#if HAS_PROUI_RUNOUT_SENSOR
   void _drawRunoutIcon() {
     static bool _runout_active = false;
     _drawIconBlink(_runout_active, !!FilamentSensorBase::poll_runout_states(), ICON_StepE, ICON_FilRunOut, 112, 416);
@@ -789,7 +789,7 @@ void updateVariable() {
     DWINUI::drawSignedFloat(DWIN_FONT_STAT, hmiData.colorIndicator,  hmiData.colorBackground, 2, 2, 204, 417, _offset);
   }
 
-  #if HAS_FILAMENT_SENSOR && PROUI_EX
+  #if HAS_PROUI_RUNOUT_SENSOR
     _drawRunoutIcon();
   #endif
 
@@ -2337,17 +2337,12 @@ void applyMove() {
     toggleCheckboxLine(runout.enabled);
   }
 
-  #if PROUI_EX
+  #if HAS_PROUI_RUNOUT_SENSOR
     void liveRunoutActive() { proUIEx.drawRunoutActive(true); }
     void setRunoutActive() {
       uint8_t val;
-      #if ENABLED(FILAMENT_MOTION_SENSOR)
-        val = PRO_data.FilamentMotionSensor ? 2 : PRO_data.Runout_active_state ? 1 : 0;
-        setOnClick(ID_SetIntNoDraw, 0, 2, 0, val, proUIEx.applyRunoutActive, liveRunoutActive);
-      #else
-        val = PRO_data.Runout_active_state ? 1 : 0;
-        setOnClick(ID_SetIntNoDraw, 0, 1, 0, val, proUIEx.applyRunoutActive, liveRunoutActive);
-      #endif
+      val = PRO_data.FilamentMotionSensor ? 2 : PRO_data.Runout_active_state ? 1 : 0;
+      setOnClick(ID_SetIntNoDraw, 0, 2, 0, val, proUIEx.applyRunoutActive, liveRunoutActive);
       proUIEx.drawRunoutActive(true);
     }
   #endif
@@ -2604,14 +2599,12 @@ void onDrawGetColorItem(MenuItem* menuitem, int8_t line) {
   dwinDrawHLine(hmiData.colorSplitLine, 16, MYPOS(line + 1), 240);
 }
 
-#if ALL(HAS_FILAMENT_SENSOR, PROUI_EX)
+#if HAS_PROUI_RUNOUT_SENSOR
   void ondrawRunoutActive(MenuItem* menuitem, int8_t line) {
     onDrawMenuItem(menuitem, line);
-    #if ENABLED(FILAMENT_MOTION_SENSOR)
-      if (PRO_data.FilamentMotionSensor)
-        DWINUI::drawString(VALX - 8, MBASE(line), GET_TEXT_F(MSG_MOTION));
-      else
-    #endif
+    if (PRO_data.FilamentMotionSensor)
+      DWINUI::drawString(VALX - 8, MBASE(line), GET_TEXT_F(MSG_MOTION));
+    else
       DWINUI::drawString(VALX + 8, MBASE(line), PRO_data.Runout_active_state ? GET_TEXT_F(MSG_HIGH) : GET_TEXT_F(MSG_LOW));
   }
 #endif
@@ -2892,7 +2885,7 @@ void drawFilSetMenu() {
     BACK_ITEM(drawAdvancedSettingsMenu);
     #if HAS_FILAMENT_SENSOR
       EDIT_ITEM(ICON_Runout, MSG_RUNOUT_ENABLE, onDrawChkbMenu, setRunoutEnable, &runout.enabled);
-      #if PROUI_EX
+      #if HAS_PROUI_RUNOUT_SENSOR
         MENU_ITEM(ICON_Runout, MSG_RUNOUT_ACTIVE, ondrawRunoutActive, setRunoutActive);
       #endif
       #if HAS_FILAMENT_RUNOUT_DISTANCE

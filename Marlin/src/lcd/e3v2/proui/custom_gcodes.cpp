@@ -147,7 +147,7 @@ void customGcode(const int16_t codenum) {
       #if ENABLED(NOZZLE_PARK_FEATURE)
         case 125: proUIEx.C125(); break;  // Set park position
       #endif
-      #if HAS_FILAMENT_SENSOR
+      #if HAS_PROUI_RUNOUT_SENSOR
         case 412: proUIEx.C412(); break;  // Set runout sensor active mode
       #endif
       case 562: proUIEx.C562(); break;    // Invert Extruder
@@ -172,7 +172,7 @@ void customGcodeReport(const bool forReplay/*=true*/) {
     #if ENABLED(NOZZLE_PARK_FEATURE)
       proUIEx.C125_report(forReplay);
     #endif
-    #if HAS_FILAMENT_SENSOR
+    #if HAS_PROUI_RUNOUT_SENSOR
       proUIEx.C412_report(forReplay);
     #endif
       proUIEx.C562_report(forReplay);
