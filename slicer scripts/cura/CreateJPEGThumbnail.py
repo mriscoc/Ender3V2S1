@@ -2,14 +2,17 @@
 # Cura JPEG Thumbnail creator
 # Professional firmware for Ender3v2
 # Miguel A. Risco-Castillo
-# version: 1.5
-# date: 2023-05-23
+# version: 1.6
+# date: 2023-07-23
 #
 # Contains code from:
 # https://github.com/Ultimaker/Cura/blob/master/plugins/PostProcessingPlugin/scripts/CreateThumbnail.py
 #------------------------------------------------------------------------------
 
 import base64
+import json
+from typing import Callable, TypeVar, Optional
+from enum import Enum, auto
 
 from UM.Logger import Logger
 from cura.Snapshot import Snapshot
@@ -17,6 +20,79 @@ from cura.CuraVersion import CuraVersion
 
 from ..Script import Script
 
+T = TypeVar("T")
+
+class Ordering(Enum):
+    LESS = auto()
+    EQUAL = auto()
+    GREATER = auto()
+
+def binary_search(list: list[T], compare: Callable[[T], Ordering]) -> Optional[T]:
+    left: int = 0
+    right: int = len(list) - 1
+    while left <= right:
+        middle: int = (left + right) // 2
+
+        comparison = compare(list[middle])
+        if comparison == Ordering.LESS:
+            left = middle + 1
+        elif comparison == Ordering.GREATER:
+            right = middle - 1
+        else:
+            return middle
+    return None
+
+class QualityFinder:
+    compute_image_size: Callable[[int], int]
+    # Keep track of which quality value produced the closest match to the target_size
+    closest_match: Optional[tuple[int, float]]
+    # The size that the image should have
+    target_size: int
+    # A lower bound for the acceptable image size in percent
+    # For example when the acceptable_bound is 0.9 and a value produces an image that
+    # has a size of target_size * 94%, then the value is accepted, because 0.94 >= 0.9
+    acceptable_bound: float
+
+    def __init__(self, compute_image_size: Callable[[int], int], target_size: int, acceptable_bound: float = 0.9) -> None:
+        self.compute_image_size = compute_image_size
+        self.closest_match = None
+        self.target_size = target_size
+        self.acceptable_bound = acceptable_bound
+
+    def __get_ratio(self, quality: int) -> float:
+        # calculate the size of the image with the specified quality:
+        current_size: int = self.compute_image_size(quality)
+
+        # check if the new image size is closer to 100% than the previous one (but ideally less than 1.0)
+        ratio = float(current_size) / float(self.target_size)
+        if self.closest_match is None:
+            self.closest_match = (quality, ratio)
+        else:
+            (_, best_ratio) = self.closest_match
+            if best_ratio > 1.0 and ratio <= 1.0:
+                self.closest_match = (quality, ratio)
+            elif ratio >= self.acceptable_bound and abs(1.0 - ratio) < abs(1.0 - best_ratio):
+                self.closest_match = (quality, ratio)
+
+        return ratio
+
+    def compare_quality(self, value: int) -> Ordering:
+        ratio = self.__get_ratio(value)
+        Logger.log("d", f"Trying quality {value}, which is {ratio * 100.0:.2f}% of {self.target_size}")
+
+        # check if the image is too large
+        if ratio > 1.0:
+            return Ordering.GREATER
+
+        if ratio >= self.acceptable_bound:
+            # check if the next quality would produce an even better result
+            next_ratio: float = self.__get_ratio(value + 1)
+            if next_ratio <= 1.0 and next_ratio > ratio:
+                return Ordering.LESS
+
+            return Ordering.EQUAL
+        else:
+            return Ordering.LESS
 
 class CreateJPEGThumbnail(Script):
     def __init__(self):
@@ -29,7 +105,7 @@ class CreateJPEGThumbnail(Script):
         except Exception:
             Logger.logException("w", "Failed to create snapshot image")
 
-    def _encodeSnapshot(self, snapshot):
+    def _encodeSnapshot(self, snapshot, quality=-1):
 
         Major=0
         Minor=0
@@ -38,7 +114,7 @@ class CreateJPEGThumbnail(Script):
           Minor = int(CuraVersion.split(".")[1])
         except:
           pass
-        
+
         if Major < 5 :
           from PyQt5.QtCore import QByteArray, QIODevice, QBuffer
         else :
@@ -52,7 +128,7 @@ class CreateJPEGThumbnail(Script):
             else:
               thumbnail_buffer.open(QBuffer.OpenModeFlag.ReadWrite)
             thumbnail_image = snapshot
-            thumbnail_image.save(thumbnail_buffer, "JPG")
+            thumbnail_image.save(thumbnail_buffer, "JPG", quality=quality)
             base64_bytes = base64.b64encode(thumbnail_buffer.data())
             base64_message = base64_bytes.decode('ascii')
             thumbnail_buffer.close()
@@ -79,7 +155,7 @@ class CreateJPEGThumbnail(Script):
         return gcode
 
     def getSettingDataString(self):
-        return """{
+        return json.dumps({
             "name": "Create JPEG Thumbnail",
             "key": "CreateJPEGThumbnail",
             "metadata": {},
@@ -92,7 +168,7 @@ class CreateJPEGThumbnail(Script):
                     "description": "Width of the generated thumbnail",
                     "unit": "px",
                     "type": "int",
-                    "default_value": 200,
+                    "default_value": 190,
                     "minimum_value": "0",
                     "minimum_value_warning": "12",
                     "maximum_value_warning": "800"
@@ -103,21 +179,47 @@ class CreateJPEGThumbnail(Script):
                     "description": "Height of the generated thumbnail",
                     "unit": "px",
                     "type": "int",
-                    "default_value": 200,
+                    "default_value": 190,
                     "minimum_value": "0",
                     "minimum_value_warning": "12",
                     "maximum_value_warning": "600"
+                },
+                "max_size":
+                {
+                    "label": "Maximum Thumbnail Size",
+                    "description": "The maximum size of the thumbnail in bytes. Thumbnails must be smaller than 20 kbytes for TJC displays. If the thumbnail size should not be changed, write -1.",
+                    "unit": "byte",
+                    "type": "int",
+                    "default_value": 15000,
+                    "minimum_value": "-1"
                 }
             }
-        }"""
+        }, indent=4)
 
     def execute(self, data):
         width = self.getSettingValueByKey("width")
         height = self.getSettingValueByKey("height")
+        max_size = self.getSettingValueByKey("max_size")
+
+        Logger.log("d", f"Options: width={width}, height={height}, max_size={max_size}")
 
         snapshot = self._createSnapshot(width, height)
         if snapshot:
             encoded_snapshot = self._encodeSnapshot(snapshot)
+            # reduce the quality of the image until the size is below max_size
+            # this option is necessary for some displays like TJC where the image must be smaller than 20kb
+            if max_size != -1:
+                finder = QualityFinder(lambda quality: len(self._encodeSnapshot(snapshot, quality=quality)), target_size=max_size)
+                # quality ranges from 95 (best) to 1 (worst)
+                qualities = list(range(1, 95 + 1))
+                index = binary_search(qualities, finder.compare_quality)
+                quality = finder.closest_match[0]
+                if index is not None:
+                    quality = qualities[index]
+                else:
+                    Logger.log("e", f"Failed to reduce image size to at most {max_size} bytes")
+                encoded_snapshot = self._encodeSnapshot(snapshot, quality=quality)
+
             snapshot_gcode = self._convertSnapshotToGcode(
                 encoded_snapshot, width, height)
 
