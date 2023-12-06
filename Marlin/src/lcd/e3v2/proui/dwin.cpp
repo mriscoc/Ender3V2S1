@@ -348,7 +348,7 @@ void iconButton(const bool selected, const int iconid, const frame_rect_t &ico, 
 // Main Menu: "Print"
 //
 void iconFiles() {
-  constexpr frame_rect_t ico = { 17, 110 - TERN0(HAS_TOOLBAR,TBYOFFSET), 110, 100};
+  constexpr frame_rect_t ico = { 17, 110 - TERN0(HAS_TOOLBAR, TBYOFFSET), 110, 100};
   iconButton(select_page.now == PAGE_FILES, ICON_Print_0, ico, GET_TEXT_F(MSG_BUTTON_MEDIA));
 }
 
@@ -356,7 +356,7 @@ void iconFiles() {
 // Main Menu: "Prepare"
 //
 void iconPrepare() {
-  constexpr frame_rect_t ico = { 145, 110 - TERN0(HAS_TOOLBAR,TBYOFFSET), 110, 100};
+  constexpr frame_rect_t ico = { 145, 110 - TERN0(HAS_TOOLBAR, TBYOFFSET), 110, 100};
   iconButton(select_page.now == PAGE_PREPARE, ICON_Prepare_0, ico, GET_TEXT_F(MSG_PREPARE));
 }
 
@@ -364,7 +364,7 @@ void iconPrepare() {
 // Main Menu: "Control"
 //
 void iconControl() {
-  constexpr frame_rect_t ico = { 17, 226 - TERN0(HAS_TOOLBAR,TBYOFFSET), 110, 100};
+  constexpr frame_rect_t ico = { 17, 226 - TERN0(HAS_TOOLBAR, TBYOFFSET), 110, 100};
   iconButton(select_page.now == PAGE_CONTROL, ICON_Control_0, ico, GET_TEXT_F(MSG_CONTROL));
 }
 
@@ -372,7 +372,7 @@ void iconControl() {
 // Main Menu: "Advanced Settings"
 //
 void iconAdvSettings() {
-  constexpr frame_rect_t ico = { 145, 226 - TERN0(HAS_TOOLBAR,TBYOFFSET), 110, 100};
+  constexpr frame_rect_t ico = { 145, 226 - TERN0(HAS_TOOLBAR, TBYOFFSET), 110, 100};
   iconButton(select_page.now == PAGE_ADVANCE, ICON_Info_0, ico, GET_TEXT_F(MSG_BUTTON_ADVANCED));
 }
 
@@ -703,7 +703,7 @@ void _drawFeedrate() {
       DWINUI::drawString(DWIN_FONT_STAT, hmiData.colorIndicator, hmiData.colorBackground, 116 + 4 * STAT_CHR_W + 2, 384, F(" %"));
     }
     else {
-      _value = round(feedrate_mm_s * feedrate_percentage / 100);
+      _value = CEIL(MMS_SCALED(feedrate_mm_s));
       dwinDrawBox(1, hmiData.colorBackground, 116 + 5 * STAT_CHR_W + 2, 384, 20, 20);
     }
     DWINUI::drawInt(DWIN_FONT_STAT, hmiData.colorIndicator, hmiData.colorBackground, 3, 116 + 2 * STAT_CHR_W, 384, _value);
@@ -2263,7 +2263,7 @@ void applyMove() {
 #endif
 
 #if HAS_HOME_OFFSET
-  void applyHomeOffset() { set_home_offset(hmiValue.select, menuData.value / MINUNITMULT); }
+  void applyHomeOffset() { set_home_offset((AxisEnum)hmiValue.select, menuData.value / MINUNITMULT); }
   void setHomeOffsetX() { hmiValue.select = X_AXIS; setPFloatOnClick(-50, 50, UNITFDIGITS, applyHomeOffset); }
   void setHomeOffsetY() { hmiValue.select = Y_AXIS; setPFloatOnClick(-50, 50, UNITFDIGITS, applyHomeOffset); }
   void setHomeOffsetZ() { hmiValue.select = Z_AXIS; setPFloatOnClick( -2,  2, UNITFDIGITS, applyHomeOffset); }
@@ -2510,7 +2510,7 @@ void applyMaxAccel() { planner.set_max_acceleration((AxisEnum)hmiValue.select, m
 #endif
 
 #if ENABLED(FWRETRACT)
-  void doRetract() { 
+  void doRetract() {
     current_position.e-=fwretract.settings.retract_length;
     axisMove(E_AXIS);
   }

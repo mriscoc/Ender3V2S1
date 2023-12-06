@@ -331,7 +331,7 @@ uint16_t Title::backColor = defColorTitleBg;
 void Title::draw(const char * const caption) {
   dwinDrawRectangle(1, backColor, 0, 0, DWIN_WIDTH - 1, TITLE_HEIGHT - 1);
   #if ENABLED(TITLE_CENTERED)
-    drawCenteredString(false, DWIN_FONT_HEAD, textColor, backColor, (TITLE_HEIGHT - DWINUI::fontHeight(DWIN_FONT_HEAD)) / 2 - 1, caption);
+    DWINUI::drawCenteredString(false, DWIN_FONT_HEAD, textColor, backColor, (TITLE_HEIGHT - DWINUI::fontHeight(DWIN_FONT_HEAD)) / 2 - 1, caption);
   #else
     dwinDrawString(false, DWIN_FONT_HEAD, textColor, backColor, 14, (TITLE_HEIGHT - DWINUI::fontHeight(DWIN_FONT_HEAD)) / 2 - 1, caption);
   #endif
