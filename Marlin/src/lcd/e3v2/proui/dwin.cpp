@@ -2753,7 +2753,7 @@ void drawAdvancedSettingsMenu() {
       EDIT_ITEM(ICON_Brightness, MSG_BRIGHTNESS, onDrawPInt8Menu, setBrightness, &ui.brightness);
       MENU_ITEM(ICON_Brightness, MSG_BRIGHTNESS_OFF, onDrawMenuItem, turnOffBacklight);
     #endif
-    #if HAS_CUSTOM_COLORS_MENU
+    #if ALL(HAS_CUSTOM_COLORS , HAS_CUSTOM_COLORS_MENU)
       MENU_ITEM(ICON_Scolor, MSG_COLORS_SELECT, onDrawSubMenu, drawSelectColorsMenu);
     #endif
   }
