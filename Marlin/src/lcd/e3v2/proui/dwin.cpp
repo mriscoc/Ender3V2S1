@@ -1823,7 +1823,6 @@ void MarlinUI::init_lcd() {
     SERIAL_ECHOLN(hs ? F("ok.") : F("error."));
   #endif
   dwinFrameSetDir(1);
-  dwinJPGShowAndCache(3);
   dwinUpdateLCD();
   encoderConfiguration();
 }
@@ -2754,7 +2753,7 @@ void drawAdvancedSettingsMenu() {
       EDIT_ITEM(ICON_Brightness, MSG_BRIGHTNESS, onDrawPInt8Menu, setBrightness, &ui.brightness);
       MENU_ITEM(ICON_Brightness, MSG_BRIGHTNESS_OFF, onDrawMenuItem, turnOffBacklight);
     #endif
-    #if HAS_CUSTOM_COLORS_MENU
+    #if ALL(HAS_CUSTOM_COLORS , HAS_CUSTOM_COLORS_MENU)
       MENU_ITEM(ICON_Scolor, MSG_COLORS_SELECT, onDrawSubMenu, drawSelectColorsMenu);
     #endif
   }
@@ -3480,7 +3479,7 @@ void drawStepsMenu() {
     if (notCurrentMenu(hotendPIDMenu)) {
       BACK_ITEM(drawAdvancedSettingsMenu);
       #if ENABLED(PID_AUTOTUNE_MENU)
-        MENU_ITEM_F(ICON_PIDNozzle, STR_HOTEND_PID, onDrawMenuItem, hotendPID);
+        MENU_ITEM(ICON_PIDNozzle, MSG_PID_AUTOTUNE, onDrawMenuItem, hotendPID);
         EDIT_ITEM(ICON_Temperature, MSG_TEMPERATURE, onDrawPIntMenu, setHotendPidT, &hmiData.hotendPidT);
         EDIT_ITEM(ICON_PIDCycles, MSG_PID_CYCLE, onDrawPIntMenu, setPidCycles, &hmiData.pidCycles);
       #endif
@@ -3510,7 +3509,7 @@ void drawStepsMenu() {
     if (notCurrentMenu(bedPIDMenu)) {
       BACK_ITEM(drawAdvancedSettingsMenu);
       #if ENABLED(PID_AUTOTUNE_MENU)
-        MENU_ITEM_F(ICON_PIDBed, STR_BED_PID, onDrawMenuItem,bedPID);
+        MENU_ITEM(ICON_PIDBed, MSG_PID_AUTOTUNE, onDrawMenuItem,bedPID);
         EDIT_ITEM(ICON_Temperature, MSG_TEMPERATURE, onDrawPIntMenu, setBedPidT, &hmiData.bedPidT);
         EDIT_ITEM(ICON_PIDCycles, MSG_PID_CYCLE, onDrawPIntMenu, setPidCycles, &hmiData.pidCycles);
       #endif
