@@ -29,7 +29,7 @@
 #include "../../marlinui.h"
 #include "plot.h"
 
-#define Plot_Bg_Color RGB( 1, 12,  8)
+#define Plot_Bg_Color RGB( 1, 12, 8)
 
 Plot plot;
 

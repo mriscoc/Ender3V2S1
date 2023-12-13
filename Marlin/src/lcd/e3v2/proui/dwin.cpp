@@ -1057,18 +1057,19 @@ void hmiMainMenu() {
   if (encoder_diffState == ENCODER_DIFF_CW) {
     if (select_page.inc(PAGE_COUNT)) {
       switch (select_page.now) {
-        case PAGE_FILES: iconFiles(); break;
-        case PAGE_PREPARE: iconFiles(); iconPrepare(); break;
+        case PAGE_FILES:   iconFiles(); break;
+        case PAGE_PREPARE: iconFiles();   iconPrepare(); break;
         case PAGE_CONTROL: iconPrepare(); iconControl(); break;
         case PAGE_ADVANCE: iconControl(); iconAdvSettings(); break;
-        TERN_(HAS_TOOLBAR, case PAGE_TOOLBAR: iconAdvSettings(); gotoToolBar();  break);
+        OPTCODE(HAS_TOOLBAR,
+        case PAGE_TOOLBAR: iconAdvSettings(); gotoToolBar(); break)
       }
     }
   }
   else if (encoder_diffState == ENCODER_DIFF_CCW) {
     if (select_page.dec()) {
       switch (select_page.now) {
-        case PAGE_FILES: iconFiles(); iconPrepare(); break;
+        case PAGE_FILES:   iconFiles();   iconPrepare(); break;
         case PAGE_PREPARE: iconPrepare(); iconControl(); break;
         case PAGE_CONTROL: iconControl(); iconAdvSettings(); break;
         case PAGE_ADVANCE: iconAdvSettings(); break;
@@ -1081,7 +1082,7 @@ void hmiMainMenu() {
         if (ENABLED(HAS_SD_EXTENDER) || hmiData.mediaAutoMount) {
           card.mount();
           safe_delay(800);
-        };
+        }
         drawFileMenu();
         break;
       case PAGE_PREPARE: drawPrepareMenu(); break;
@@ -1150,13 +1151,11 @@ void drawMainArea() {
     case ID_MainMenu:               drawMainMenu(); break;
     case ID_PrintProcess:           drawPrintProcess(); break;
     case ID_PrintDone:              drawPrintDone(); break;
-    #if HAS_ESDIAG
-      case ID_ESDiagProcess:        drawEndStopDiag(); break;
-    #endif
+    OPTCODE(HAS_ESDIAG,
+    case ID_ESDiagProcess:          drawEndStopDiag(); break)
     case ID_Popup:                  popupDraw(); break;
-    #if HAS_LOCKSCREEN
-      case ID_Locked:               lockScreen.draw(); break;
-    #endif
+    OPTCODE(HAS_LOCKSCREEN,
+    case ID_Locked:                 lockScreen.draw(); break)
     case ID_Menu:
       #if HAS_TOOLBAR
         if (currentMenu == &toolBar) drawMainMenu(); else redrawMenu();
@@ -1371,12 +1370,12 @@ void dwinHandleScreen() {
     case ID_SetIntNoDraw:    hmiSetNoDraw(); break;
     case ID_PrintProcess:    hmiPrinting(); break;
     case ID_Popup:           hmiPopup(); break;
-    case ID_Leveling:        TERN_(PROUI_EX, hmiWaitForUser();) break;
-    #if HAS_LOCKSCREEN
-      case ID_Locked:        hmiLockScreen(); break;
-    #endif
+    case ID_Leveling:        OPTCODE(PROUI_EX, hmiWaitForUser()) break;
+    OPTCODE(HAS_LOCKSCREEN,
+    case ID_Locked:          hmiLockScreen(); break)
     case ID_PrintDone:
-    TERN_(HAS_ESDIAG, case ID_ESDiagProcess:)
+    TERN_(HAS_ESDIAG,
+    case ID_ESDiagProcess:)
     case ID_WaitResponse:    hmiWaitForUser(); break;
     case ID_Homing:
     case ID_PIDProcess:
@@ -1393,7 +1392,8 @@ bool idIsPopUp() {    // If ID is popup...
     case ID_Homing:
     case ID_Leveling:
     case ID_PIDProcess:
-    TERN_(HAS_ESDIAG, case ID_ESDiagProcess:)
+    TERN_(HAS_ESDIAG,
+    case ID_ESDiagProcess:)
       return true;
     default: break;
   }
@@ -1409,7 +1409,8 @@ void hmiSaveProcessID(const uint8_t id) {
     case ID_WaitResponse:
     case ID_PrintDone:
     case ID_Leveling:
-    TERN_(HAS_ESDIAG, case ID_ESDiagProcess:)
+    TERN_(HAS_ESDIAG,
+    case ID_ESDiagProcess:)
       wait_for_user = true;
     default: break;
   }
@@ -1515,47 +1516,25 @@ void dwinHomingDone() {
         case MPCTEMP_START:
           DWINUI::drawCenteredString(hmiData.colorPopupTxt, 100, GET_TEXT_F(MSG_MPC_AUTOTUNE));
           DWINUI::drawString(hmiData.colorPopupTxt, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, GET_TEXT_F(MSG_MPC_TARGET));
-          break;
-      #endif
-      #if ANY(PIDTEMP, PIDTEMPBED)
-        TERN_(PIDTEMP,    case PIDTEMP_START:)
-        TERN_(PIDTEMPBED, case PIDTEMPBED_START:)
-          DWINUI::drawCenteredString(hmiData.colorPopupTxt, 100, GET_TEXT_F(MSG_PID_AUTOTUNE));
-          DWINUI::drawString(hmiData.colorPopupTxt, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, GET_TEXT_F(MSG_PID_TARGET));
-          break;
-      #endif
-      default: break;
-    }
-    switch (hmiValue.tempControl) {
-      #if ANY(PIDTEMP, MPC_AUTOTUNE)
-        TERN_(PIDTEMP,      case PIDTEMP_START:)
-        TERN_(MPC_AUTOTUNE, case MPCTEMP_START:)
           DWINUI::drawCenteredString(hmiData.colorPopupTxt, 120, GET_TEXT_F(MSG_NOZZLE_IS_RUN));
-          break;
-      #endif
-      #if ENABLED(PIDTEMPBED)
-        case PIDTEMPBED_START:
-          DWINUI::drawCenteredString(hmiData.colorPopupTxt, 120, GET_TEXT_F(MSG_BED_IS_RUN));
-          break;
-      #endif
-      default: break;
-    }
-    // Set values
-    switch (hmiValue.tempControl) {
-      #if ENABLED(MPC_AUTOTUNE)
-        case MPCTEMP_START:
           _maxtemp = thermalManager.hotend_maxtemp[EXT];
           _target = 200;
           break;
       #endif
       #if ENABLED(PIDTEMP)
         case PIDTEMP_START:
+          DWINUI::drawCenteredString(hmiData.colorPopupTxt, 100, GET_TEXT_F(MSG_PID_AUTOTUNE));
+          DWINUI::drawString(hmiData.colorPopupTxt, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, GET_TEXT_F(MSG_PID_TARGET));
+          DWINUI::drawCenteredString(hmiData.colorPopupTxt, 120, GET_TEXT_F(MSG_NOZZLE_IS_RUN));
           _maxtemp = thermalManager.hotend_maxtemp[EXT];
           _target = hmiData.hotendPidT;
           break;
       #endif
       #if ENABLED(PIDTEMPBED)
         case PIDTEMPBED_START:
+          DWINUI::drawCenteredString(hmiData.colorPopupTxt, 100, GET_TEXT_F(MSG_PID_AUTOTUNE));
+          DWINUI::drawString(hmiData.colorPopupTxt, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, GET_TEXT_F(MSG_PID_TARGET));
+          DWINUI::drawCenteredString(hmiData.colorPopupTxt, 120, GET_TEXT_F(MSG_BED_IS_RUN));
           _maxtemp = BED_MAXTEMP;
           _target = hmiData.bedPidT;
           break;
@@ -2830,7 +2809,9 @@ void drawMoveMenu() {
           EDIT_ITEM(ICON_HSMode, MSG_ENABLE_HS_MODE, onDrawChkbMenu, setHSMode, &bltouch.high_speed_mode);
         #endif
       #endif
-      MENU_ITEM(ICON_ProbeTest, MSG_M48_TEST, onDrawMenuItem, probeTest);
+      #if ENABLED(Z_MIN_PROBE_REPEATABILITY_TEST)
+        MENU_ITEM(ICON_ProbeTest, MSG_M48_TEST, onDrawMenuItem, probeTest);
+      #endif
     }
     SET_MENU(probeSetMenu, MSG_ZPROBE_SETTINGS);
   }
@@ -3476,6 +3457,7 @@ void drawStepsMenu() {
   #endif
 
   void drawHotendPIDMenu() {
+    checkkey = ID_Menu;
     if (notCurrentMenu(hotendPIDMenu)) {
       BACK_ITEM(drawAdvancedSettingsMenu);
       #if ENABLED(PID_AUTOTUNE_MENU)
