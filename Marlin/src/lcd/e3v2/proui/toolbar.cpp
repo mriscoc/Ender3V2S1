@@ -55,7 +55,7 @@ void drawToolBar() {
       if (TBItem->icon) MENU_ITEM_F(TBItem->icon, TBItem->caption, onDrawTBItem, TBItem->onClick);
     }
     toolBar.onExit = &exitToolBar;
-    toolBar.count = TBMaxOpt;
+    toolBar.count = menuItemCount;
     currentMenu = &toolBar;
   }
   toolBar.draw();
