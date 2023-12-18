@@ -61,6 +61,7 @@ struct MenuItem_t {
   OnClickItem onClick = nullptr;
   void* value;
 };
+extern int8_t menuItemCount;
 
 constexpr uint8_t menu_max_items = MENU_MAX_ITEMS;
 
