@@ -467,8 +467,6 @@
 #define BOARD_FYSETC_CHEETAH_V30      5250  // FYSETC Cheetah V3.0 (STM32F446RC)
 #define BOARD_BLACKBEEZMINI_V1        5251  // BlackBeezMini V1 (STM32F401CCU6)
 
-#define BOARD_CREALITY_CR4NTxxC10     5301  // Creality STM32F401RE
-
 //
 // ARM Cortex-M7
 //
