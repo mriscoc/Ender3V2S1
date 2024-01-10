@@ -198,8 +198,13 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
       WRITE(LCD_BACKLIGHT_PIN, HIGH);
     #endif
   }
+#elif ENABLED(PROUI_EX)
+  void MarlinUI::refresh_backlight_timeout() {
+    // do nothing
+  }
+#endif
 
-#elif HAS_DISPLAY_SLEEP
+#if HAS_DISPLAY_SLEEP
 
   constexpr uint8_t MarlinUI::sleep_timeout_min, MarlinUI::sleep_timeout_max;
 

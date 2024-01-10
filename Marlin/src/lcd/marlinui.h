@@ -278,7 +278,11 @@ public:
     static uint8_t backlight_timeout_minutes;
     static millis_t backlight_off_ms;
     static void refresh_backlight_timeout();
-  #elif HAS_DISPLAY_SLEEP
+  #elif ENABLED(PROUI_EX)
+    static void refresh_backlight_timeout();
+  #endif
+
+  #if HAS_DISPLAY_SLEEP
     static constexpr uint8_t sleep_timeout_min = 0;
     static constexpr uint8_t sleep_timeout_max = 99;
     static uint8_t sleep_timeout_minutes;
