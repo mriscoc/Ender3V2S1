@@ -50,10 +50,12 @@ EncoderRate encoderRate;
 
 // TODO: Replace with ui.quick_feedback
 void Encoder_tick() {
-  #if ENABLED(SPEAKER)
-    if (ui.sound_on) BUZZ(50,800);
-  #elif HAS_BEEPER
-    if (ui.sound_on) buzzer.click(10);
+  #if HAS_CHIRP
+    #if ENABLED(SPEAKER)
+      if (ui.sound_on) BUZZ(LCD_FEEDBACK_FREQUENCY_DURATION_MS, LCD_FEEDBACK_FREQUENCY_HZ);
+    #elif HAS_BEEPER
+      if (ui.sound_on) buzzer.click(10);
+    #endif
   #endif
 }
 

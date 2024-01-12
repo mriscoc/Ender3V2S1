@@ -33,6 +33,21 @@
 
 #if ENABLED(MARLIN_DEV_MODE)
   #warning "WARNING! Disable MARLIN_DEV_MODE for the final build!"
+  #ifdef __LONG_MAX__
+    #if __LONG_MAX__ > __INT_MAX__
+      #warning "The 'long' type is larger than the 'int' type on this platform."
+    #else
+      #warning "The 'long' type is the same as the 'int' type on this platform."
+    #endif
+  #endif
+#endif
+
+#if DISABLED(DEBUG_FLAGS_GCODE)
+  #warning "DEBUG_FLAGS_GCODE is recommended if you have space. Some hosts rely on it."
+#endif
+
+#if DISABLED(CAPABILITIES_REPORT)
+  #warning "CAPABILITIES_REPORT is recommended if you have space. Some hosts rely on it."
 #endif
 
 #if ENABLED(LA_DEBUG)
@@ -58,6 +73,9 @@
 #endif
 #if HAS_COOLER && DISABLED(THERMAL_PROTECTION_COOLER)
   #warning "Safety Alert! Enable THERMAL_PROTECTION_COOLER for the final build!"
+#endif
+#if ENABLED(IGNORE_THERMOCOUPLE_ERRORS)
+  #warning "Safety Alert! Disable IGNORE_THERMOCOUPLE_ERRORS for the final build!"
 #endif
 #if ANY_THERMISTOR_IS(998) || ANY_THERMISTOR_IS(999)
   #warning "Warning! Don't use dummy thermistors (998/999) for final build!"
@@ -685,16 +703,16 @@
 #endif
 
 /**
- * FYSETC/MKS/BTT Mini Panel backlighting
+ * FYSETC/MKS/BTT/BEEZ Mini Panel backlighting
  */
 #if ANY(FYSETC_242_OLED_12864, FYSETC_MINI_12864_2_1) && !ALL(NEOPIXEL_LED, LED_CONTROL_MENU, LED_USER_PRESET_STARTUP, LED_COLOR_PRESETS)
-  #warning "Your FYSETC/MKS/BTT Mini Panel works best with NEOPIXEL_LED, LED_CONTROL_MENU, LED_USER_PRESET_STARTUP, and LED_COLOR_PRESETS."
+  #warning "Your FYSETC/MKS/BTT/BEEZ Mini Panel works best with NEOPIXEL_LED, LED_CONTROL_MENU, LED_USER_PRESET_STARTUP, and LED_COLOR_PRESETS."
 #endif
 
 #if ANY(FYSETC_MINI_12864_1_2, FYSETC_MINI_12864_2_0) && DISABLED(RGB_LED)
   #warning "Your FYSETC Mini Panel works best with RGB_LED."
 #elif ANY(FYSETC_MINI_12864_2_0, FYSETC_MINI_12864_2_1) && DISABLED(LED_USER_PRESET_STARTUP)
-  #warning "Your FYSETC Mini Panel works best with LED_USER_PRESET_STARTUP."
+  #warning "Your FYSETC/MKS/BTT/BEEZ Mini Panel works best with LED_USER_PRESET_STARTUP."
 #endif
 
 #if ANY(FYSETC_242_OLED_12864, FYSETC_MINI_12864) && ALL(PSU_CONTROL, HAS_COLOR_LEDS) && !LED_POWEROFF_TIMEOUT
@@ -704,7 +722,7 @@
 /**
  * Maple environment
  */
-#if ENABLED(__STM32F1__) && DISABLED(NO_MAPLE_WARNING)
+#if defined(__STM32F1__) && DISABLED(NO_MAPLE_WARNING)
   #warning "Maple build environments are deprecated. Please use a non-Maple build environment. Report issues to the Marlin Firmware project."
 #endif
 
@@ -775,6 +793,13 @@
 #endif
 
 /**
+ * Voxelab N32 bootloader
+ */
+#ifdef SDCARD_FLASH_LIMIT_256K
+  #warning "This board has 512K but the bootloader can only flash firmware.bin <= 256K. ICSP required for full 512K capacity."
+#endif
+
+/**
  * ProUI Boot Screen Duration
  */
 #if ENABLED(DWIN_LCD_PROUI) && BOOTSCREEN_TIMEOUT > 2000
@@ -786,4 +811,11 @@
  */
 #if HAL_ADC_VREF_MV < 5000 && ANY_THERMISTOR_IS(-1) && DISABLED(ALLOW_AD595_3V3_VREF)
   #warning "The (-1) AD595 Thermocouple Amplifier requires 5V input supply! Use AD8495 for 3.3V ADC."
+#endif
+
+/**
+ * No PWM on the Piezo Beeper?
+ */
+#if PIN_EXISTS(BEEPER) && ALL(SPEAKER, NO_SPEAKER)
+  #warning "The BEEPER cannot produce tones so you can disable SPEAKER."
 #endif

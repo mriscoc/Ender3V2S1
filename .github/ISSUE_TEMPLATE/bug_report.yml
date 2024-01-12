@@ -1,6 +1,7 @@
 name: 🐛 Report a bug
 description: Create a bug report to help improve the Professional Firmware
 title: "[BUG] (bug summary)"
+labels: ["Bug: Potential ?"]
 body:
   - type: markdown
     attributes:

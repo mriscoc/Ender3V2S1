@@ -88,8 +88,7 @@ typedef bool (*statusResetFunc_t)();
 
 #if HAS_WIRED_LCD
   #define LCD_WITH_BLINK 1
-  #define LCD_UPDATE_INTERVAL TERN(HAS_TOUCH_BUTTONS, 50, 100)
-
+  #define LCD_UPDATE_INTERVAL DIV_TERN(DOUBLE_LCD_FRAMERATE, TERN(HAS_TOUCH_BUTTONS, 50, 100), 2)
 #endif
 
 #if HAS_MARLINUI_U8GLIB
@@ -279,7 +278,11 @@ public:
     static uint8_t backlight_timeout_minutes;
     static millis_t backlight_off_ms;
     static void refresh_backlight_timeout();
-  #elif HAS_DISPLAY_SLEEP
+  #elif ENABLED(PROUI_EX)
+    static void refresh_backlight_timeout();
+  #endif
+
+  #if HAS_DISPLAY_SLEEP
     static constexpr uint8_t sleep_timeout_min = 0;
     static constexpr uint8_t sleep_timeout_max = 99;
     static uint8_t sleep_timeout_minutes;
@@ -661,7 +664,7 @@ public:
 
     #if HAS_TOUCH_BUTTONS
       static uint8_t touch_buttons;
-      static uint8_t repeat_delay;
+      static uint16_t repeat_delay;
     #else
       static constexpr uint8_t touch_buttons = 0;
     #endif

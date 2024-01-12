@@ -152,7 +152,7 @@ typedef struct {
   #if ANY(HAS_PID_HEATING, MPCTEMP)
     tempcontrol_t tempControl = AUTOTUNE_DONE;
   #endif
-  uint8_t select = 0;  // Auxiliary selector variable
+  uint8_t select  = 0;  // Auxiliary selector variable
 } hmi_value_t;
 
 typedef struct {
@@ -329,7 +329,7 @@ void drawMotionMenu();
 void drawTemperatureMenu();
 void drawMaxSpeedMenu();
 void drawMaxAccelMenu();
-#if HAS_CLASSIC_JERK
+#if ENABLED(CLASSIC_JERK)
   void drawMaxJerkMenu();
 #endif
 void drawStepsMenu();

@@ -28,8 +28,8 @@
 
 // Default Colors
 #define COLOR_WHITE         0xFFFF
-#define COLOR_YELLOW        RGB(0x1F, 0x3F, 0x00)
-#define COLOR_RED           RGB(0x1F, 0x00, 0x00)
+#define COLOR_YELLOW        RGB(0x1F,0x3F,0x00)
+#define COLOR_RED           RGB(0x1F,0x00,0x00)
 #define COLOR_ERROR_RED     0xB000  // Error!
 #define COLOR_BG_RED        0xF00F  // Red background color
 #define COLOR_BG_WINDOW     0x31E8  // Popup background color
@@ -45,9 +45,9 @@
 
 // Extended Colors
 #define COLOR_BLACK           0
-#define COLOR_GREEN           RGB(0, 63, 0)
-#define COLOR_AQUA            RGB(0, 63, 31)
-#define COLOR_BLUE            RGB(0, 0, 31)
+#define COLOR_GREEN           RGB(0,63,0)
+#define COLOR_AQUA            RGB(0,63,31)
+#define COLOR_BLUE            RGB(0,0,31)
 #define COLOR_LIGHT_WHITE     0xBDD7
 #define COLOR_LIGHT_GREEN     0x3460
 #define COLOR_CYAN            0x07FF
@@ -55,7 +55,7 @@
 #define COLOR_LIGHT_BLUE      0x3A6A
 #define COLOR_MAGENTA         0xF81F
 #define COLOR_LIGHT_MAGENTA   0x9813
-#define COLOR_LIGHT_RED       RGB(31, 31, 15)
+#define COLOR_LIGHT_RED       RGB(31,31,15)
 #define COLOR_ORANGE          0xFA20
 #define COLOR_LIGHT_ORANGE    0xFBC0
 #define COLOR_LIGHT_YELLOW    0x8BE0
