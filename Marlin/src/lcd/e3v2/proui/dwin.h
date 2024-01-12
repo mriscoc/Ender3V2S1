@@ -152,7 +152,7 @@ typedef struct {
   #if ANY(HAS_PID_HEATING, MPCTEMP)
     tempcontrol_t tempControl = AUTOTUNE_DONE;
   #endif
-  uint8_t select  = 0;  // Auxiliary selector variable
+  uint8_t select = 0;  // Auxiliary selector variable
 } hmi_value_t;
 
 typedef struct {
