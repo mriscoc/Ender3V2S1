@@ -38,6 +38,7 @@
 #include "../../../MarlinCore.h"
 #include "../../../core/serial.h"
 #include "../../../core/macros.h"
+#include "../../../libs/numtostr.h"
 #include "../../../module/temperature.h"
 #include "../../../module/printcounter.h"
 #include "../../../module/motion.h"
