@@ -132,7 +132,7 @@ class MarlinSettings {
       static void EEPROM_SKIP(const T &VAR) { eeprom_index += sizeof(VAR); }
 
       template<typename T>
-      static void EEPROM_WRITE(const T &VAR) {
+      static void EEPROM_WRITE_(const T &VAR) {
         persistentStore.write_data(eeprom_index, (const uint8_t *) &VAR, sizeof(VAR), &working_crc);
       }
 

@@ -203,6 +203,7 @@
  *                 ------
  *                  EXP1
  */
+
 #define EXP1_01_PIN                         PC0
 #define EXP1_02_PIN                         PB2
 #define EXP1_03_PIN                         PA2
