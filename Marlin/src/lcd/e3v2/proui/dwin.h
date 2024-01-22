@@ -22,7 +22,6 @@
 
 #include "../../../inc/MarlinConfig.h"
 
-#include "../../../libs/BL24CXX.h"
 #include "../../../MarlinCore.h"
 #include "../../../module/printcounter.h"
 #include "../../../sd/cardreader.h"
