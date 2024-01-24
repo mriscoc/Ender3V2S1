@@ -1530,47 +1530,25 @@ void dwinHomingDone() {
         case MPCTEMP_START:
           DWINUI::drawCenteredString(hmiData.colorPopupTxt, 100, GET_TEXT_F(MSG_MPC_AUTOTUNE));
           DWINUI::drawString(hmiData.colorPopupTxt, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, GET_TEXT_F(MSG_MPC_TARGET));
-          break;
-      #endif
-      #if ANY(PIDTEMP, PIDTEMPBED)
-        TERN_(PIDTEMP,    case PIDTEMP_START:)
-        TERN_(PIDTEMPBED, case PIDTEMPBED_START:)
-          DWINUI::drawCenteredString(hmiData.colorPopupTxt, 100, GET_TEXT_F(MSG_PID_AUTOTUNE));
-          DWINUI::drawString(hmiData.colorPopupTxt, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, GET_TEXT_F(MSG_PID_TARGET));
-          break;
-      #endif
-      default: break;
-    }
-    switch (hmiValue.tempControl) {
-      #if ANY(PIDTEMP, MPC_AUTOTUNE)
-        TERN_(PIDTEMP,      case PIDTEMP_START:)
-        TERN_(MPC_AUTOTUNE, case MPCTEMP_START:)
           DWINUI::drawCenteredString(hmiData.colorPopupTxt, 120, GET_TEXT_F(MSG_NOZZLE_IS_RUN));
-          break;
-      #endif
-      #if ENABLED(PIDTEMPBED)
-        case PIDTEMPBED_START:
-          DWINUI::drawCenteredString(hmiData.colorPopupTxt, 120, GET_TEXT_F(MSG_BED_IS_RUN));
-          break;
-      #endif
-      default: break;
-    }
-    // Set values
-    switch (hmiValue.tempControl) {
-      #if ENABLED(MPC_AUTOTUNE)
-        case MPCTEMP_START:
           _maxtemp = thermalManager.hotend_maxtemp[EXT];
           _target = 200;
           break;
       #endif
       #if ENABLED(PIDTEMP)
         case PIDTEMP_START:
+          DWINUI::drawCenteredString(hmiData.colorPopupTxt, 100, GET_TEXT_F(MSG_PID_AUTOTUNE));
+          DWINUI::drawString(hmiData.colorPopupTxt, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, GET_TEXT_F(MSG_PID_TARGET));
+          DWINUI::drawCenteredString(hmiData.colorPopupTxt, 120, GET_TEXT_F(MSG_NOZZLE_IS_RUN));
           _maxtemp = thermalManager.hotend_maxtemp[EXT];
           _target = hmiData.hotendPidT;
           break;
       #endif
       #if ENABLED(PIDTEMPBED)
         case PIDTEMPBED_START:
+          DWINUI::drawCenteredString(hmiData.colorPopupTxt, 100, GET_TEXT_F(MSG_PID_AUTOTUNE));
+          DWINUI::drawString(hmiData.colorPopupTxt, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, GET_TEXT_F(MSG_PID_TARGET));
+          DWINUI::drawCenteredString(hmiData.colorPopupTxt, 120, GET_TEXT_F(MSG_BED_IS_RUN));
           _maxtemp = BED_MAXTEMP;
           _target = hmiData.bedPidT;
           break;
