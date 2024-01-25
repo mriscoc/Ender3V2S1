@@ -63,7 +63,7 @@ void gotoPopup(const popupDrawFunc_t fnDraw, const popupClickFunc_t fnClick/*=nu
   popupClick = fnClick;
   popupChange = fnChange;
   hmiSaveProcessID(ID_Popup);
-  hmiFlag.select_flag = false;
+  hmiFlag.select_flag = 0;
   popupDraw();
 }
 
