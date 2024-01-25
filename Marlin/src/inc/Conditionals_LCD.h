@@ -1042,20 +1042,19 @@
   #define SERIAL_CATCHALL 0
   #define HAS_LCD_BRIGHTNESS 1
   #ifdef TJC_DISPLAY
-    #define LCD_BRIGHTNESS_MAX 100
+    #define LCD_BRIGHTNESS_MIN 6
+    #define LCD_BRIGHTNESS_MAX 40
+    #define LCD_BRIGHTNESS_DEFAULT 20
   #else 
+    #define LCD_BRIGHTNESS_MIN 1
     #define LCD_BRIGHTNESS_MAX 250
+    #define LCD_BRIGHTNESS_DEFAULT 127
   #endif
 #endif
 
 #if ENABLED(DWIN_LCD_PROUI)
   #define DO_LIST_BIN_FILES 1
-  #ifdef TJC_DISPLAY
-    #define LCD_BRIGHTNESS_DEFAULT 90
-  #else 
-    #define LCD_BRIGHTNESS_DEFAULT 127
-  #endif
-  #define LCD_BRIGHTNESS_DIM 5
+  #define LCD_BRIGHTNESS_DIM 6
 #endif
 
 // Serial Controllers require LCD_SERIAL_PORT
