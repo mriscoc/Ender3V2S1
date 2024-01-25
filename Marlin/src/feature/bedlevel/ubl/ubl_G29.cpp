@@ -1841,7 +1841,8 @@ bool unified_bed_leveling::smart_fill_one(const uint8_t x, const uint8_t y, cons
       print_hex_word(i);
       SERIAL_ECHOPGM(": ");
       for (uint16_t j = 0; j < 16; j++) {
-        persistentStore.read_data(i + j, &cccc, sizeof(uint8_t));
+        int pos = i + j;
+        persistentStore.read_data(pos, &cccc, sizeof(uint8_t));
         print_hex_byte(cccc);
         SERIAL_CHAR(' ');
       }

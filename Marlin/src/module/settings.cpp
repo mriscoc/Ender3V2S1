@@ -46,8 +46,8 @@
 
 // Check the integrity of data offsets.
 // Can be disabled for production build.
-//#define DEBUG_EEPROM_READWRITE
-//#define DEBUG_EEPROM_OBSERVE
+// #define DEBUG_EEPROM_READWRITE
+// #define DEBUG_EEPROM_OBSERVE
 
 #include "settings.h"
 
@@ -707,7 +707,8 @@ typedef struct SettingsDataStruct {
 
 } SettingsData;
 
-//static_assert(sizeof(SettingsData) <= MARLIN_EEPROM_SIZE, "EEPROM too small to contain SettingsData!");
+constexpr size_t settingsdata_size = sizeof(SettingsData);
+static_assert(settingsdata_size <= MARLIN_EEPROM_SIZE, "EEPROM too small to contain SettingsData!");
 
 MarlinSettings settings;
 
@@ -796,7 +797,8 @@ void MarlinSettings::postprocess() {
 
   bool MarlinSettings::sd_update_status() {
     uint8_t val;
-    persistentStore.read_data(SD_FIRMWARE_UPDATE_EEPROM_ADDR, &val);
+    int pos = SD_FIRMWARE_UPDATE_EEPROM_ADDR;
+    persistentStore.read_data(pos, &val);
     return (val == SD_FIRMWARE_UPDATE_ACTIVE_VALUE);
   }
 
@@ -846,11 +848,13 @@ void MarlinSettings::postprocess() {
   #endif
 
   #if ENABLED(DEBUG_EEPROM_OBSERVE)
-    #define EEPROM_READ(V...)        do{ SERIAL_ECHOLNPGM("READ: ", F(STRINGIFY(FIRST(V)))); EEPROM_READ_(V); }while(0)
-    #define EEPROM_READ_ALWAYS(V...) do{ SERIAL_ECHOLNPGM("READ: ", F(STRINGIFY(FIRST(V)))); EEPROM_READ_ALWAYS_(V); }while(0)
+    #define EEPROM_READ(V...)        do{ SERIAL_ECHOPGM("READ: ", F(STRINGIFY(FIRST(V)))); EEPROM_READ_(V); SERIAL_ECHOLNPGM(" CRC: ", working_crc); }while(0)
+    #define EEPROM_READ_ALWAYS(V...) do{ SERIAL_ECHOPGM("READ: ", F(STRINGIFY(FIRST(V)))); EEPROM_READ_ALWAYS_(V); SERIAL_ECHOLNPGM(" CRC: ", working_crc); }while(0)
+    #define EEPROM_WRITE(V...)       do{ SERIAL_ECHOPGM("WRITE: ", F(STRINGIFY(FIRST(V)))); EEPROM_WRITE_(V); SERIAL_ECHOLNPGM(" CRC: ", working_crc); }while(0)
   #else
     #define EEPROM_READ(V...)        EEPROM_READ_(V)
     #define EEPROM_READ_ALWAYS(V...) EEPROM_READ_ALWAYS_(V)
+    #define EEPROM_WRITE(V...)       EEPROM_WRITE_(V)
   #endif
 
   const char version[4] = EEPROM_VERSION;

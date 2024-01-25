@@ -737,7 +737,7 @@ void _drawXYZPosition(const bool force) {
 }
 
 void updateVariable() {
-  TERN_(DEBUG_DWIN,DWINUI::drawInt(COLOR_YELLOW, COLOR_BG_BLACK, 2, DWIN_WIDTH-6*DWINUI::fontWidth(), 6, checkkey));
+  TERN_(DEBUG_DWIN,DWINUI::drawInt(COLOR_LIGHT_RED, COLOR_BG_BLACK, 2, DWIN_WIDTH-6*DWINUI::fontWidth(), 6, checkkey));
   TERN_(DEBUG_DWIN,DWINUI::drawInt(COLOR_YELLOW, COLOR_BG_BLACK, 2, DWIN_WIDTH-3*DWINUI::fontWidth(), 6, last_checkkey));
 
   _drawXYZPosition(false);
@@ -1438,7 +1438,7 @@ void hmiReturnScreen() {
 
 void dwinHomingStart() {
   DEBUG_ECHOLNPGM("dwinHomingStart");
-  hmiSaveProcessID(ID_Homing);
+  if (checkkey != ID_NothingToDo) hmiSaveProcessID(ID_Homing);
   title.draw(GET_TEXT_F(MSG_HOMING));
   dwinShowPopup(ICON_BLTouch, GET_TEXT_F(MSG_HOMING), GET_TEXT_F(MSG_PLEASE_WAIT));
 }
@@ -1454,7 +1454,7 @@ void dwinHomingDone() {
   #endif
   if (last_checkkey == ID_PrintDone)
     gotoPrintDone();
-  else
+  else if (checkkey != ID_NothingToDo)
     hmiReturnScreen();
 }
 
@@ -1464,10 +1464,10 @@ void dwinHomingDone() {
     DEBUG_ECHOLNPGM("dwinLevelingStart");
     #if HAS_BED_PROBE
       hmiSaveProcessID(ID_Leveling);
-      TERN_(PROUI_EX,proUIEx.cancel_lev = 0);
       title.draw(GET_TEXT_F(MSG_BED_LEVELING));
       #if PROUI_EX
         meshViewer.drawBackground(GRID_MAX_POINTS_X, GRID_MAX_POINTS_Y);
+        proUIEx.cancel_lev = 0;
         DWINUI::drawButton(BTN_Cancel, 86, 305);
       #else
         dwinShowPopup(ICON_AutoLeveling, GET_TEXT_F(MSG_BED_LEVELING), GET_TEXT_F(MSG_PLEASE_WAIT), TERN(PROUI_EX, BTN_Cancel, 0));
@@ -1576,6 +1576,7 @@ void dwinHomingDone() {
   void dwinPidTuning(tempcontrol_t result) {
     hmiValue.tempControl = result;
     switch (result) {
+      #if ENABLED(PIDTEMPBED)
       case PIDTEMPBED_START:
         hmiSaveProcessID(ID_PIDProcess);
         #if HAS_PLOT
@@ -1584,6 +1585,8 @@ void dwinHomingDone() {
           dwinDrawPopup(ICON_TempTooHigh, GET_TEXT_F(MSG_PID_AUTOTUNE), GET_TEXT_F(MSG_BED_IS_RUN));
         #endif
         break;
+      #endif
+      #if ENABLED(PIDTEMP)
       case PIDTEMP_START:
         hmiSaveProcessID(ID_PIDProcess);
         #if HAS_PLOT
@@ -1592,6 +1595,7 @@ void dwinHomingDone() {
           dwinDrawPopup(ICON_TempTooHigh, GET_TEXT_F(MSG_PID_AUTOTUNE), GET_TEXT_F(MSG_NOZZLE_IS_RUN));
         #endif
         break;
+      #endif
       case PID_BAD_HEATER_ID:
         checkkey = last_checkkey;
         dwinPopupContinue(ICON_TempTooLow, GET_TEXT_F(MSG_PID_AUTOTUNE_FAILED), GET_TEXT_F(MSG_BAD_HEATER_ID));
@@ -2633,9 +2637,11 @@ void drawPrepareMenu() {
 
   #if ALL(HAS_BED_PROBE, HAS_TRAMMING_WIZARD)
     void runTrammingWizard() {
+      hmiSaveProcessID(ID_NothingToDo);
       meshViewer.meshfont = font8x16;
       trammingWizard();
       meshViewer.meshfont = TERN(TJC_DISPLAY, font8x16, font6x12);
+      hmiSaveProcessID(ID_WaitResponse);
     }
   #endif
 
