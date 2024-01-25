@@ -1041,12 +1041,20 @@
 #if HAS_DWIN_E3V2 || IS_DWIN_MARLINUI
   #define SERIAL_CATCHALL 0
   #define HAS_LCD_BRIGHTNESS 1
-  #define LCD_BRIGHTNESS_MAX 250
+  #ifdef TJC_DISPLAY
+    #define LCD_BRIGHTNESS_MAX 100
+  #else 
+    #define LCD_BRIGHTNESS_MAX 250
+  #endif
 #endif
 
 #if ENABLED(DWIN_LCD_PROUI)
   #define DO_LIST_BIN_FILES 1
-  #define LCD_BRIGHTNESS_DEFAULT 127
+  #ifdef TJC_DISPLAY
+    #define LCD_BRIGHTNESS_DEFAULT 90
+  #else 
+    #define LCD_BRIGHTNESS_DEFAULT 127
+  #endif
   #define LCD_BRIGHTNESS_DIM 5
 #endif
 
