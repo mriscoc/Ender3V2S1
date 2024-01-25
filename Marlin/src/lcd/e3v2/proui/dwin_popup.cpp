@@ -31,7 +31,10 @@ popupDrawFunc_t popupDraw = nullptr;
 popupClickFunc_t popupClick = nullptr;
 popupChangeFunc_t popupChange = nullptr;
 
+uint16_t highlightY = 280;
+
 void drawSelectHighlight(const bool sel, const uint16_t ypos) {
+  highlightY = ypos;
   hmiFlag.select_flag = sel;
   const uint16_t c1 = sel ? hmiData.colorHighlight : hmiData.colorPopupBg,
                  c2 = sel ? hmiData.colorPopupBg : hmiData.colorHighlight;
@@ -73,7 +76,7 @@ void hmiPopup() {
     EncoderState encoder_diffState = get_encoder_state();
     if (encoder_diffState == ENCODER_DIFF_CW || encoder_diffState == ENCODER_DIFF_CCW) {
       const bool change = encoder_diffState != ENCODER_DIFF_CW;
-      if (popupChange) popupChange(change); else drawSelectHighlight(change);
+      if (popupChange) popupChange(change); else drawSelectHighlight(change, highlightY);
       dwinUpdateLCD();
     }
   }
