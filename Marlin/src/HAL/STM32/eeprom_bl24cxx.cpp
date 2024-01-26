@@ -54,8 +54,8 @@ bool PersistentStore::write_data(int &pos, const uint8_t *value, size_t size, ui
   while (size--) {
     uint8_t v = *value;
     uint8_t * const p = (uint8_t * const)REAL_EEPROM_ADDR(pos);
+    SERIAL_ECHOLNPGM("Addr:", (unsigned)pos, ", real:", (unsigned)p, ", value:", v);
     if (v != eeprom_read_byte(p)) { // EEPROM has only ~100,000 write cycles, so only write bytes that have changed!
-      SERIAL_ECHOLNPGM("Addr:", (unsigned)pos, ", real:", (unsigned)p, ", value:", v);
       eeprom_write_byte(p, v);
       if (++written & 0x7F) delay(2); else safe_delay(2); // Avoid triggering watchdog during long EEPROM writes
       if (eeprom_read_byte(p) != v) {

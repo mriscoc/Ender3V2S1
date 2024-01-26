@@ -848,9 +848,9 @@ void MarlinSettings::postprocess() {
   #endif
 
   #if ENABLED(DEBUG_EEPROM_OBSERVE)
-    #define EEPROM_READ(V...)        do{ SERIAL_ECHOPGM("READ: ", F(STRINGIFY(FIRST(V)))); EEPROM_READ_(V); SERIAL_ECHOLNPGM(" CRC: ", working_crc); }while(0)
-    #define EEPROM_READ_ALWAYS(V...) do{ SERIAL_ECHOPGM("READ: ", F(STRINGIFY(FIRST(V)))); EEPROM_READ_ALWAYS_(V); SERIAL_ECHOLNPGM(" CRC: ", working_crc); }while(0)
-    #define EEPROM_WRITE(V...)       do{ SERIAL_ECHOPGM("WRITE: ", F(STRINGIFY(FIRST(V)))); EEPROM_WRITE_(V); SERIAL_ECHOLNPGM(" CRC: ", working_crc); }while(0)
+    #define EEPROM_READ(V...)        do{ SERIAL_ECHOLNPGM("READ: ", F(STRINGIFY(FIRST(V)))); EEPROM_READ_(V); SERIAL_ECHOLNPGM(" CRC: ", working_crc); }while(0)
+    #define EEPROM_READ_ALWAYS(V...) do{ SERIAL_ECHOLNPGM("READ: ", F(STRINGIFY(FIRST(V)))); EEPROM_READ_ALWAYS_(V); SERIAL_ECHOLNPGM(" CRC: ", working_crc); }while(0)
+    #define EEPROM_WRITE(V...)       do{ SERIAL_ECHOLNPGM("WRITE: ", F(STRINGIFY(FIRST(V)))); EEPROM_WRITE_(V); SERIAL_ECHOLNPGM(" CRC: ", working_crc); }while(0)
   #else
     #define EEPROM_READ(V...)        EEPROM_READ_(V)
     #define EEPROM_READ_ALWAYS(V...) EEPROM_READ_ALWAYS_(V)
