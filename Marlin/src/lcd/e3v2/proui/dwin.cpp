@@ -1470,7 +1470,7 @@ void dwinHomingDone() {
         proUIEx.cancel_lev = 0;
         DWINUI::drawButton(BTN_Cancel, 86, 305);
       #else
-        dwinShowPopup(ICON_AutoLeveling, GET_TEXT_F(MSG_BED_LEVELING), GET_TEXT_F(MSG_PLEASE_WAIT), TERN(PROUI_EX, BTN_Cancel, 0));
+        dwinShowPopup(ICON_AutoLeveling, GET_TEXT_F(MSG_BED_LEVELING), GET_TEXT_F(MSG_PLEASE_WAIT));
       #endif
       #if ALL(AUTO_BED_LEVELING_UBL, PREHEAT_BEFORE_LEVELING)
         #if HAS_BED_PROBE
