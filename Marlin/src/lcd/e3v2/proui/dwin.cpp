@@ -2701,6 +2701,16 @@ void drawControlMenu() {
       MENU_ITEM(ICON_ResumeEEPROM, MSG_RESTORE_DEFAULTS, onDrawMenuItem, resetEeprom);
     #endif
     MENU_ITEM(ICON_Reboot, MSG_RESET_PRINTER, onDrawMenuItem, rebootPrinter);
+    #if ENABLED(CASE_LIGHT_MENU)
+      #if ENABLED(CASELIGHT_USES_BRIGHTNESS)
+        MENU_ITEM(ICON_CaseLight, MSG_CASE_LIGHT, onDrawSubMenu, drawCaseLightMenu);
+      #else
+        EDIT_ITEM(ICON_CaseLight, MSG_CASE_LIGHT, onDrawChkbMenu, setCaseLight, &caselight.on);
+      #endif
+    #endif
+    #if ENABLED(LED_CONTROL_MENU)
+      MENU_ITEM(ICON_LedControl, MSG_LED_CONTROL, onDrawSubMenu, drawLedControlMenu );
+    #endif
     MENU_ITEM(ICON_Info, MSG_INFO_SCREEN, onDrawSubMenu, gotoInfoMenu);
   }
   SET_MENU(controlMenu, MSG_CONTROL);
