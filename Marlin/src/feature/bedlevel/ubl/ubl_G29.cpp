@@ -783,7 +783,7 @@ void unified_bed_leveling::shift_mesh_height() {
       #endif
 
       #if PROUI_EX
-        if (proUIEx.quitLeveling()) return TERN(DWIN_LCD_PROIU, dwinLevelingDone(), proUIEx.levelingDone());
+        if (proUIEx.quitLeveling()) return TERN(DWIN_LCD_PROUI, dwinLevelingDone(), proUIEx.levelingDone());
       #endif
 
       // do_furthest is normally false

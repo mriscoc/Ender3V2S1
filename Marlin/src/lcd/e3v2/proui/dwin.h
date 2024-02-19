@@ -22,7 +22,6 @@
 
 #include "../../../inc/MarlinConfig.h"
 
-#include "../../../libs/BL24CXX.h"
 #include "../../../MarlinCore.h"
 #include "../../../module/printcounter.h"
 #include "../../../sd/cardreader.h"
@@ -106,9 +105,6 @@ enum processID : uint8_t {
   };
 #endif
 
-#define DWIN_CHINESE 123
-#define DWIN_ENGLISH 0
-
 typedef struct {
   uint16_t colorBackground;
   uint16_t colorCursor;
@@ -152,7 +148,7 @@ typedef struct {
   #if ANY(HAS_PID_HEATING, MPCTEMP)
     tempcontrol_t tempControl = AUTOTUNE_DONE;
   #endif
-  uint8_t select  = 0;  // Auxiliary selector variable
+  uint8_t select = 0;  // Auxiliary selector variable
 } hmi_value_t;
 
 typedef struct {

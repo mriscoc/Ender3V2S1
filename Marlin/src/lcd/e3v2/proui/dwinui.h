@@ -535,7 +535,7 @@ namespace DWINUI {
   //  x: abscissa of the center of the circle
   //  y: ordinate of the center of the circle
   //  r: circle radius
-  void drawCircle(uint16_t color, uint16_t x,uint16_t y,uint8_t r);
+  void drawCircle(uint16_t color, uint16_t x, uint16_t y, uint8_t r);
   inline void drawCircle(uint16_t color, uint8_t r) {
     drawCircle(color, cursor.x, cursor.y, r);
   }
@@ -580,7 +580,7 @@ namespace DWINUI {
   //  x: abscissa of the center of the circle
   //  y: ordinate of the center of the circle
   //  r: circle radius
-  void drawFillCircle(uint16_t bcolor, uint16_t x,uint16_t y,uint8_t r);
+  void drawFillCircle(uint16_t bcolor, uint16_t x, uint16_t y, uint8_t r);
   inline void drawFillCircle(uint16_t bcolor, uint8_t r) {
     drawFillCircle(bcolor, cursor.x, cursor.y, r);
   }

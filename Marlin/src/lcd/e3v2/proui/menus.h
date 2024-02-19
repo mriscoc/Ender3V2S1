@@ -51,7 +51,6 @@ typedef struct {
 } MenuData_t;
 extern MenuData_t menuData;
 
-struct MenuItem_t;
 typedef void (*OnDrawItem)(int8_t pos, int8_t line);
 typedef void (*OnClickItem)();
 struct MenuItem_t {

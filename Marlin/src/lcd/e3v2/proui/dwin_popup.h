@@ -21,7 +21,6 @@
 #pragma once
 
 #include "dwin.h"
-#include "dwinui.h"
 
 typedef void (*popupDrawFunc_t)();
 typedef void (*popupClickFunc_t)();

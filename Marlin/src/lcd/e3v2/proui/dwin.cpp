@@ -38,6 +38,7 @@
 #include "../../../MarlinCore.h"
 #include "../../../core/serial.h"
 #include "../../../core/macros.h"
+#include "../../../libs/numtostr.h"
 #include "../../../module/temperature.h"
 #include "../../../module/printcounter.h"
 #include "../../../module/motion.h"
@@ -346,7 +347,7 @@ void iconButton(const bool selected, const int iconid, const frame_rect_t &ico, 
 // Main Menu: "Print"
 //
 void iconFiles() {
-  constexpr frame_rect_t ico = { 17, 110 - TERN0(HAS_TOOLBAR,TBYOFFSET), 110, 100};
+  constexpr frame_rect_t ico = { 17, 110 - TERN0(HAS_TOOLBAR, TBYOFFSET), 110, 100};
   iconButton(select_page.now == PAGE_FILES, ICON_Print_0, ico, GET_TEXT_F(MSG_BUTTON_MEDIA));
 }
 
@@ -354,7 +355,7 @@ void iconFiles() {
 // Main Menu: "Prepare"
 //
 void iconPrepare() {
-  constexpr frame_rect_t ico = { 145, 110 - TERN0(HAS_TOOLBAR,TBYOFFSET), 110, 100};
+  constexpr frame_rect_t ico = { 145, 110 - TERN0(HAS_TOOLBAR, TBYOFFSET), 110, 100};
   iconButton(select_page.now == PAGE_PREPARE, ICON_Prepare_0, ico, GET_TEXT_F(MSG_PREPARE));
 }
 
@@ -362,7 +363,7 @@ void iconPrepare() {
 // Main Menu: "Control"
 //
 void iconControl() {
-  constexpr frame_rect_t ico = { 17, 226 - TERN0(HAS_TOOLBAR,TBYOFFSET), 110, 100};
+  constexpr frame_rect_t ico = { 17, 226 - TERN0(HAS_TOOLBAR, TBYOFFSET), 110, 100};
   iconButton(select_page.now == PAGE_CONTROL, ICON_Control_0, ico, GET_TEXT_F(MSG_CONTROL));
 }
 
@@ -370,7 +371,7 @@ void iconControl() {
 // Main Menu: "Advanced Settings"
 //
 void iconAdvSettings() {
-  constexpr frame_rect_t ico = { 145, 226 - TERN0(HAS_TOOLBAR,TBYOFFSET), 110, 100};
+  constexpr frame_rect_t ico = { 145, 226 - TERN0(HAS_TOOLBAR, TBYOFFSET), 110, 100};
   iconButton(select_page.now == PAGE_ADVANCE, ICON_Info_0, ico, GET_TEXT_F(MSG_BUTTON_ADVANCED));
 }
 
@@ -497,26 +498,27 @@ void drawPrintLabels() {
   DWINUI::drawString(181, 173, GET_TEXT_F(MSG_REMAINING_TIME));
 }
 
+static uint8_t _percent_done = 100;
 void drawPrintProgressBar() {
-  const uint8_t _percent_done = ui.get_progress_percent();
   DWINUI::drawIconWB(ICON_Bar, 15, 93);
-  dwinDrawRectangle(1, hmiData.colorBarfill, 16 + (_percent_done * 240) / 100, 93, 256, 113);
-  DWINUI::drawInt(hmiData.colorPercentTxt, hmiData.colorBackground, 3, 117, 133, _percent_done);
-  DWINUI::drawString(hmiData.colorPercentTxt, 142, 133, F("%"));
+  dwinDrawRectangle(1, hmiData.colorBarfill, 15 + (_percent_done * 242) / 100, 93, 257, 113);
+  DWINUI::drawString(hmiData.colorPercentTxt, hmiData.colorBackground, 117, 133, pcttostrpctrj(_percent_done));
 }
 
+duration_t _printtime = print_job_timer.duration();
 void drawPrintProgressElapsed() {
-  MString<12> buf;
-  duration_t elapsed = print_job_timer.duration(); // Print timer
-  buf.setf(F("%02i:%02i "), uint16_t(elapsed.value / 3600), (uint16_t(elapsed.value) % 3600) / 60);
-  DWINUI::drawString(hmiData.colorText, hmiData.colorBackground, 47, 192, buf);
+  char buf[10];
+  const bool has_days = (_printtime.value > 60*60*24L);
+  _printtime.toDigital(buf, has_days);
+  DWINUI::drawString(hmiData.colorText, hmiData.colorBackground, 45, 192, buf);
 }
 
 #if ENABLED(SHOW_REMAINING_TIME)
+  duration_t _remain_time = 0;
   void drawPrintProgressRemain() {
-    const uint32_t _remain_time = ui.get_remaining_time();
-    MString<12> buf;
-    buf.setf(F("%02i:%02i "), _remain_time / 3600, (_remain_time % 3600) / 60);
+    char buf[10];
+    const bool has_days = (_remain_time.value > 60*60*24L);
+    _remain_time.toDigital(buf, has_days);
     DWINUI::drawString(hmiData.colorText, hmiData.colorBackground, 181, 192, buf);
   }
 #endif
@@ -715,7 +717,7 @@ void _drawFeedrate() {
       DWINUI::drawString(DWIN_FONT_STAT, hmiData.colorIndicator, hmiData.colorBackground, 116 + 4 * STAT_CHR_W + 2, 384, F(" %"));
     }
     else {
-      _value = round(feedrate_mm_s * feedrate_percentage / 100);
+      _value = CEIL(MMS_SCALED(feedrate_mm_s));
       dwinDrawBox(1, hmiData.colorBackground, 116 + 5 * STAT_CHR_W + 2, 384, 20, 20);
     }
     DWINUI::drawInt(DWIN_FONT_STAT, hmiData.colorIndicator, hmiData.colorBackground, 3, 116 + 2 * STAT_CHR_W, 384, _value);
@@ -1071,18 +1073,19 @@ void hmiMainMenu() {
   if (encoder_diffState == ENCODER_DIFF_CW) {
     if (select_page.inc(PAGE_COUNT)) {
       switch (select_page.now) {
-        case PAGE_FILES: iconFiles(); break;
-        case PAGE_PREPARE: iconFiles(); iconPrepare(); break;
+        case PAGE_FILES:   iconFiles(); break;
+        case PAGE_PREPARE: iconFiles();   iconPrepare(); break;
         case PAGE_CONTROL: iconPrepare(); iconControl(); break;
         case PAGE_ADVANCE: iconControl(); iconAdvSettings(); break;
-        TERN_(HAS_TOOLBAR, case PAGE_TOOLBAR: iconAdvSettings(); gotoToolBar();  break);
+        OPTCODE(HAS_TOOLBAR,
+        case PAGE_TOOLBAR: iconAdvSettings(); gotoToolBar(); break)
       }
     }
   }
   else if (encoder_diffState == ENCODER_DIFF_CCW) {
     if (select_page.dec()) {
       switch (select_page.now) {
-        case PAGE_FILES: iconFiles(); iconPrepare(); break;
+        case PAGE_FILES:   iconFiles();   iconPrepare(); break;
         case PAGE_PREPARE: iconPrepare(); iconControl(); break;
         case PAGE_CONTROL: iconControl(); iconAdvSettings(); break;
         case PAGE_ADVANCE: iconAdvSettings(); break;
@@ -1095,7 +1098,7 @@ void hmiMainMenu() {
         if (ENABLED(HAS_SD_EXTENDER) || hmiData.mediaAutoMount) {
           card.mount();
           safe_delay(800);
-        };
+        }
         drawFileMenu();
         break;
       case PAGE_PREPARE: drawPrepareMenu(); break;
@@ -1301,15 +1304,13 @@ void eachMomentUpdate() {
     if (checkkey == ID_PrintProcess) { // print process
 
       // Progress percent
-      static uint8_t _percent_done = 255;
-      if (_percent_done != ui.get_progress_percent()) {
-        _percent_done = ui.get_progress_percent();
+      if (_percent_done != card.percentDone()) {
+        _percent_done = card.percentDone();
         drawPrintProgressBar();
       }
 
       // Remaining time
       #if ENABLED(SHOW_REMAINING_TIME)
-        static uint32_t _remain_time = 0;
         if (_remain_time != ui.get_remaining_time()) {
           _remain_time = ui.get_remaining_time();
           drawPrintProgressRemain();
@@ -1317,10 +1318,9 @@ void eachMomentUpdate() {
       #endif
 
       // Elapse print time
-      static uint16_t _printtime = 0;
-      const uint16_t min = (print_job_timer.duration() % 3600) / 60;
-      if (_printtime != min) { // 1 minute update
-        _printtime = min;
+      const uint16_t min = print_job_timer.duration();
+      if (_printtime.minute() + 1 <= min) { // 1 minute update
+        _printtime.value = min;
         drawPrintProgressElapsed();
       }
 
@@ -1385,7 +1385,7 @@ void dwinHandleScreen() {
     case ID_SetIntNoDraw:    hmiSetNoDraw(); break;
     case ID_PrintProcess:    hmiPrinting(); break;
     case ID_Popup:           hmiPopup(); break;
-    case ID_Leveling:        TERN_(PROUI_EX, hmiWaitForUser()); break;
+    case ID_Leveling:        OPTCODE(PROUI_EX, hmiWaitForUser()) break;
     #if HAS_LOCKSCREEN
       case ID_Locked:        hmiLockScreen(); break;
     #endif
@@ -1394,6 +1394,7 @@ void dwinHandleScreen() {
     case ID_WaitResponse:    hmiWaitForUser(); break;
     case ID_Homing:
     case ID_PIDProcess:
+    case ID_MPCProcess:
     case ID_NothingToDo:     break;
     default: break;
   }
@@ -1469,7 +1470,7 @@ void dwinHomingDone() {
         proUIEx.cancel_lev = 0;
         DWINUI::drawButton(BTN_Cancel, 86, 305);
       #else
-        dwinShowPopup(ICON_AutoLeveling, GET_TEXT_F(MSG_BED_LEVELING), GET_TEXT_F(MSG_PLEASE_WAIT), TERN(PROUI_EX, BTN_Cancel, 0));
+        dwinShowPopup(ICON_AutoLeveling, GET_TEXT_F(MSG_BED_LEVELING), GET_TEXT_F(MSG_PLEASE_WAIT));
       #endif
       #if ALL(AUTO_BED_LEVELING_UBL, PREHEAT_BEFORE_LEVELING)
         #if HAS_BED_PROBE
@@ -1529,47 +1530,25 @@ void dwinHomingDone() {
         case MPCTEMP_START:
           DWINUI::drawCenteredString(hmiData.colorPopupTxt, 100, GET_TEXT_F(MSG_MPC_AUTOTUNE));
           DWINUI::drawString(hmiData.colorPopupTxt, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, GET_TEXT_F(MSG_MPC_TARGET));
-          break;
-      #endif
-      #if ANY(PIDTEMP, PIDTEMPBED)
-        TERN_(PIDTEMP,    case PIDTEMP_START:)
-        TERN_(PIDTEMPBED, case PIDTEMPBED_START:)
-          DWINUI::drawCenteredString(hmiData.colorPopupTxt, 100, GET_TEXT_F(MSG_PID_AUTOTUNE));
-          DWINUI::drawString(hmiData.colorPopupTxt, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, GET_TEXT_F(MSG_PID_TARGET));
-          break;
-      #endif
-      default: break;
-    }
-    switch (hmiValue.tempControl) {
-      #if ANY(PIDTEMP, MPC_AUTOTUNE)
-        TERN_(PIDTEMP,      case PIDTEMP_START:)
-        TERN_(MPC_AUTOTUNE, case MPCTEMP_START:)
           DWINUI::drawCenteredString(hmiData.colorPopupTxt, 120, GET_TEXT_F(MSG_NOZZLE_IS_RUN));
-          break;
-      #endif
-      #if ENABLED(PIDTEMPBED)
-        case PIDTEMPBED_START:
-          DWINUI::drawCenteredString(hmiData.colorPopupTxt, 120, GET_TEXT_F(MSG_BED_IS_RUN));
-          break;
-      #endif
-      default: break;
-    }
-    // Set values
-    switch (hmiValue.tempControl) {
-      #if ENABLED(MPC_AUTOTUNE)
-        case MPCTEMP_START:
           _maxtemp = thermalManager.hotend_maxtemp[EXT];
           _target = 200;
           break;
       #endif
       #if ENABLED(PIDTEMP)
         case PIDTEMP_START:
+          DWINUI::drawCenteredString(hmiData.colorPopupTxt, 100, GET_TEXT_F(MSG_PID_AUTOTUNE));
+          DWINUI::drawString(hmiData.colorPopupTxt, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, GET_TEXT_F(MSG_PID_TARGET));
+          DWINUI::drawCenteredString(hmiData.colorPopupTxt, 120, GET_TEXT_F(MSG_NOZZLE_IS_RUN));
           _maxtemp = thermalManager.hotend_maxtemp[EXT];
           _target = hmiData.hotendPidT;
           break;
       #endif
       #if ENABLED(PIDTEMPBED)
         case PIDTEMPBED_START:
+          DWINUI::drawCenteredString(hmiData.colorPopupTxt, 100, GET_TEXT_F(MSG_PID_AUTOTUNE));
+          DWINUI::drawString(hmiData.colorPopupTxt, gfrm.x, gfrm.y - DWINUI::fontHeight() - 4, GET_TEXT_F(MSG_PID_TARGET));
+          DWINUI::drawCenteredString(hmiData.colorPopupTxt, 120, GET_TEXT_F(MSG_BED_IS_RUN));
           _maxtemp = BED_MAXTEMP;
           _target = hmiData.bedPidT;
           break;
@@ -2530,7 +2509,7 @@ void applyMaxAccel() { planner.set_max_acceleration((AxisEnum)hmiValue.select, m
 #endif
 
 #if ENABLED(FWRETRACT)
-  void doRetract() { 
+  void doRetract() {
     current_position.e-=fwretract.settings.retract_length;
     axisMove(E_AXIS);
   }
@@ -2786,7 +2765,7 @@ void drawAdvancedSettingsMenu() {
       EDIT_ITEM(ICON_Brightness, MSG_BRIGHTNESS, onDrawPInt8Menu, setBrightness, &ui.brightness);
       MENU_ITEM(ICON_Brightness, MSG_BRIGHTNESS_OFF, onDrawMenuItem, turnOffBacklight);
     #endif
-    #if ALL(HAS_CUSTOM_COLORS , HAS_CUSTOM_COLORS_MENU)
+    #if ALL(HAS_CUSTOM_COLORS, HAS_CUSTOM_COLORS_MENU)
       MENU_ITEM(ICON_Scolor, MSG_COLORS_SELECT, onDrawSubMenu, drawSelectColorsMenu);
     #endif
   }

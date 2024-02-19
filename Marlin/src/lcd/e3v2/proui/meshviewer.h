@@ -23,7 +23,7 @@
 #include "../../../inc/MarlinConfig.h"
 #include "../../../feature/bedlevel/bedlevel.h"
 
-#define USE_GRID_MESHVIEWER
+#define USE_GRID_MESHVIEWER 1
 
 #if ENABLED(PROUI_EX)
   class MeshViewerPro {
