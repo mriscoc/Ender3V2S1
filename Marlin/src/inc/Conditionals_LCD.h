@@ -1039,7 +1039,7 @@
 
 // E3V2 extras
 #if HAS_DWIN_E3V2 || IS_DWIN_MARLINUI
-  #define SERIAL_CATCHALL 0
+  //#define SERIAL_CATCHALL 0
   #define HAS_LCD_BRIGHTNESS 1
   #ifdef TJC_DISPLAY
     #define LCD_BRIGHTNESS_MIN 6
