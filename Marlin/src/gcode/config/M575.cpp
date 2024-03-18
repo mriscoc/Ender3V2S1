@@ -53,6 +53,7 @@ void GcodeSuite::M575() {
     case 115200: case 250000: case 500000: case 1000000: {
       const int8_t port = parser.intval('P', -99);
       const bool set1 = (port == -99 || port == 0);
+        const bool set2 = (port == -99 || port == 1);
 
       SERIAL_FLUSH();
 
@@ -66,7 +67,6 @@ void GcodeSuite::M575() {
 
       if (set1) SERIAL_ECHO_MSG(" Serial ", AS_DIGIT(0), " baud rate set to ", baud);
       #if HAS_MULTI_SERIAL
-        const bool set2 = (port == -99 || port == 1);
         if (set2) SERIAL_ECHO_MSG(" Serial ", AS_DIGIT(1), " baud rate set to ", baud);
         #ifdef SERIAL_PORT_3
           const bool set3 = (port == -99 || port == 2);
