@@ -2437,7 +2437,7 @@
 #define EEPROM_BOOT_SILENT    // Keep M503 quiet and only give errors during first load
 #if ENABLED(EEPROM_SETTINGS)
   #define EEPROM_AUTO_INIT  // Init EEPROM automatically on any errors.  // Ender Configs
-  #define EEPROM_INIT_NOW   // Init EEPROM on first boot after a new build.  // MRiscoC Reset EEPROM on first boot
+  //#define EEPROM_INIT_NOW   // Init EEPROM on first boot after a new build.  // MRiscoC Reset EEPROM on first boot
 #endif
 
 // @section host
@@ -2640,7 +2640,7 @@
  *
  * View the current statistics with M78.
  */
-#define PRINTCOUNTER  // MRiscoC Enable Print Statistics
+//#define PRINTCOUNTER  // MRiscoC Enable Print Statistics
 #if ENABLED(PRINTCOUNTER)
   #define PRINTCOUNTER_SAVE_INTERVAL 60 // (minutes) EEPROM save interval during print. A value of 0 will save stats at end of print.
 #endif
@@ -2814,7 +2814,7 @@
 // Add individual axis homing items (Home X, Home Y, and Home Z) to the LCD menu.
 //
 //#define INDIVIDUAL_AXIS_HOMING_MENU
-#define INDIVIDUAL_AXIS_HOMING_SUBMENU
+//#define INDIVIDUAL_AXIS_HOMING_SUBMENU
 
 //
 // SPEAKER/BUZZER
@@ -3518,16 +3518,16 @@
     #define HAS_TOOLBAR 1
   #endif
   #define HAS_CUSTOM_COLORS 1
-  #define HAS_CUSTOM_COLORS_MENU 1
+  //#define HAS_CUSTOM_COLORS_MENU 1
   #define HAS_PLOT 1
   #define HAS_ESDIAG 1
-  #define HAS_LOCKSCREEN 1
+  //#define HAS_LOCKSCREEN 1
   #define MESH_EDIT_MENU
   //#define PREVIEW_MENU_ITEM    // Allows enable/disable Thumbnail preview via menu and C250
   #define SHOW_REAL_POS        // Display the real axes position in cartesian printers
   //#define ACTIVATE_MESH_ITEM   // Allows temporary enabling of mesh leveling
   #define RUNOUT_TUNE_ITEM     // Allows enable/disable the run out filament sensor while printing
-  #define PLR_TUNE_ITEM        // Allows enable/disable the power lost recovery while printing
+  //#define PLR_TUNE_ITEM        // Allows enable/disable the power lost recovery while printing
   //#define JD_TUNE_ITEM         // Enable only if Juntion Deviation is enabled
   //#define ADVK_TUNE_ITEM       // Enable only if Linear Advance is enabled
   //#define MEDIASORT_MENU_ITEM  // Allows enable/disable file list sorting
