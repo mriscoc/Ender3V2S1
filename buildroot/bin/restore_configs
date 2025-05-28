@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+rm -f Marlin/_Bootscreen.h Marlin/_Statusscreen.h marlin_config.json .pio/build/mc.zip
+
+if [[ $1 == '-d' || $1 == '--default' ]]; then
+  use_example_configs
+else
+  git checkout Marlin/Configuration.h 2>/dev/null
+  git checkout Marlin/Configuration_adv.h 2>/dev/null
+  git checkout Marlin/config.ini 2>/dev/null
+  git checkout Marlin/src/pins/*/pins_*.h 2>/dev/null
+fi
