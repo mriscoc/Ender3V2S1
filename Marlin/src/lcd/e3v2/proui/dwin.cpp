@@ -445,7 +445,7 @@ void setPrintTitle(const char *text) { printing.setPrintTitle(text); };
 
 void gotoPrintDone() {
   DEBUG_ECHOLNPGM("gotoPrintDone");
-  wait_for_user = true;
+  marlin.wait_start();
   if (checkkey != ID_PrintDone) {
     checkkey = ID_PrintDone;
     printing.drawPrintDone();
@@ -889,7 +889,12 @@ void drawInfoMenu() {
   sprintf_P(machine_size, PSTR("%ix%ix%i"), (int16_t)X_BED_SIZE, (int16_t)Y_BED_SIZE, (int16_t)Z_MAX_POS);
 
   DWINUI::drawCenteredString(92,  GET_TEXT_F(MSG_INFO_MACHINENAME));
+  #if ENABLED(CONFIGURABLE_MACHINE_NAME)
+  DWINUI::drawCenteredString(112, machine_name);
+  #else
+  static_assert(sizeof(MACHINE_NAME) <= 33, "MACHINE Name must be 32 characters or less.");
   DWINUI::drawCenteredString(112, F(MACHINE_NAME));
+  #endif
   DWINUI::drawCenteredString(145, GET_TEXT_F(MSG_INFO_SIZE));
   DWINUI::drawCenteredString(165, machine_size);
 
@@ -984,7 +989,7 @@ void drawMainArea() {
 
 void hmiWaitForUser() {
   encoderReceiveAnalyze();
-  if (!wait_for_user) {
+  if (!marlin.wait_for_user) {
     switch (checkkey) {
       case ID_PrintDone:
         select_page.reset();
@@ -1029,7 +1034,7 @@ void eachMomentUpdate() {
 
   if (ELAPSED(ms, next_var_update_ms)) {
     next_var_update_ms = ms + DWIN_VAR_UPDATE_INTERVAL;
-    blink = !blink;
+    FLIP(blink);
     updateVariable();
     #if HAS_ESDIAG
       if (checkkey == ID_ESDiagProcess) esDiag.update();
@@ -1193,14 +1198,14 @@ void hmiSaveProcessID(const uint8_t id) {
     case ID_PrintDone:
     case ID_Leveling:
     TERN_(HAS_ESDIAG, case ID_ESDiagProcess:)
-      wait_for_user = true;
+      marlin.wait_start();
     default: break;
   }
 }
 
 void hmiReturnScreen() {
   checkkey = last_checkkey;
-  wait_for_user = false;
+  marlin.user_resume();
   drawMainArea();
 }
 
@@ -1277,7 +1282,7 @@ void dwinHomingDone() {
 #endif // HAS_LEVELING
 
 #if HAS_MESH
-  void dwinMeshUpdate(const int8_t cpos, const int8_t tpos, const_float_t zval) {
+  void dwinMeshUpdate(const int8_t cpos, const int8_t tpos, const float zval) {
     LCD_MESSAGE_F(
       &MString<32>(GET_TEXT_F(MSG_PROBING_POINT), ' ', cpos, '/', tpos, F(" Z="), p_float_t(zval, 2))
     );
@@ -1396,7 +1401,7 @@ void dwinHomingDone() {
         break;
       case PID_TEMP_TOO_HIGH:
         checkkey = last_checkkey;
-        dwinPopupContinue(ICON_TempTooHigh, GET_TEXT_F(MSG_PID_AUTOTUNE_FAILED), GET_TEXT_F(MSG_TEMP_TOO_HIGH));
+        dwinPopupContinue(ICON_TempTooHigh, GET_TEXT_F(MSG_PID_AUTOTUNE_FAILED), GET_TEXT_F(DGUS_MSG_TEMP_TOO_HIGH));
         break;
       case AUTOTUNE_DONE:
         checkkey = last_checkkey;
@@ -1472,7 +1477,7 @@ void dwinPrintFinished() {
   DEBUG_ECHOLNPGM("dwinPrintFinished");
   hmiFlag.abort_flag = false;
   hmiFlag.pause_flag = false;
-  wait_for_heatup = false;
+  marlin.heatup_done();
   #if PROUI_EX
     if (!fileprop.isConfig) gotoPrintDone();
     fileprop.clear();
@@ -1831,7 +1836,7 @@ void gotoConfirmToPrint() {
 
 // Reset Printer
 void rebootPrinter() {
-  wait_for_heatup = wait_for_user = false;    // Stop waiting for heating/user
+  marlin.end_waiting();    // Stop waiting for heating/user
   thermalManager.disable_all_heaters();
   planner.finish_and_disable();
   dwinRebootScreen();
@@ -1871,14 +1876,14 @@ void autoHome() { queue.inject_P(G28_STR); }
   #endif
   void liveZOffset() {
     #if ANY(BABYSTEP_ZPROBE_OFFSET, JUST_BABYSTEP)
-      const_float_t step_zoffset = round((menuData.value / 100.0f) * planner.settings.axis_steps_per_mm[Z_AXIS]) - babystep.accum;
+      const float step_zoffset = roundf((menuData.value * 0.01f) * planner.settings.axis_steps_per_mm[Z_AXIS]) - babystep.accum;
       if (BABYSTEP_ALLOWED()) babystep.add_steps(Z_AXIS, step_zoffset);
       //SERIAL_ECHOLN(F("BB Steps: "), step_zoffset);
     #endif
   }
   void setZOffset() {
     #if ANY(BABYSTEP_ZPROBE_OFFSET, JUST_BABYSTEP)
-      babystep.accum = round(planner.settings.axis_steps_per_mm[Z_AXIS] * BABY_Z_VAR);
+      babystep.accum = LROUND(planner.settings.axis_steps_per_mm[Z_AXIS] * BABY_Z_VAR);
     #endif
     #if ALL(EEPROM_SETTINGS, ZOFFSET_SAVE_SETTINGS)
       setPFloatOnClick(OFFSET_ZMIN, OFFSET_ZMAX, 2, applyZOffset, liveZOffset);
@@ -2260,8 +2265,9 @@ void applyMaxAccel() { planner.set_max_acceleration((AxisEnum)hmiValue.select, m
   void setJDmm() { setPFloatOnClick(MIN_JD_MM, MAX_JD_MM, 3, applyJDmm); }
 #endif
 
-#if ENABLED(LIN_ADVANCE)
-  void setLA_K() { setPFloatOnClick(0, 10, 3); }
+#if HAS_LIN_ADVANCE_K
+  void applyLA_K() { planner.set_advance_k(menuData.value / POW(10,3)); }
+  void setLA_K() { setPFloatOnClick(0, 10, 3, applyLA_K); }
 #endif
 
 #if HAS_X_AXIS
@@ -2812,7 +2818,7 @@ void drawTuneMenu() {
 }
 
 #if ENABLED(ADAPTIVE_STEP_SMOOTHING_TOGGLE)
-  void setAdaptiveStepSmoothing() {
+  void toggleAdaptiveStepSmoothing() {
     toggleCheckboxLine(stepper.adaptive_step_smoothing_enabled);
   }
 #endif
@@ -2863,34 +2869,26 @@ void drawTuneMenu() {
 #endif
 
 #if HAS_TRINAMIC_CONFIG
-  #if AXIS_IS_TMC(X)
+  #if X_IS_TRINAMIC
     void setXTMCCurrent() { setPIntOnClick(MIN_TMC_CURRENT, MAX_TMC_CURRENT, []{ stepperX.refresh_stepper_current(); }); }
   #endif
-  #if AXIS_IS_TMC(Y)
+  #if Y_IS_TRINAMIC
     void setYTMCCurrent() { setPIntOnClick(MIN_TMC_CURRENT, MAX_TMC_CURRENT, []{ stepperY.refresh_stepper_current(); }); }
   #endif
-  #if AXIS_IS_TMC(Z)
+  #if Z_IS_TRINAMIC
     void setZTMCCurrent() { setPIntOnClick(MIN_TMC_CURRENT, MAX_TMC_CURRENT, []{ stepperZ.refresh_stepper_current(); }); }
   #endif
-  #if AXIS_IS_TMC(E0)
+  #if E0_IS_TRINAMIC
     void setETMCCurrent() { setPIntOnClick(MIN_TMC_CURRENT, MAX_TMC_CURRENT, []{ stepperE0.refresh_stepper_current(); }); }
   #endif
 
   void drawTrinamicConfigMenu() {
     if (notCurrentMenu(trinamicConfigMenu)) {
       BACK_ITEM(drawAdvancedSettingsMenu);
-      #if AXIS_IS_TMC(X)
-        EDIT_ITEM(ICON_TMCXSet, MSG_TMC_ACURRENT, onDrawPIntMenu, setXTMCCurrent, &stepperX.val_mA);
-      #endif
-      #if AXIS_IS_TMC(Y)
-        EDIT_ITEM(ICON_TMCYSet, MSG_TMC_BCURRENT, onDrawPIntMenu, setYTMCCurrent, &stepperY.val_mA);
-      #endif
-      #if AXIS_IS_TMC(Z)
-        EDIT_ITEM(ICON_TMCZSet, MSG_TMC_CCURRENT, onDrawPIntMenu, setZTMCCurrent, &stepperZ.val_mA);
-      #endif
-      #if AXIS_IS_TMC(E0)
-        EDIT_ITEM(ICON_TMCESet, MSG_TMC_ECURRENT, onDrawPIntMenu, setETMCCurrent, &stepperE0.val_mA);
-      #endif
+      TERN_(X_IS_TRINAMIC, EDIT_ITEM(ICON_TMCXSet, MSG_TMC_ACURRENT, onDrawPIntMenu, setXTMCCurrent, &stepperX.val_mA));
+      TERN_(Y_IS_TRINAMIC, EDIT_ITEM(ICON_TMCYSet, MSG_TMC_BCURRENT, onDrawPIntMenu, setYTMCCurrent, &stepperY.val_mA));
+      TERN_(Z_IS_TRINAMIC, EDIT_ITEM(ICON_TMCZSet, MSG_TMC_CCURRENT, onDrawPIntMenu, setZTMCCurrent, &stepperZ.val_mA));
+      TERN_(E0_IS_TRINAMIC, EDIT_ITEM(ICON_TMCESet, MSG_TMC_ECURRENT, onDrawPIntMenu, setETMCCurrent, &stepperE0.val_mA));
     }
     SET_MENU(trinamicConfigMenu, MSG_TMC_DRIVERS);
   }
@@ -2912,14 +2910,14 @@ void drawMotionMenu() {
     #elif HAS_JUNCTION_DEVIATION
       EDIT_ITEM(ICON_JDmm, MSG_JUNCTION_DEVIATION, onDrawPFloat3Menu, setJDmm, &planner.junction_deviation_mm);
     #endif
-    #if ENABLED(LIN_ADVANCE)
+    #if HAS_LIN_ADVANCE_K
       EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, setLA_K, &planner.extruder_advance_K[EXT]);
     #endif
     #if ENABLED(SHAPING_MENU)
       MENU_ITEM(ICON_InputShaping, MSG_INPUT_SHAPING, onDrawSubMenu, drawInputShaping_menu);
     #endif
     #if ENABLED(ADAPTIVE_STEP_SMOOTHING_TOGGLE)
-      EDIT_ITEM(ICON_UBLActive, MSG_STEP_SMOOTHING, onDrawChkbMenu, setAdaptiveStepSmoothing, &stepper.adaptive_step_smoothing_enabled);
+      EDIT_ITEM(ICON_UBLActive, MSG_STEP_SMOOTHING, onDrawChkbMenu, toggleAdaptiveStepSmoothing, &stepper.adaptive_step_smoothing_enabled);
     #endif
     #if HAS_FLOW_EDIT
       EDIT_ITEM(ICON_Flow, MSG_FLOW, onDrawPIntMenu, setFlow, &planner.flow_percentage[EXT]);

@@ -98,6 +98,10 @@ void onMediaRemoved() {
   }
 }
 
+void onHeatingError(const heater_id_t header_id) {}
+void onMinTempError(const heater_id_t header_id) {}
+void onMaxTempError(const heater_id_t header_id) {}
+
 void onPlayTone(const uint16_t, const uint16_t/*=0*/) {
   rts.sendData(StartSoundSet, SoundAddr);
 }
@@ -228,9 +232,33 @@ void onUserConfirmRequired(const char *const msg) {
   lastPauseMsgState = ExtUI::pauseModeStatus;
 }
 
-void onStatusChanged(const char *const statMsg) {
-  for (int16_t j = 0; j < 20; j++) // Clear old message
+// For fancy LCDs include an icon ID, message, and translated button title
+void onUserConfirmRequired(const int, const char * const cstr, FSTR_P const) {
+  onUserConfirmRequired(cstr);
+}
+void onUserConfirmRequired(const int, FSTR_P const fstr, FSTR_P const) {
+  onUserConfirmRequired(fstr);
+}
+
+#if ENABLED(ADVANCED_PAUSE_FEATURE)
+  void onPauseMode(
+    const PauseMessage message,
+    const PauseMode mode/*=PAUSE_MODE_SAME*/,
+    const uint8_t extruder/*=active_extruder*/
+  ) {
+    stdOnPauseMode(message, mode, extruder);
+  }
+#endif
+
+static constexpr int16_t STATUS_MESSAGE_SIZE = 20;
+
+void clearStatus() {
+  for (int16_t j = 0; j < STATUS_MESSAGE_SIZE; j++) // Clear old message
     rts.sendData(' ', StatusMessageString + j);
+}
+
+void onStatusChanged(const char * const statMsg) {
+  clearStatus();
   rts.sendData(statMsg, StatusMessageString);
 }
 
@@ -338,7 +366,7 @@ void onPostprocessSettings() {}
 #if HAS_MESH
   void onMeshUpdate(const int8_t xpos, const int8_t ypos, probe_state_t state) {}
 
-  void onMeshUpdate(const int8_t xpos, const int8_t ypos, const_float_t zval) {
+  void onMeshUpdate(const int8_t xpos, const int8_t ypos, const float zval) {
     if (waitway == 3)
       if (isPositionKnown() && (getActualTemp_celsius(BED) >= (getTargetTemp_celsius(BED) - 1)))
         rts.sendData(ExchangePageBase + 64, ExchangepageAddr);
@@ -354,6 +382,10 @@ void onPostprocessSettings() {}
         }
     #endif
   }
+#endif
+
+#if ENABLED(PREVENT_COLD_EXTRUSION)
+  void onSetMinExtrusionTemp(const celsius_t) {}
 #endif
 
 #if ENABLED(POWER_LOSS_RECOVERY)
@@ -373,7 +405,7 @@ void onPostprocessSettings() {}
 #endif
 
 #if HAS_PID_HEATING
-  void onPIDTuning(const result_t rst) {
+  void onPIDTuning(const pidresult_t rst) {
     // Called for temperature PID tuning result
     rts.sendData(pid_hotendAutoTemp, HotendPID_AutoTmp);
     rts.sendData(pid_bedAutoTemp, BedPID_AutoTmp);
@@ -387,6 +419,19 @@ void onPostprocessSettings() {}
     #endif
     onStatusChanged(F("PID Tune Finished"));
   }
+  void onStartM303(const int count, const heater_id_t hid, const celsius_t temp) {
+    // Called by M303 to update the UI
+  }
+#endif
+
+#if ENABLED(MPC_AUTOTUNE)
+  void onMPCTuning(const mpcresult_t rst) {
+    // Called for temperature PID tuning result
+  }
+#endif
+
+#if ENABLED(PLATFORM_M997_SUPPORT)
+  void onFirmwareFlash() {}
 #endif
 
 void onHomingStart() {}
@@ -396,6 +441,8 @@ void onPrintDone() {}
 
 void onSteppersDisabled() {}
 void onSteppersEnabled() {}
+void onAxisDisabled(const axis_t) {}
+void onAxisEnabled(const axis_t) {}
 
 } // ExtUI
 

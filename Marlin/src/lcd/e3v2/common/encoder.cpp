@@ -69,15 +69,13 @@ EncoderState encoderReceiveAnalyze() {
       #if PIN_EXISTS(LCD_LED)
         //LED_Action();
       #endif
-      #if LCD_BACKLIGHT_TIMEOUT_MINS
-        ui.refresh_backlight_timeout();
-      #endif
+      TERN_(HAS_BACKLIGHT_TIMEOUT, ui.refresh_backlight_timeout());
       if (!ui.backlight) {
         ui.refresh_brightness();
         return ENCODER_DIFF_NO;
       }
-      const bool was_waiting = wait_for_user;
-      wait_for_user = false;
+      const bool was_waiting = marlin.wait_for_user;
+      marlin.user_resume();
       return was_waiting ? ENCODER_DIFF_NO : ENCODER_DIFF_ENTER;
     }
     else return ENCODER_DIFF_NO;
@@ -119,9 +117,7 @@ EncoderState encoderReceiveAnalyze() {
   }
 
   if (temp_diffState != ENCODER_DIFF_NO) {
-    #if LCD_BACKLIGHT_TIMEOUT_MINS
-      ui.refresh_backlight_timeout();
-    #endif
+    TERN_(HAS_BACKLIGHT_TIMEOUT, ui.refresh_backlight_timeout());
     if (!ui.backlight) ui.refresh_brightness();
   }
 
@@ -137,9 +133,9 @@ EncoderState get_encoder_menuitems() { return TERN(SMOOTH_ENCODER_MENUITEMS, get
 
   // LED light operation
   void LED_Action() {
-    LED_Control(RGB_SCALE_WARM_WHITE,0x0F);
+    LED_Control(RGB_SCALE_WARM_WHITE, 0x0F);
     delay(30);
-    LED_Control(RGB_SCALE_WARM_WHITE,0x00);
+    LED_Control(RGB_SCALE_WARM_WHITE, 0x00);
   }
 
   // LED initialization
@@ -149,9 +145,8 @@ EncoderState get_encoder_menuitems() { return TERN(SMOOTH_ENCODER_MENUITEMS, get
 
   // LED write data
   void LED_WriteData() {
-    uint8_t tempCounter_LED, tempCounter_Bit;
-    for (tempCounter_LED = 0; tempCounter_LED < LED_NUM; tempCounter_LED++) {
-      for (tempCounter_Bit = 0; tempCounter_Bit < 24; tempCounter_Bit++) {
+    for (uint8_t tempCounter_LED = 0; tempCounter_LED < LED_NUM; tempCounter_LED++) {
+      for (uint8_t tempCounter_Bit = 0; tempCounter_Bit < 24; tempCounter_Bit++) {
         if (LED_DataArray[tempCounter_LED] & (0x800000 >> tempCounter_Bit)) {
           LED_DATA_HIGH;
           DELAY_NS(300);
@@ -202,20 +197,22 @@ EncoderState get_encoder_menuitems() { return TERN(SMOOTH_ENCODER_MENUITEMS, get
       }
     }
 
-    struct { bool g, r, b; } led_flag = { false, false, false };
+    struct { bool g, r, b; } led_flag;
     for (uint8_t i = 0; i < LED_NUM; i++) {
+      led_flag = { false, false, false };
       while (1) {
         const uint8_t g = uint8_t(LED_DataArray[i] >> 16),
                       r = uint8_t(LED_DataArray[i] >> 8),
                       b = uint8_t(LED_DataArray[i]);
         if (g == led_data[i].g) led_flag.g = true;
-        else LED_DataArray[i] += (g > led_data[i].g) ? -0x010000 : 0x010000;
+        else LED_DataArray[i] += (g > led_data[i].g) ? -_BV32(16) : _BV32(16);
         if (r == led_data[i].r) led_flag.r = true;
-        else LED_DataArray[i] += (r > led_data[i].r) ? -0x000100 : 0x000100;
+        else LED_DataArray[i] += (r > led_data[i].r) ? -_BV32(8) : _BV32(8);
         if (b == led_data[i].b) led_flag.b = true;
-        else LED_DataArray[i] += (b > led_data[i].b) ? -0x000001 : 0x000001;
+        else LED_DataArray[i] += (b > led_data[i].b) ? -_BV32(0) : _BV32(0);
+
         LED_WriteData();
-        if (led_flag.r && led_flag.g && led_flag.b) break;
+        if (led_flag.g && led_flag.r && led_flag.b) break;
         delay(change_Interval);
       }
     }

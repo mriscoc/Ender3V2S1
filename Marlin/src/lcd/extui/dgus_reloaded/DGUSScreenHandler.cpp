@@ -117,7 +117,7 @@ void DGUSScreenHandler::loop() {
   }
 
   if (current_screenID == DGUS_ScreenID::WAIT
-      && ((wait_continue && !wait_for_user) || (!wait_continue && isPrinterIdle()))
+      && ((wait_continue && !marlin.wait_for_user) || (!wait_continue && isPrinterIdle()))
   ) {
     moveToScreen(wait_return_screenID, true);
     return;
@@ -305,10 +305,11 @@ void DGUSScreenHandler::filamentRunout(const ExtUI::extruder_t extruder) {
 
 #if HAS_PID_HEATING
 
-  void DGUSScreenHandler::pidTuning(const ExtUI::result_t rst) {
+  void DGUSScreenHandler::pidTuning(const ExtUI::pidresult_t rst) {
     switch (rst) {
       case ExtUI::PID_STARTED:
       case ExtUI::PID_BED_STARTED:
+      case ExtUI::PID_CHAMBER_STARTED:
         setStatusMessage(GET_TEXT_F(MSG_PID_AUTOTUNE));
         break;
       case ExtUI::PID_BAD_HEATER_ID:
@@ -452,7 +453,7 @@ void DGUSScreenHandler::moveToScreen(const DGUS_ScreenID screenID, bool abort_wa
 
     if (!abort_wait) return;
 
-    if (wait_continue && wait_for_user)
+    if (wait_continue && marlin.wait_for_user)
       ExtUI::setUserConfirmed();
   }
 

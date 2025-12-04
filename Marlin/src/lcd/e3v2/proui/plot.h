@@ -25,9 +25,9 @@
 
 class Plot {
 public:
-  static void draw(const frame_rect_t &frame, const_float_t max, const_float_t ref=0);
-  static void update(const_float_t value);
-  static void putPoint(const uint16_t color, const_float_t value);
+  static void draw(const frame_rect_t &frame, const float max, const float ref=0);
+  static void update(const float value);
+  static void putPoint(const uint16_t color, const float value);
 };
 
 extern Plot plot;

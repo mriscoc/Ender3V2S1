@@ -37,9 +37,9 @@
  * M75: Start print timer
  */
 void GcodeSuite::M75() {
-  startOrResumeJob();
+  marlin.startOrResumeJob();
   #if ENABLED(DWIN_LCD_PROUI)
-    if (!IS_SD_PRINTING()) setPrintTitle(parser.string_arg && parser.string_arg[0] ? parser.string_arg : GET_TEXT(MSG_HOST_START_PRINT));
+    if (!card.isStillPrinting()) setPrintTitle(parser.has_string() ? parser.string_arg : GET_TEXT(MSG_HOST_START_PRINT));
   #endif
 }
 

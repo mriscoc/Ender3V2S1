@@ -153,7 +153,7 @@ def Upload(source, target, env):
     marlin_string_config_h_author = _GetMarlinEnv(MarlinEnv, 'STRING_CONFIG_H_AUTHOR')
 
     # Get firmware upload params
-    upload_firmware_source_name = env['FIRMWARE_NAME'] if env['FIRMWARE_NAME'] else str(source[0])  # Source firmware filename
+    upload_firmware_source_path = os.path.join(env["PROJECT_BUILD_DIR"], env["PIOENV"], f"{env['PROGNAME']}.bin") if 'PROGNAME' in env else str(source[0])
     upload_speed = env['UPLOAD_SPEED'] if 'UPLOAD_SPEED' in env else 115200
                                                     # baud rate of serial connection
     upload_port = _GetUploadPort(env)               # Serial port to use

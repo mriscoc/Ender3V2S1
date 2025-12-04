@@ -53,6 +53,10 @@
   #include "e3v2/proui/dwin.h"
 #endif
 
+#if ALL(HAS_STATUS_MESSAGE, IS_DWIN_MARLINUI)
+  #include "e3v2/marlinui/marlinui_dwin.h" // for LCD_WIDTH
+#endif
+
 typedef bool (*statusResetFunc_t)();
 
 #if HAS_WIRED_LCD
@@ -86,9 +90,13 @@ typedef bool (*statusResetFunc_t)();
 
 #endif // HAS_WIRED_LCD
 
-#if HAS_WIRED_LCD
+#if ANY(HAS_WIRED_LCD, DWIN_CREALITY_LCD_JYERSUI)
   #define LCD_WITH_BLINK 1
   #define LCD_UPDATE_INTERVAL DIV_TERN(DOUBLE_LCD_FRAMERATE, TERN(HAS_TOUCH_BUTTONS, 50, 100), 2)
+#endif
+
+#if LCD_WITH_BLINK && HAS_EXTRA_PROGRESS && !IS_DWIN_MARLINUI
+  #define HAS_ROTATE_PROGRESS 1
 #endif
 
 #if HAS_MARLINUI_U8GLIB
@@ -113,6 +121,9 @@ typedef bool (*statusResetFunc_t)();
     #endif
     #if HAS_HEATED_BED
       celsius_t bed_temp;
+    #endif
+    #if HAS_HEATED_CHAMBER
+      celsius_t chamber_temp;
     #endif
     #if HAS_FAN
       uint16_t fan_speed;
@@ -159,7 +170,7 @@ typedef bool (*statusResetFunc_t)();
     static float axis_value(const AxisEnum axis) {
       return NATIVE_TO_LOGICAL(processing ? destination[axis] : SUM_TERN(IS_KINEMATIC, current_position[axis], offset), axis);
     }
-    static bool apply_diff(const AxisEnum axis, const_float_t diff, const_float_t min, const_float_t max) {
+    static bool apply_diff(const AxisEnum axis, const float diff, const float min, const float max) {
       #if IS_KINEMATIC
         float &valref = offset;
         const float rmin = min - current_position[axis], rmax = max - current_position[axis];
@@ -248,8 +259,10 @@ public:
   #endif
 
   #if HAS_MEDIA
-    #define MEDIA_MENU_GATEWAY TERN(PASSWORD_ON_SD_PRINT_MENU, password.media_gatekeeper, menu_media)
-    static void media_changed(const uint8_t old_stat, const uint8_t stat);
+    #define MEDIA_MENU_GATEWAY     TERN(PASSWORD_ON_SD_PRINT_MENU, password.media_gatekeeper,     menu_file_selector)
+    #define MEDIA_MENU_GATEWAY_SD  TERN(PASSWORD_ON_SD_PRINT_MENU, password.media_gatekeeper_sd,  menu_file_selector_sd)
+    #define MEDIA_MENU_GATEWAY_USB TERN(PASSWORD_ON_SD_PRINT_MENU, password.media_gatekeeper_usb, menu_file_selector_usb)
+    static void media_changed(const MediaPresence old_stat, const MediaPresence stat);
   #endif
 
   #if HAS_LCD_BRIGHTNESS
@@ -269,22 +282,30 @@ public:
     FORCE_INLINE static void refresh_brightness() { set_brightness(brightness); }
   #endif
 
-  #if LCD_BACKLIGHT_TIMEOUT_MINS
+  #if HAS_BACKLIGHT_TIMEOUT
+    #if ENABLED(EDITABLE_DISPLAY_TIMEOUT)
+      static uint8_t backlight_timeout_minutes;
+    #else
+      static constexpr uint8_t backlight_timeout_minutes = LCD_BACKLIGHT_TIMEOUT_MINS;
+    #endif
     static constexpr uint8_t backlight_timeout_min = 0;
     static constexpr uint8_t backlight_timeout_max = 99;
-    static uint8_t backlight_timeout_minutes;
     static millis_t backlight_off_ms;
     static void refresh_backlight_timeout();
-  #elif ENABLED(PROUI_EX)
-    static void refresh_backlight_timeout();
-  #endif
-
-  #if HAS_DISPLAY_SLEEP
+  #elif HAS_DISPLAY_SLEEP
+    #if ENABLED(EDITABLE_DISPLAY_TIMEOUT)
+      static uint8_t sleep_timeout_minutes;
+    #else
+      static constexpr uint8_t sleep_timeout_minutes = DISPLAY_SLEEP_MINUTES;
+    #endif
     static constexpr uint8_t sleep_timeout_min = 0;
     static constexpr uint8_t sleep_timeout_max = 99;
-    static uint8_t sleep_timeout_minutes;
-    static millis_t screen_timeout_millis;
+    static millis_t screen_timeout_ms;
     static void refresh_screen_timeout();
+  #endif
+
+  #if PROUI_EX && !HAS_BACKLIGHT_TIMEOUT
+    static void refresh_backlight_timeout();
   #endif
 
   // Sleep or wake the display (e.g., by turning the backlight off/on).
@@ -334,7 +355,7 @@ public:
       FORCE_INLINE static uint16_t get_progress_permyriad() { return _get_progress(); }
     #endif
     static uint8_t get_progress_percent() { return uint8_t(_get_progress() / (PROGRESS_SCALE)); }
-    #if LCD_WITH_BLINK && HAS_EXTRA_PROGRESS
+    #if HAS_ROTATE_PROGRESS
       #if ENABLED(SHOW_PROGRESS_PERCENT)
         static void drawPercent();
       #endif
@@ -361,17 +382,7 @@ public:
 
   #if HAS_STATUS_MESSAGE
 
-    #if ANY(HAS_WIRED_LCD, DWIN_LCD_PROUI)
-      #if ENABLED(STATUS_MESSAGE_SCROLLING)
-        #define MAX_MESSAGE_LENGTH _MAX(LONG_FILENAME_LENGTH, MAX_LANG_CHARSIZE * 2 * (LCD_WIDTH))
-      #else
-        #define MAX_MESSAGE_LENGTH (MAX_LANG_CHARSIZE * (LCD_WIDTH))
-      #endif
-    #else
-      #define MAX_MESSAGE_LENGTH 63
-    #endif
-
-    static MString<MAX_MESSAGE_LENGTH> status_message;
+    static MString<MAX_MESSAGE_SIZE> status_message;
     static uint8_t alert_level; // Higher levels block lower levels
 
     #if HAS_STATUS_MESSAGE_TIMEOUT
@@ -402,7 +413,6 @@ public:
 
   #else
 
-    #define MAX_MESSAGE_LENGTH 1
     static constexpr bool has_status() { return false; }
 
     static bool set_alert_level(int8_t) { return false; }
@@ -612,7 +622,7 @@ public:
 
     #if ANY(BABYSTEP_GFX_OVERLAY, MESH_EDIT_GFX_OVERLAY)
       static void zoffset_overlay(const int8_t dir);
-      static void zoffset_overlay(const_float_t zvalue);
+      static void zoffset_overlay(const float zvalue);
     #endif
 
     static void draw_kill_screen();
@@ -646,13 +656,15 @@ public:
   #if HAS_PREHEAT
     enum PreheatTarget : uint8_t { PT_HOTEND, PT_BED, PT_FAN, PT_CHAMBER, PT_ALL = 0xFF };
     static preheat_t material_preset[PREHEAT_COUNT];
+    static void reset_material_presets();
     static FSTR_P get_preheat_label(const uint8_t m);
     static void apply_preheat(const uint8_t m, const uint8_t pmask, const uint8_t e=active_extruder);
     static void preheat_set_fan(const uint8_t m) { TERN_(HAS_FAN, apply_preheat(m, _BV(PT_FAN))); }
-    static void preheat_hotend(const uint8_t m, const uint8_t e=active_extruder) { TERN_(HAS_HOTEND, apply_preheat(m, _BV(PT_HOTEND))); }
+    static void preheat_hotend(const uint8_t m, const uint8_t e=active_extruder) { TERN_(HAS_HOTEND, apply_preheat(m, _BV(PT_HOTEND), e)); }
     static void preheat_hotend_and_fan(const uint8_t m, const uint8_t e=active_extruder) { preheat_hotend(m, e); preheat_set_fan(m); }
     static void preheat_bed(const uint8_t m) { TERN_(HAS_HEATED_BED, apply_preheat(m, _BV(PT_BED))); }
-    static void preheat_all(const uint8_t m) { apply_preheat(m, PT_ALL); }
+    static void preheat_chamber(const uint8_t m) { TERN_(HAS_HEATED_CHAMBER, apply_preheat(m, _BV(PT_CHAMBER))); }
+    static void preheat_all(const uint8_t m, const uint8_t e=active_extruder) { apply_preheat(m, PT_ALL, e); }
   #endif
 
   static void reset_status_timeout(const millis_t ms) {
@@ -726,7 +738,7 @@ public:
     #endif
 
     #if ENABLED(AUTO_BED_LEVELING_UBL)
-      static void ubl_mesh_edit_start(const_float_t initial);
+      static void ubl_mesh_edit_start(const float initial);
       static float ubl_mesh_value();
     #endif
 
@@ -756,7 +768,7 @@ public:
     static bool use_click() { return false; }
   #endif
 
-  #if ENABLED(ADVANCED_PAUSE_FEATURE) && ANY(HAS_MARLINUI_MENU, EXTENSIBLE_UI, DWIN_LCD_PROUI)
+  #if ENABLED(ADVANCED_PAUSE_FEATURE) && ANY(HAS_MARLINUI_MENU, EXTENSIBLE_UI, DWIN_CREALITY_LCD_JYERSUI, DWIN_LCD_PROUI)
     static void pause_show_message(const PauseMessage message, const PauseMode mode=PAUSE_MODE_SAME, const uint8_t extruder=active_extruder);
   #else
     static void _pause_show_message() {}
@@ -863,7 +875,7 @@ public:
       TERN_(REVERSE_SELECT_DIRECTION, encoderDirection = -(ENCODERBASE));
     }
 
-  #else
+  #else // !HAS_ENCODER_ACTION
 
     static void update_buttons() {}
     static bool hw_button_pressed() { return false; }
@@ -903,6 +915,29 @@ private:
     #endif
   #endif
 };
+
+/**
+ * @brief Expand a string with optional substitution
+ * @details Expand a string with optional substitutions:
+ *   $ : the clipped string given by fstr or cstr
+ *   { :  '0'....'10' for indexes 0 - 10
+ *   ~ :  '1'....'11' for indexes 0 - 10
+ *   * : 'E1'...'E11' for indexes 0 - 10 (By default. Uses LCD_FIRST_TOOL)
+ *   @ : an axis name such as XYZUVW, or E for an extruder
+ *
+ * @param *outstr The output destination buffer
+ * @param ptpl A ROM string (template)
+ * @param ind An index value to use for = ~ * substitution
+ * @param cstr An SRAM C-string to use for $ substitution
+ * @param fstr A ROM F-string to use for $ substitution
+ * @param maxlen The maximum size of the string (in pixels on GLCD)
+ * @return the output width (in pixels on GLCD)
+ */
+uint8_t expand_u8str_P(char * const outstr, PGM_P const ptpl, const int8_t ind, const char *cstr=nullptr, FSTR_P const fstr=nullptr, const uint8_t maxlen=MAX_MESSAGE_SIZE);
+
+inline uint8_t expand_u8str(char * const outstr, FSTR_P const ftpl, const int8_t ind, const char *cstr=nullptr, FSTR_P const fstr=nullptr, const uint8_t maxlen=MAX_MESSAGE_SIZE) {
+  return expand_u8str_P(outstr, FTOP(ftpl), ind, cstr, fstr, maxlen);
+}
 
 #define LCD_MESSAGE_F(S)       ui.set_status(F(S))
 #define LCD_MESSAGE(M)         ui.set_status(GET_TEXT_F(M))

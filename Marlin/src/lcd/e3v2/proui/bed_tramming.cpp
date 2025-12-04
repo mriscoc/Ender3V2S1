@@ -36,7 +36,7 @@
 #include "bed_tramming.h"
 #include "dwin.h"
 
-#if defined(BED_TRAMMING_INSET_LFRB)
+#if defined(BED_TRAMMING_INSET_LFRB) && !HAS_MESH
   constexpr uint16_t inset_lfrb[] = BED_TRAMMING_INSET_LFRB;
 #endif
 
@@ -45,10 +45,10 @@
 #endif
 
 bool tram(const uint8_t point OPTARG(HAS_BED_PROBE, bool stow_probe/*=true*/)) {
-  #if defined(BED_TRAMMING_INSET_LFRB)
-    uint16_t lfrb[] = { inset_lfrb[0], inset_lfrb[1], (uint16_t)(X_BED_SIZE - inset_lfrb[2]), (uint16_t)(Y_BED_SIZE - inset_lfrb[3]) };
-  #elif HAS_MESH
+  #if HAS_MESH
     uint16_t lfrb[] = { MESH_MIN_X, MESH_MIN_Y, MESH_MAX_X, MESH_MAX_Y };
+  #elif defined(BED_TRAMMING_INSET_LFRB)
+    uint16_t lfrb[] = { inset_lfrb[0], inset_lfrb[1], (uint16_t)(X_BED_SIZE - inset_lfrb[2]), (uint16_t)(Y_BED_SIZE - inset_lfrb[3]) };
   #else
     uint16_t lfrb[] = { 30, 30, (uint16_t)(X_BED_SIZE - 30), (uint16_t)(Y_BED_SIZE - 30) };
   #endif

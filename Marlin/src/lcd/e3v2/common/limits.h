@@ -61,13 +61,19 @@ constexpr xyze_float_t min_acceleration_edit_values = LOGICAL_AXIS_ARRAY_1(MIN_A
                         #endif
                       ;
 
-//
-// Max jerk limits
-//
-#define MIN_JERK_EDIT_VALUE 0.1
-#define DEFAULT_MAX_JERK_MULTIPLIER 2
+#if HAS_SPINDLE_ACCELERATION
+  constexpr float min_acceleration_edit_values_spindle = 1,
+                  default_acceleration_spindle = DEFAULT_ACCELERATION_SPINDLE,
+                  max_acceleration_edit_values_spindle = default_acceleration_spindle * DEFAULT_MAX_MULTIPLIER;
+#endif
 
+//
+// Max Jerk limits
+//
 #if ENABLED(CLASSIC_JERK)
+  #define MIN_JERK_EDIT_VALUE 0.1
+  #define DEFAULT_MAX_JERK_MULTIPLIER 2
+
   constexpr xyze_float_t min_jerk_edit_values = LOGICAL_AXIS_ARRAY_1(MIN_JERK_EDIT_VALUE),
                          default_jerk = LOGICAL_AXIS_ARRAY(
                            DEFAULT_EJERK,
@@ -98,3 +104,22 @@ constexpr xyze_float_t min_steps_edit_values = LOGICAL_AXIS_ARRAY_1(MIN_STEPS_ED
                            default_steps * float(DEFAULT_MAX_MULTIPLIER)
                          #endif
                        ;
+
+//
+// Homing Feedrate limits
+//
+#if ENABLED(EDITABLE_HOMING_FEEDRATE)
+  #define MIN_HOMING_EDIT_VALUE 1
+
+  constexpr xyz_uint_t min_homing_edit_values = NUM_AXIS_ARRAY_1(MIN_HOMING_EDIT_VALUE);
+  #ifdef DEFAULT_MAX_MULTIPLIER
+    constexpr xyz_long_t default_homing = HOMING_FEEDRATE_MM_M;
+  #endif
+  constexpr xyz_long_t max_homing_edit_values =
+                           #ifdef DEFAULT_MAX_MULTIPLIER
+                             default_homing * DEFAULT_MAX_MULTIPLIER
+                           #else
+                             { 10000, 10000, 3000 }
+                           #endif
+                         ;
+#endif

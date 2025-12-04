@@ -39,11 +39,11 @@ uint16_t grphpoints, yref, x2, y2, xpos = 0;
 frame_rect_t grphframe = {0};
 float scale = 0;
 
-uint16_t calcYpos(const_float_t value) {
+uint16_t calcYpos(const float value) {
   return round((y2) - value * scale);
 }
 
-void Plot::draw(const frame_rect_t &frame, const_float_t max, const_float_t ref/*=0*/) {
+void Plot::draw(const frame_rect_t &frame, const float max, const float ref/*=0*/) {
   grphframe = frame;
   grphpoints = 0;
   scale = frame.h / max;
@@ -60,7 +60,7 @@ void Plot::draw(const frame_rect_t &frame, const_float_t max, const_float_t ref/
   else yref = 0;
 }
 
-void Plot::update(const_float_t value) {
+void Plot::update(const float value) {
   if (!scale) return;
   xpos = (grphpoints < grphframe.w) ? grphpoints + grphframe.x : x2 - 1;
   const uint16_t ypos = calcYpos(value);
@@ -73,7 +73,7 @@ void Plot::update(const_float_t value) {
   grphpoints++;
 }
 
-void Plot::putPoint(const uint16_t color, const_float_t value) {
+void Plot::putPoint(const uint16_t color, const float value) {
   const uint16_t ypos = calcYpos(value);
   dwinDrawPoint(color, 1, 1, xpos, ypos);
 }

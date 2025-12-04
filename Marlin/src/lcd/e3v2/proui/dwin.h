@@ -166,6 +166,10 @@ typedef struct {
 extern hmi_data_t hmiData;
 static constexpr size_t eeprom_data_size = sizeof(hmi_data_t);
 
+#if ALL(INDIVIDUAL_AXIS_HOMING_SUBMENU, MESH_BED_LEVELING)
+  #define Z_POST_CLEARANCE hmiData.zAfterHoming
+#endif
+
 typedef struct {
   int8_t Color[3];      // Color components
   #if ANY(HAS_PID_HEATING, MPCTEMP)
@@ -195,9 +199,9 @@ extern hmi_value_t hmiValue;
 extern hmi_flag_t hmiFlag;
 extern uint8_t checkkey;
 
-inline bool isPrinting() { return (printingIsActive() || print_job_timer.isPaused()); }
-inline bool sdPrinting() { return (isPrinting() && IS_SD_FILE_OPEN()); }
-inline bool hostPrinting() { return (isPrinting() && !IS_SD_FILE_OPEN()); }
+inline bool isPrinting()   { return marlin.printingIsActive() || marlin.printingIsPaused(); }
+inline bool sdPrinting()   { return isPrinting() && card.isStillPrinting(); }
+inline bool hostPrinting() { return isPrinting() && !card.isStillPrinting(); }
 
 inline void iconButton(const bool selected, const int iconid, const frame_rect_t &ico, FSTR_P caption) {
   return DWINUI::iconButton(selected, hmiData.colorHighlight, iconid, ico, caption);
@@ -281,7 +285,7 @@ void dwinCheckStatusMessage();
 void dwinHomingStart();
 void dwinHomingDone();
 #if HAS_MESH
-  void dwinMeshUpdate(const int8_t cpos, const int8_t tpos, const_float_t zval);
+  void dwinMeshUpdate(const int8_t cpos, const int8_t tpos, const float zval);
 #endif
 #if HAS_LEVELING
   void dwinLevelingStart();

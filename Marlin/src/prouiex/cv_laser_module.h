@@ -58,7 +58,7 @@ class spindle_laser_soft_pwm
     static bool is_laser_device();
     static bool is_fdm_device();
     //0-1000 比例转换为0-255
-    static uint8_t power16_to_8(const_float_t power);
+    static uint8_t power16_to_8(const float power);
     // 设置并启动timer3 的pwm
     static void laser_power_start(const uint8_t power);
     // 将pwm占空比设置为1，以最弱的激光输出

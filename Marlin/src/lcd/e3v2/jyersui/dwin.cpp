@@ -266,7 +266,7 @@ private:
       uint8_t tilt_grid = 1;
 
       void manualValueUpdate(bool undefined=false) {
-        gcode.process_subcommands_now(
+        queue.inject(
           TS(F("M421I"), mesh_x, 'J', mesh_y, 'Z', p_float_t(current_position.z, 3), undefined ? "N" : "")
         );
         planner.synchronize();
@@ -313,7 +313,7 @@ private:
     #else
 
       void manualValueUpdate() {
-        gcode.process_subcommands_now(
+        queue.inject(
           TS(F("G29I"), mesh_x, 'J', mesh_y, 'Z', p_float_t(current_position.z, 3))
         );
         planner.synchronize();
@@ -378,8 +378,8 @@ private:
         dwinDrawRectangle(1,                                          // RGB565 colors: http://www.barth-dev.de/online/rgb565-color-picker/
           isnan(bedlevel.z_values[x][y]) ? COLOR_GREY : (             // gray if undefined
             (bedlevel.z_values[x][y] < 0 ?
-              (uint16_t)round(0x1F * -bedlevel.z_values[x][y] / (!viewer_asymmetric_range ? rmax : v_min)) << 11 :  // red if mesh point value is negative
-              (uint16_t)round(0x3F *  bedlevel.z_values[x][y] / (!viewer_asymmetric_range ? rmax : v_max)) << 5) |  // green if mesh point value is positive
+              (uint16_t)LROUND(0x1F * -bedlevel.z_values[x][y] / (!viewer_asymmetric_range ? rmax : v_min)) << 11 : // red if mesh point value is negative
+              (uint16_t)LROUND(0x3F *  bedlevel.z_values[x][y] / (!viewer_asymmetric_range ? rmax : v_max)) << 5) | // green if mesh point value is positive
                 _MIN(0x1F, (((uint8_t)abs(bedlevel.z_values[x][y]) / 10) * 4))),                                    // + blue stepping for every mm
           start_x_px, start_y_px, end_x_px, end_y_px
         );
@@ -427,7 +427,7 @@ private:
         v1 = -rmax;
         v2 =  rmin;
       }
-      jyersDWIN.updateStatus(TS(GET_TEXT_F(MSG_COLORS_RED), ' ', p_float_t(v1, 3) , F("..0.."), p_float_t(v2, 3), ' ', GET_TEXT_F(MSG_COLORS_GREEN)));
+      jyersDWIN.updateStatus(TS(GET_TEXT_F(MSG_COLORS_RED), ' ', p_float_t(v1, 3), F("..0.."), p_float_t(v2, 3), ' ', GET_TEXT_F(MSG_COLORS_GREEN)));
       drawing_mesh = false;
     }
 
@@ -454,7 +454,7 @@ void JyersDWIN::clearScreen(const uint8_t e/*=3*/) {
   if (e == 4) dwinDrawRectangle(1, COLOR_BG_BLACK, 0, 31, DWIN_WIDTH, DWIN_HEIGHT); // Clear Popup Area
 }
 
-void JyersDWIN::drawFloat(const_float_t value, const uint8_t row, const bool selected/*=false*/, const uint8_t minunit/*=10*/) {
+void JyersDWIN::drawFloat(const float value, const uint8_t row, const bool selected/*=false*/, const uint8_t minunit/*=10*/) {
   const uint8_t digits = (uint8_t)floor(log10(abs(value))) + log10(minunit) + (minunit > 1);
   const uint16_t bColor = selected ? COLOR_SELECT : COLOR_BG_BLACK;
   const uint16_t xpos = 240 - (digits * 8);
@@ -523,18 +523,18 @@ void JyersDWIN::drawMenuItem(const uint8_t row, const uint8_t icon/*=0*/, FSTR_P
 }
 
 void JyersDWIN::drawCheckbox(const uint8_t row, const bool value) {
-  #if ENABLED(DWIN_CREALITY_LCD_CUSTOM_ICONS)   // Draw appropriate checkbox icon
+  #if DISABLED(DWIN_CREALITY_LCD_STD_ICONS)     // Draw appropriate checkbox icon
     dwinIconShow(ICON, (value ? ICON_Checkbox_T : ICON_Checkbox_F), 226, MBASE(row) - 3);
   #else                                         // Draw a basic checkbox using rectangles and lines
     dwinDrawRectangle(1, COLOR_BG_BLACK, 226, MBASE(row) - 3, 226 + 20, MBASE(row) - 3 + 20);
-    dwinDrawRectangle(0, COLOR_WHITE, 226, MBASE(row) - 3, 226 + 20, MBASE(row) - 3 + 20);
+    dwinDrawRectangle(0, COLOR_WHITE,    226, MBASE(row) - 3, 226 + 20, MBASE(row) - 3 + 20);
     if (value) {
-      dwinDrawLine(COLOR_CHECKBOX, 227, MBASE(row) - 3 + 11, 226 + 8, MBASE(row) - 3 + 17);
-      dwinDrawLine(COLOR_CHECKBOX, 227 + 8, MBASE(row) - 3 + 17, 226 + 19, MBASE(row) - 3 + 1);
-      dwinDrawLine(COLOR_CHECKBOX, 227, MBASE(row) - 3 + 12, 226 + 8, MBASE(row) - 3 + 18);
-      dwinDrawLine(COLOR_CHECKBOX, 227 + 8, MBASE(row) - 3 + 18, 226 + 19, MBASE(row) - 3 + 2);
-      dwinDrawLine(COLOR_CHECKBOX, 227, MBASE(row) - 3 + 13, 226 + 8, MBASE(row) - 3 + 19);
-      dwinDrawLine(COLOR_CHECKBOX, 227 + 8, MBASE(row) - 3 + 19, 226 + 19, MBASE(row) - 3 + 3);
+      dwinDrawLine(COLOR_CHECKBOX, 227,     MBASE(row) - 3 + 11, 226 +  8, MBASE(row) - 3 + 17);
+      dwinDrawLine(COLOR_CHECKBOX, 227 + 8, MBASE(row) - 3 + 17, 226 + 19, MBASE(row) - 3 +  1);
+      dwinDrawLine(COLOR_CHECKBOX, 227,     MBASE(row) - 3 + 12, 226 +  8, MBASE(row) - 3 + 18);
+      dwinDrawLine(COLOR_CHECKBOX, 227 + 8, MBASE(row) - 3 + 18, 226 + 19, MBASE(row) - 3 +  2);
+      dwinDrawLine(COLOR_CHECKBOX, 227,     MBASE(row) - 3 + 13, 226 +  8, MBASE(row) - 3 + 19);
+      dwinDrawLine(COLOR_CHECKBOX, 227 + 8, MBASE(row) - 3 + 19, 226 + 19, MBASE(row) - 3 +  3);
     }
   #endif
 }
@@ -1176,7 +1176,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
                     thermalManager.wait_for_hotend(0);
                   }
                   popupHandler(Popup_FilChange);
-                  gcode.process_subcommands_now(TS(F("M600 B1 R"), thermalManager.degTargetHotend(0)));
+                  queue.inject(TS(F("M600 B1 R"), thermalManager.degTargetHotend(0)));
                 }
               #endif
             }
@@ -1225,7 +1225,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
             drawMenuItem(row, ICON_MoveX, GET_TEXT_F(MSG_AUTO_HOME_X));
           else {
             popupHandler(Popup_Home);
-            gcode.process_subcommands_now(F("G28X"));
+            queue.inject(F("G28X"));
             planner.synchronize();
             redrawMenu();
           }
@@ -1235,7 +1235,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
             drawMenuItem(row, ICON_MoveY, GET_TEXT_F(MSG_AUTO_HOME_X));
           else {
             popupHandler(Popup_Home);
-            gcode.process_subcommands_now(F("G28Y"));
+            queue.inject(F("G28Y"));
             planner.synchronize();
             redrawMenu();
           }
@@ -1245,7 +1245,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
             drawMenuItem(row, ICON_MoveZ, GET_TEXT_F(MSG_AUTO_HOME_X));
           else {
             popupHandler(Popup_Home);
-            gcode.process_subcommands_now(F("G28Z"));
+            queue.inject(F("G28Z"));
             planner.synchronize();
             redrawMenu();
           }
@@ -1254,7 +1254,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
           if (draw)
             drawMenuItem(row, ICON_SetHome, F("Set Home Here"));
           else {
-            gcode.process_subcommands_now(F("G92X0Y0Z0"));
+            queue.inject(F("G92X0Y0Z0"));
             audioFeedback();
           }
           break;
@@ -1342,7 +1342,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
               drawCheckbox(row, probe_deployed);
             }
             else {
-              probe_deployed ^= true;
+              FLIP(probe_deployed);
               probe.set_deployed(probe_deployed);
               drawCheckbox(row, probe_deployed);
             }
@@ -1355,7 +1355,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
             drawCheckbox(row, livemove);
           }
           else {
-            livemove ^= true;
+            FLIP(livemove);
             drawCheckbox(row, livemove);
           }
           break;
@@ -1400,7 +1400,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
               drawCheckbox(row, use_probe);
             }
             else {
-              use_probe ^= true;
+              FLIP(use_probe);
               drawCheckbox(row, use_probe);
               if (use_probe) {
                 popupHandler(Popup_Level);
@@ -1523,7 +1523,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
             if (use_probe) {
               #if HAS_BED_PROBE
                 gcode.process_subcommands_now(
-                  TS(F("G0F4000\nG0Z10\nG0X"), p_float_t((X_MAX_POS) / 2.0f - probe.offset.x, 3), 'Y', p_float_t((Y_MAX_POS) / 2.0f - probe.offset.y, 3))
+                  TS(F("G0F4000\nG0Z10\nG0X"), p_float_t((X_MAX_POS) * 0.5f - probe.offset.x, 3), 'Y', p_float_t((Y_MAX_POS) * 0.5f - probe.offset.y, 3))
                 );
                 planner.synchronize();
                 popupHandler(Popup_ManualProbing);
@@ -1577,7 +1577,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
               drawMenuItem(row, ICON_Homing, GET_TEXT_F(MSG_AUTO_HOME_Z));
             else {
               popupHandler(Popup_Home);
-              gcode.process_subcommands_now(F("G28Z"));
+              queue.inject(F("G28Z"));
               popupHandler(Popup_MoveWait);
               #if ENABLED(Z_SAFE_HOMING)
                 planner.synchronize();
@@ -1616,7 +1616,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
                 planner.synchronize();
                 redrawMenu();
               }
-              liveadjust ^= true;
+              FLIP(liveadjust);
               drawCheckbox(row, liveadjust);
             }
             break;
@@ -1809,8 +1809,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
                 drawMenuItem(row, ICON_Info, F(CONFIG_MENU_ITEM_1_DESC));
               else {
                 popupHandler(Popup_Custom);
-                //queue.inject(F(CONFIG_MENU_ITEM_1_GCODE)); // Old code
-                gcode.process_subcommands_now(F(CONFIG_MENU_ITEM_1_GCODE));
+                TERN(CONFIG_MENU_ITEM_1_IMMEDIATE, gcode.process_subcommands_now, queue.inject)(F(CONFIG_MENU_ITEM_1_GCODE));
                 planner.synchronize();
                 redrawMenu();
                 #if ENABLED(CUSTOM_MENU_CONFIG_SCRIPT_AUDIBLE_FEEDBACK)
@@ -1829,7 +1828,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
                 drawMenuItem(row, ICON_Info, F(CONFIG_MENU_ITEM_2_DESC));
               else {
                 popupHandler(Popup_Custom);
-                gcode.process_subcommands_now(F(CONFIG_MENU_ITEM_2_GCODE));
+                TERN(CONFIG_MENU_ITEM_1_IMMEDIATE, gcode.process_subcommands_now, queue.inject)(F(CONFIG_MENU_ITEM_2_GCODE));
                 planner.synchronize();
                 redrawMenu();
                 #if ENABLED(CUSTOM_MENU_CONFIG_SCRIPT_AUDIBLE_FEEDBACK)
@@ -1848,7 +1847,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
                 drawMenuItem(row, ICON_Info, F(CONFIG_MENU_ITEM_3_DESC));
               else {
                 popupHandler(Popup_Custom);
-                gcode.process_subcommands_now(F(CONFIG_MENU_ITEM_3_GCODE));
+                TERN(CONFIG_MENU_ITEM_1_IMMEDIATE, gcode.process_subcommands_now, queue.inject)(F(CONFIG_MENU_ITEM_3_GCODE));
                 planner.synchronize();
                 redrawMenu();
                 #if ENABLED(CUSTOM_MENU_CONFIG_SCRIPT_AUDIBLE_FEEDBACK)
@@ -1867,7 +1866,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
                 drawMenuItem(row, ICON_Info, F(CONFIG_MENU_ITEM_4_DESC));
               else {
                 popupHandler(Popup_Custom);
-                gcode.process_subcommands_now(F(CONFIG_MENU_ITEM_4_GCODE));
+                TERN(CONFIG_MENU_ITEM_1_IMMEDIATE, gcode.process_subcommands_now, queue.inject)(F(CONFIG_MENU_ITEM_4_GCODE));
                 planner.synchronize();
                 redrawMenu();
                 #if ENABLED(CUSTOM_MENU_CONFIG_SCRIPT_AUDIBLE_FEEDBACK)
@@ -1886,7 +1885,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
                 drawMenuItem(row, ICON_Info, F(CONFIG_MENU_ITEM_5_DESC));
               else {
                 popupHandler(Popup_Custom);
-                gcode.process_subcommands_now(F(CONFIG_MENU_ITEM_5_GCODE));
+                TERN(CONFIG_MENU_ITEM_1_IMMEDIATE, gcode.process_subcommands_now, queue.inject)(F(CONFIG_MENU_ITEM_5_GCODE));
                 planner.synchronize();
                 redrawMenu();
                 #if ENABLED(CUSTOM_MENU_CONFIG_SCRIPT_AUDIBLE_FEEDBACK)
@@ -2127,7 +2126,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
               drawMenuItem(row, ICON_HotendTemp, GET_TEXT_F(MSG_PID_AUTOTUNE));
             else {
               popupHandler(Popup_PIDWait);
-              gcode.process_subcommands_now(TS(F("M303E0C"), PID_cycles, 'S', PID_e_temp, 'U'));
+              queue.inject(TS(F("M303E0C"), PID_cycles, 'S', PID_e_temp, 'U'));
               planner.synchronize();
               redrawMenu();
             }
@@ -2193,7 +2192,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
               drawMenuItem(row, ICON_HotendTemp, GET_TEXT_F(MSG_PID_AUTOTUNE));
             else {
               popupHandler(Popup_PIDWait);
-              gcode.process_subcommands_now(TS(F("M303E-1C"), PID_cycles, 'S', PID_bed_temp, 'U'));
+              queue.inject(TS(F("M303E-1C"), PID_cycles, 'S', PID_bed_temp, 'U'));
               planner.synchronize();
               redrawMenu();
             }
@@ -2398,10 +2397,13 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
           case MOTION_LA:
             if (draw) {
               drawMenuItem(row, ICON_MaxAccelerated, GET_TEXT_F(MSG_ADVANCE_K));
-              drawFloat(planner.extruder_advance_K[0], row, false, 100);
+              drawFloat(planner.get_advance_k(), row, false, 100);
             }
-            else
-              modifyValue(planner.extruder_advance_K[0], 0, 10, 100);
+            else {
+              static float k = planner.get_advance_k();
+              modifyValue(k, 0, 10, 100, []{ planner.set_advance_k(k); });
+            }
+
             break;
         #endif
       }
@@ -2719,7 +2721,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
             drawCheckbox(row, eeprom_settings.time_format_textual);
           }
           else {
-            eeprom_settings.time_format_textual ^= true;
+            FLIP(eeprom_settings.time_format_textual);
             drawCheckbox(row, eeprom_settings.time_format_textual);
           }
           break;
@@ -2877,7 +2879,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
               drawCheckbox(row, ui.sound_on);
             }
             else {
-              ui.sound_on ^= true;
+              FLIP(ui.sound_on);
               drawCheckbox(row, ui.sound_on);
             }
             break;
@@ -2914,10 +2916,12 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
           case ADVANCED_LA:
             if (draw) {
               drawMenuItem(row, ICON_MaxAccelerated, GET_TEXT_F(MSG_ADVANCE_K));
-              drawFloat(planner.extruder_advance_K[0], row, false, 100);
+              drawFloat(planner.get_advance_k(), row, false, 100);
             }
-            else
-              modifyValue(planner.extruder_advance_K[0], 0, 10, 100);
+            else {
+              static float k = planner.get_advance_k();
+              modifyValue(k, 0, 10, 100, []{ planner.set_advance_k(k); });
+            }
             break;
         #endif
 
@@ -2960,7 +2964,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
               drawCheckbox(row, runout.enabled);
             }
             else {
-              runout.enabled ^= true;
+              FLIP(runout.enabled);
               drawCheckbox(row, runout.enabled);
             }
             break;
@@ -3032,8 +3036,8 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
               if (draw)
                 drawMenuItem(row, ICON_StepY, F("M48 Probe Test"));
               else {
-                gcode.process_subcommands_now(
-                  TS(F("G28O\nM48X") , p_float_t((X_BED_SIZE + X_MIN_POS) / 2.0f, 3), 'Y', p_float_t((Y_BED_SIZE + Y_MIN_POS) / 2.0f, 3), 'P', testcount)
+                queue.inject(
+                  TS(F("G28O\nM48X"), p_float_t((X_BED_SIZE + X_MIN_POS) / 2.0f, 3), 'Y', p_float_t((Y_BED_SIZE + Y_MIN_POS) / 2.0f, 3), 'P', testcount)
                 );
               }
               break;
@@ -3068,7 +3072,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
               drawMenu(ID_Advanced, ADVANCED_TMC);
             break;
 
-          #if AXIS_IS_TMC(X)
+          #if X_IS_TRINAMIC
             case TMC_STEPPER_CURRENT_X:
 
               static float stepper_current_x;
@@ -3084,7 +3088,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
               break;
           #endif
 
-          #if AXIS_IS_TMC(Y)
+          #if Y_IS_TRINAMIC
             case TMC_STEPPER_CURRENT_Y:
               static float stepper_current_y;
               if (draw) {
@@ -3098,7 +3102,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
               break;
           #endif
 
-          #if AXIS_IS_TMC(Z)
+          #if Z_IS_TRINAMIC
             case TMC_STEPPER_CURRENT_Z:
               static float stepper_current_z;
               if (draw) {
@@ -3112,7 +3116,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
               break;
           #endif
 
-          #if AXIS_IS_TMC(E0)
+          #if E0_IS_TRINAMIC
             case TMC_STEPPER_CURRENT_E:
               static float stepper_current_e;
               if (draw) {
@@ -3226,9 +3230,9 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
                 gcode.home_all_axes(true);
                 popupHandler(Popup_Level);
                 if (mesh_conf.tilt_grid > 1)
-                  gcode.process_subcommands_now(TS(F("G29J"), mesh_conf.tilt_grid));
+                  queue.inject(TS(F("G29J"), mesh_conf.tilt_grid));
                 else
-                  gcode.process_subcommands_now(F("G29J"));
+                  queue.inject(F("G29J"));
                 planner.synchronize();
                 redrawMenu();
               }
@@ -3263,7 +3267,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
                 #endif
               #elif HAS_BED_PROBE
                 popupHandler(Popup_Level);
-                gcode.process_subcommands_now(F("G29"));
+                queue.inject(F("G29"));
                 planner.synchronize();
                 popupHandler(Popup_SaveLevel);
               #else
@@ -3271,7 +3275,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
                 set_bed_leveling_enabled(false);
                 gridpoint = 1;
                 popupHandler(Popup_MoveWait);
-                gcode.process_subcommands_now(F("G29"));
+                queue.inject(F("G29"));
                 planner.synchronize();
                 drawMenu(ID_ManualMesh);
               #endif
@@ -3354,7 +3358,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
                   popupHandler(Popup_MeshSlot);
                   break;
                 }
-                gcode.process_subcommands_now(F("G29 L"));
+                queue.inject(F("G29 L"));
                 planner.synchronize();
                 audioFeedback(true);
               }
@@ -3367,7 +3371,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
                   popupHandler(Popup_MeshSlot);
                   break;
                 }
-                gcode.process_subcommands_now(F("G29 S"));
+                queue.inject(F("G29 S"));
                 planner.synchronize();
                 audioFeedback(true);
               }
@@ -3403,7 +3407,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
               drawCheckbox(row, mesh_conf.viewer_print_value);
             }
             else {
-              mesh_conf.viewer_print_value ^= true;
+              FLIP(mesh_conf.viewer_print_value);
               drawCheckbox(row, mesh_conf.viewer_print_value);
             }
             break;
@@ -3413,7 +3417,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
               drawCheckbox(row, mesh_conf.viewer_asymmetric_range);
             }
             else {
-              mesh_conf.viewer_asymmetric_range ^= true;
+              FLIP(mesh_conf.viewer_asymmetric_range);
               drawCheckbox(row, mesh_conf.viewer_asymmetric_range);
             }
             break;
@@ -3571,7 +3575,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
               drawMenuItem(row, ICON_Axis, F("+0.01mm Up"));
             else if (bedlevel.z_values[mesh_conf.mesh_x][mesh_conf.mesh_y] < MAX_Z_OFFSET) {
               bedlevel.z_values[mesh_conf.mesh_x][mesh_conf.mesh_y] += 0.01;
-              gcode.process_subcommands_now(F("M290 Z0.01"));
+              queue.inject(F("M290 Z0.01"));
               planner.synchronize();
               current_position.z += 0.01f;
               sync_plan_position();
@@ -3583,7 +3587,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
               drawMenuItem(row, ICON_AxisD, F("-0.01mm Down"));
             else if (bedlevel.z_values[mesh_conf.mesh_x][mesh_conf.mesh_y] > MIN_Z_OFFSET) {
               bedlevel.z_values[mesh_conf.mesh_x][mesh_conf.mesh_y] -= 0.01;
-              gcode.process_subcommands_now(F("M290 Z-0.01"));
+              queue.inject(F("M290 Z-0.01"));
               planner.synchronize();
               current_position.z -= 0.01f;
               sync_plan_position();
@@ -3596,7 +3600,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
               drawCheckbox(row, mesh_conf.goto_mesh_value);
             }
             else {
-              mesh_conf.goto_mesh_value ^= true;
+              FLIP(mesh_conf.goto_mesh_value);
               current_position.z = 0;
               mesh_conf.manual_mesh_move(true);
               drawCheckbox(row, mesh_conf.goto_mesh_value);
@@ -3654,7 +3658,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
                 mesh_conf.manual_mesh_move();
               }
               else {
-                gcode.process_subcommands_now(F("G29 S"));
+                queue.inject(F("G29 S"));
                 planner.synchronize();
                 audioFeedback(true);
                 drawMenu(ID_Leveling, LEVELING_GET_MESH);
@@ -3692,7 +3696,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
               drawMenuItem(row, ICON_Axis, F("+0.01mm Up"));
             else if (bedlevel.z_values[mesh_conf.mesh_x][mesh_conf.mesh_y] < MAX_Z_OFFSET) {
               bedlevel.z_values[mesh_conf.mesh_x][mesh_conf.mesh_y] += 0.01;
-              gcode.process_subcommands_now(F("M290 Z0.01"));
+              queue.inject(F("M290 Z0.01"));
               planner.synchronize();
               current_position.z += 0.01f;
               sync_plan_position();
@@ -3704,7 +3708,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
               drawMenuItem(row, ICON_Axis, F("-0.01mm Down"));
             else if (bedlevel.z_values[mesh_conf.mesh_x][mesh_conf.mesh_y] > MIN_Z_OFFSET) {
               bedlevel.z_values[mesh_conf.mesh_x][mesh_conf.mesh_y] -= 0.01;
-              gcode.process_subcommands_now(F("M290 Z-0.01"));
+              queue.inject(F("M290 Z-0.01"));
               planner.synchronize();
               current_position.z -= 0.01f;
               sync_plan_position();
@@ -3746,13 +3750,13 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
             }
             else if (gridpoint < GRID_MAX_POINTS) {
               popupHandler(Popup_MoveWait);
-              gcode.process_subcommands_now(F("G29"));
+              queue.inject(F("G29"));
               planner.synchronize();
               gridpoint++;
               redrawMenu();
             }
             else {
-              gcode.process_subcommands_now(F("G29"));
+              queue.inject(F("G29"));
               planner.synchronize();
               audioFeedback(settings.save());
               drawMenu(ID_Leveling, LEVELING_GET_MESH);
@@ -3925,10 +3929,12 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
           case TUNE_LA:
             if (draw) {
               drawMenuItem(row, ICON_MaxAccelerated, GET_TEXT_F(MSG_ADVANCE_K));
-              drawFloat(planner.extruder_advance_K[0], row, false, 100);
+              drawFloat(planner.get_advance_k(), row, false, 100);
             }
-            else
-              modifyValue(planner.extruder_advance_K[0], 0, 10, 100);
+            else {
+              static float k = planner.get_advance_k();
+              modifyValue(k, 0, 10, 100, []{ planner.set_advance_k(k); });
+            }
             break;
         #endif
 
@@ -3957,7 +3963,7 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
               drawCheckbox(row, runout.enabled);
             }
             else {
-              runout.enabled ^= true;
+              FLIP(runout.enabled);
               drawCheckbox(row, runout.enabled);
             }
             break;
@@ -4013,26 +4019,26 @@ void JyersDWIN::menuItemHandler(const uint8_t menu, const uint8_t item, bool dra
               switch (last_menu) {
                 case ID_Prepare:
                   popupHandler(Popup_FilChange);
-                  gcode.process_subcommands_now(TS(F("M600 B1 R"), thermalManager.degTargetHotend(0)));
+                  queue.inject(TS(F("M600 B1 R"), thermalManager.degTargetHotend(0)));
                   break;
                 #if ENABLED(FILAMENT_LOAD_UNLOAD_GCODES)
                   case ID_ChangeFilament:
                     switch (last_selection) {
                       case CHANGEFIL_LOAD:
                         popupHandler(Popup_FilLoad);
-                        gcode.process_subcommands_now(F("M701"));
+                        queue.inject(F("M701"));
                         planner.synchronize();
                         redrawMenu(true, true, true);
                         break;
                       case CHANGEFIL_UNLOAD:
                         popupHandler(Popup_FilLoad, true);
-                        gcode.process_subcommands_now(F("M702"));
+                        queue.inject(F("M702"));
                         planner.synchronize();
                         redrawMenu(true, true, true);
                         break;
                       case CHANGEFIL_CHANGE:
                         popupHandler(Popup_FilChange);
-                        gcode.process_subcommands_now(TS(F("M600 B1 R"), thermalManager.degTargetHotend(0)));
+                        queue.inject(TS(F("M600 B1 R"), thermalManager.degTargetHotend(0)));
                         break;
                     }
                     break;
@@ -4601,16 +4607,16 @@ void JyersDWIN::printScreenControl() {
       case PRINT_PAUSE_RESUME:
         if (paused) {
           if (sdprint) {
-            wait_for_user = false;
+            marlin.user_resume();
             #if ENABLED(PARK_HEAD_ON_PAUSE)
               card.startOrResumeFilePrinting();
               TERN_(POWER_LOSS_RECOVERY, recovery.prepare());
             #else
               #if HAS_HEATED_BED
-                gcode.process_subcommands_now(TS(F("M140 S"), pausebed));
+                queue.inject(TS(F("M140 S"), pausebed));
               #endif
               #if HAS_EXTRUDERS
-                gcode.process_subcommands_now(TS(F("M109 S"), pausetemp));
+                queue.inject(TS(F("M109 S"), pausetemp));
               #endif
               TERN_(HAS_FAN, thermalManager.fan_speed[0] = pausefan);
               planner.synchronize();
@@ -4653,7 +4659,7 @@ void JyersDWIN::popupControl() {
             #if ENABLED(PARK_HEAD_ON_PAUSE)
               popupHandler(Popup_Home, true);
               #if HAS_MEDIA
-                if (IS_SD_PRINTING()) card.pauseSDPrint();
+                if (card.isStillPrinting()) card.pauseSDPrint();
               #endif
               planner.synchronize();
               queue.inject(F("M125"));
@@ -4730,7 +4736,7 @@ void JyersDWIN::popupControl() {
                 thermalManager.wait_for_hotend(0);
               }
               popupHandler(Popup_FilChange);
-              gcode.process_subcommands_now(TS(F("M600B1R"), thermalManager.degTargetHotend(0)));
+              queue.inject(TS(F("M600B1R"), thermalManager.degTargetHotend(0)));
             }
           }
           else
@@ -4753,7 +4759,7 @@ void JyersDWIN::popupControl() {
         case Popup_SaveLevel:
           if (selection == 0) {
             #if ENABLED(AUTO_BED_LEVELING_UBL)
-              gcode.process_subcommands_now(F("G29 S"));
+              queue.inject(F("G29 S"));
               planner.synchronize();
               audioFeedback(true);
             #else
@@ -4786,15 +4792,15 @@ void JyersDWIN::confirmControl() {
         break;
       case Popup_FilInsert:
         popupHandler(Popup_FilChange);
-        wait_for_user = false;
+        marlin.user_resume();
         break;
       case Popup_HeaterTime:
         popupHandler(Popup_Heating);
-        wait_for_user = false;
+        marlin.user_resume();
         break;
       default:
         redrawMenu(true, true, false);
-        wait_for_user = false;
+        marlin.user_resume();
         break;
     }
   }
@@ -4805,7 +4811,7 @@ void JyersDWIN::confirmControl() {
 // In-Menu Value Modification
 //
 
-void JyersDWIN::setupValue(const_float_t value, const_float_t min, const_float_t max, const_float_t unit, const uint8_t type) {
+void JyersDWIN::setupValue(const float value, const float min, const float max, const float unit, const uint8_t type) {
   if (TERN0(PIDTEMP, valuepointer == &thermalManager.temp_hotend[0].pid.Ki) || TERN0(PIDTEMPBED, valuepointer == &thermalManager.temp_bed.pid.Ki))
     tempvalue = unscalePID_i(value) * unit;
   else if (TERN0(PIDTEMP, valuepointer == &thermalManager.temp_hotend[0].pid.Kd) || TERN0(PIDTEMPBED, valuepointer == &thermalManager.temp_bed.pid.Kd))
@@ -4821,32 +4827,32 @@ void JyersDWIN::setupValue(const_float_t value, const_float_t min, const_float_t
   drawFloat(tempvalue / unit, selection - scrollpos, true, valueunit);
 }
 
-void JyersDWIN::modifyValue(float &value, const_float_t min, const_float_t max, const_float_t unit, void (*f)()/*=nullptr*/) {
+void JyersDWIN::modifyValue(float &value, const float min, const float max, const float unit, void (*f)()/*=nullptr*/) {
   valuepointer = &value;
   funcpointer = f;
   setupValue((float)value, min, max, unit, 0);
 }
-void JyersDWIN::modifyValue(uint8_t &value, const_float_t min, const_float_t max, const_float_t unit, void (*f)()/*=nullptr*/) {
+void JyersDWIN::modifyValue(uint8_t &value, const float min, const float max, const float unit, void (*f)()/*=nullptr*/) {
   valuepointer = &value;
   funcpointer = f;
   setupValue((float)value, min, max, unit, 1);
 }
-void JyersDWIN::modifyValue(uint16_t &value, const_float_t min, const_float_t max, const_float_t unit, void (*f)()/*=nullptr*/) {
+void JyersDWIN::modifyValue(uint16_t &value, const float min, const float max, const float unit, void (*f)()/*=nullptr*/) {
   valuepointer = &value;
   funcpointer = f;
   setupValue((float)value, min, max, unit, 2);
 }
-void JyersDWIN::modifyValue(int16_t &value, const_float_t min, const_float_t max, const_float_t unit, void (*f)()/*=nullptr*/) {
+void JyersDWIN::modifyValue(int16_t &value, const float min, const float max, const float unit, void (*f)()/*=nullptr*/) {
   valuepointer = &value;
   funcpointer = f;
   setupValue((float)value, min, max, unit, 3);
 }
-void JyersDWIN::modifyValue(uint32_t &value, const_float_t min, const_float_t max, const_float_t unit, void (*f)()/*=nullptr*/) {
+void JyersDWIN::modifyValue(uint32_t &value, const float min, const float max, const float unit, void (*f)()/*=nullptr*/) {
   valuepointer = &value;
   funcpointer = f;
   setupValue((float)value, min, max, unit, 4);
 }
-void JyersDWIN::modifyValue(int8_t &value, const_float_t min, const_float_t max, const_float_t unit, void (*f)()/*=nullptr*/) {
+void JyersDWIN::modifyValue(int8_t &value, const float min, const float max, const float unit, void (*f)()/*=nullptr*/) {
   valuepointer = &value;
   funcpointer = f;
   setupValue((float)value, min, max, unit, 5);
@@ -4941,7 +4947,7 @@ void JyersDWIN::stateUpdate() {
     if (process == Proc_Print) printScreenIcons();
     if (process == Proc_Wait && !paused) redrawMenu(true, true);
   }
-  if (wait_for_user && !(process == Proc_Confirm) && !print_job_timer.isPaused())
+  if (marlin.wait_for_user && !(process == Proc_Confirm) && !print_job_timer.isPaused())
     confirmHandler(Popup_UserInput);
   #if ENABLED(ADVANCED_PAUSE_FEATURE)
     if (process == Proc_Popup && popup == Popup_PurgeMore) {
@@ -5105,7 +5111,7 @@ void JyersDWIN::loadSettings(const char * const buff) {
   memcpy(&eeprom_settings, buff, _MIN(sizeof(eeprom_settings), eeprom_data_size));
   TERN_(AUTO_BED_LEVELING_UBL, mesh_conf.tilt_grid = eeprom_settings.tilt_grid_size + 1);
   if (eeprom_settings.corner_pos == 0) eeprom_settings.corner_pos = 325;
-  corner_pos = eeprom_settings.corner_pos / 10.0f;
+  corner_pos = eeprom_settings.corner_pos * 0.1f;
   redrawScreen();
   #if ENABLED(POWER_LOSS_RECOVERY)
     static bool init = true;
@@ -5132,7 +5138,7 @@ void JyersDWIN::resetSettings() {
   eeprom_settings.coordinates_text = 0;
   eeprom_settings.coordinates_split_line = 0;
   TERN_(AUTO_BED_LEVELING_UBL, mesh_conf.tilt_grid = eeprom_settings.tilt_grid_size + 1);
-  corner_pos = eeprom_settings.corner_pos / 10.0f;
+  corner_pos = eeprom_settings.corner_pos * 0.1f;
   TERN_(SOUND_MENU_ITEM, ui.sound_on = ENABLED(SOUND_ON_DEFAULT));
   redrawScreen();
 }

@@ -30,9 +30,6 @@
 
 #include "dwin.h"
 
-//#define USE_STRING_HEADINGS
-//#define USE_STRING_TITLES
-
 #if DISABLED(PROBE_MANUALLY) && ANY(AUTO_BED_LEVELING_BILINEAR, AUTO_BED_LEVELING_LINEAR, AUTO_BED_LEVELING_3POINT)
   #define HAS_ONESTEP_LEVELING 1
 #endif
@@ -99,7 +96,7 @@
 
 // Minimum unit (0.1) : multiple (10)
 #define UNITFDIGITS 1
-#define MINUNITMULT pow(10, UNITFDIGITS)
+#define MINUNITMULT POW(10, UNITFDIGITS)
 
 #define DWIN_VAR_UPDATE_INTERVAL         1024
 #define DWIN_SCROLL_UPDATE_INTERVAL      SEC_TO_MS(2)
@@ -315,7 +312,7 @@ void iconResume() {
 }
 
 void iconResumeOrPause() {
-  if (printingIsPaused() || hmiFlag.pause_flag || hmiFlag.pause_action)
+  if (marlin.printingIsPaused() || hmiFlag.pause_flag || hmiFlag.pause_action)
     iconResume();
   else
     iconPause();
@@ -1391,7 +1388,7 @@ void hmiMoveDone(const AxisEnum axis) {
     LIMIT(hmiValues.offset_value, _OFFSET_ZMIN * 100, _OFFSET_ZMAX * 100);
 
     last_zoffset = dwin_zoffset;
-    dwin_zoffset = hmiValues.offset_value / 100.0f;
+    dwin_zoffset = hmiValues.offset_value * 0.01f;
     #if ANY(BABYSTEP_ZPROBE_OFFSET, JUST_BABYSTEP)
       if (BABYSTEP_ALLOWED()) babystep.add_mm(Z_AXIS, dwin_zoffset - last_zoffset);
     #endif
@@ -1594,6 +1591,27 @@ void hmiMaxAccelerationXYZE() {
   // MaxAcceleration value
   drawEditInteger4(select_acc.now, hmiValues.maxAcceleration, true);
 }
+
+
+#if HAS_SPINDLE_ACCELERATION
+
+  void hmiSpindleAcceleration() {
+    EncoderState encoder_diffState = encoderReceiveAnalyze();
+    if (encoder_diffState == ENCODER_DIFF_NO) return;
+    if (applyEncoder(encoder_diffState, hmiValues.spindleAcceleration)) {
+      checkkey = ID_SpindleAcceleration;
+      encoderRate.enabled = false;
+      cutter.spindle_acceleration_deg_per_s2 = hmiValues.spindleAcceleration;
+      drawEditInteger4(select_acc.now, hmiValues.spindleAcceleration);
+      return;
+    }
+    // SpindleAcceleration limit
+    LIMIT(hmiValues.spindleAcceleration, min_acceleration_edit_values_spindle, max_acceleration_edit_values_spindle);
+    // SpindleAcceleration value
+    drawEditInteger4(select_acc.now, hmiValues.spindleAcceleration, true);
+  }
+
+#endif // HAS_SPINDLE_ACCELERATION
 
 #if ENABLED(CLASSIC_JERK)
 
@@ -1964,11 +1982,11 @@ void hmiSDCardUpdate() {
       if (checkkey == ID_SelectFile) {
         redrawSDList();
       }
-      else if (checkkey == ID_PrintProcess || checkkey == ID_Tune || printingIsActive()) {
+      else if (checkkey == ID_PrintProcess || checkkey == ID_Tune || marlin.printingIsActive()) {
         // TODO: Move card removed abort handling
         //       to CardReader::manage_media.
         card.abortFilePrintSoon();
-        wait_for_heatup = wait_for_user = false;
+        marlin.end_waiting();
         dwin_abort_flag = true; // Reset feedrate, return to Home
       }
     }
@@ -2371,7 +2389,7 @@ void hmiPauseOrStop() {
     else if (select_print.now == PRINT_STOP) {
       if (hmiFlag.select_flag) {
         checkkey = ID_BackMain;
-        wait_for_heatup = wait_for_user = false;      // Stop waiting for heating/user
+        marlin.end_waiting();                         // Stop waiting for heating/user
         card.abortFilePrintSoon();                    // Let the main loop handle SD abort
         dwin_abort_flag = true;                       // Reset feedrate, return to Home
         #ifdef ACTION_ON_CANCEL
@@ -2495,7 +2513,7 @@ void itemAdvBedPID(const uint8_t row) {
     }
     else {
       #ifdef USE_STRING_TITLES
-        dwinDrawLabel(row, GET_TEXT_F(MSG_ZPROBE_OFFSETS));
+        dwinDrawLabel(row, GET_TEXT_F(MSG_OUTAGE_RECOVERY));
       #else
         itemAreaCopy(1, 208, 137, 221, row);  // "Power-loss Recovery"
       #endif
@@ -2974,9 +2992,11 @@ void hmiAxisMove() {
         hmiFlag.cold_flag = false;
         hmiValues.moveScaled.e = current_position.e * MINUNITMULT;
         drawMoveMenu();
-        TERN_(HAS_X_AXIS, drawEditFloat3(1, hmiValues.moveScaled.x));
-        TERN_(HAS_Y_AXIS, drawEditFloat3(2, hmiValues.moveScaled.y));
-        TERN_(HAS_Z_AXIS, drawEditFloat3(3, hmiValues.moveScaled.z));
+        XYZ_CODE(
+          drawEditFloat3(1, hmiValues.moveScaled.x),
+          drawEditFloat3(2, hmiValues.moveScaled.y),
+          drawEditFloat3(3, hmiValues.moveScaled.z)
+        );
         drawEditSignedFloat3(4, 0);
         dwinUpdateLCD();
       }
@@ -3658,7 +3678,7 @@ void hmiAdvSet() {
     dwinUpdateLCD();
   }
 
-  void hmiHomeOffN(const AxisEnum axis, float &posScaled, const_float_t lo, const_float_t hi) {
+  void hmiHomeOffN(const AxisEnum axis, float &posScaled, const float lo, const float hi) {
     EncoderState encoder_diffState = encoderReceiveAnalyze();
     if (encoder_diffState == ENCODER_DIFF_NO) return;
 
@@ -4129,15 +4149,15 @@ void eachMomentUpdate() {
       dwinDrawRectangle(1, COLOR_BG_BLACK, 0, 250, DWIN_WIDTH - 1, STATUS_Y);
       dwinIconShow(ICON, hmiIsChinese() ? ICON_Confirm_C : ICON_Confirm_E, 86, 283);
     }
-    else if (hmiFlag.pause_flag != printingIsPaused()) {
+    else if (hmiFlag.pause_flag != marlin.printingIsPaused()) {
       // print status update
-      hmiFlag.pause_flag = printingIsPaused();
+      hmiFlag.pause_flag = marlin.printingIsPaused();
       iconResumeOrPause();
     }
   }
 
   // pause after homing
-  if (hmiFlag.pause_action && printingIsPaused() && !planner.has_blocks_queued()) {
+  if (hmiFlag.pause_action && marlin.printingIsPaused() && !planner.has_blocks_queued()) {
     hmiFlag.pause_action = false;
     #if ENABLED(PAUSE_HEAT)
       TERN_(HAS_HOTEND, resume_hotend_temp = thermalManager.degTargetHotend(0));
@@ -4291,6 +4311,9 @@ void dwinHandleScreen() {
     case ID_PrintSpeed:     hmiPrintSpeed(); break;
     case ID_MaxSpeedValue:  hmiMaxFeedspeedXYZE(); break;
     case ID_MaxAccelerationValue: hmiMaxAccelerationXYZE(); break;
+    #if HAS_SPINDLE_ACCELERATION
+      case ID_SpindleAccelerationValue: hmiSpindleAcceleration(); break;
+    #endif
     #if ENABLED(CLASSIC_JERK)
       case ID_MaxJerkValue: hmiMaxJerkXYZE(); break;
     #endif

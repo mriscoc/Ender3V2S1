@@ -34,6 +34,14 @@
   #include "../../feature/probe_temp_comp.h"
 #endif
 
+#if ENABLED(FT_MOTION)
+  #include "../../module/ft_motion.h"
+#endif
+
+#if ANY(DWIN_CREALITY_LCD_JYERSUI, EXTENSIBLE_UI, DWIN_LCD_PROUI)
+  #define VERBOSE_SINGLE_PROBE
+#endif
+
 /**
  * G30: Do a single Z probe at the given XY (default: current)
  *
@@ -63,14 +71,17 @@ void GcodeSuite::G30() {
     // Disable feedrate scaling so movement speeds are correct
     remember_feedrate_scaling_off();
 
-    TERN_(DWIN_LCD_PROUI, process_subcommands_now(F("G28O")));
-
+    // With VERBOSE_SINGLE_PROBE home only if needed
+    TERN_(VERBOSE_SINGLE_PROBE, process_subcommands_now(F("G28O")));
 
     // Raise after based on the 'E' parameter
     const ProbePtRaise raise_after = parser.boolval('E', true) ? PROBE_PT_STOW : PROBE_PT_NONE;
 
     // Use 'C' to set Probe Temperature Compensation ON/OFF (on by default)
     TERN_(HAS_PTC, ptc.set_enabled(parser.boolval('C', true)));
+
+    // Potentially disable Fixed-Time Motion for probing
+    TERN_(FT_MOTION, FTM_DISABLE_IN_SCOPE());
 
     // Probe the bed, optionally raise, and return the measured height
     const float measured_z = probe.probe_at_point(probepos, raise_after);
@@ -87,9 +98,7 @@ void GcodeSuite::G30() {
         F(  " Z:"), p_float_t(measured_z, 3)
       );
       msg.echoln();
-      #if ANY(DWIN_LCD_PROUI, DWIN_CREALITY_LCD_JYERSUI)
-        ui.set_status(msg);
-      #endif
+      TERN_(VERBOSE_SINGLE_PROBE, ui.set_status(msg));
     }
 
     // Restore feedrate scaling

@@ -19,6 +19,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+#pragma once
 
 /**
  * Creality CREALITY_CR4NTXXC10 (STM32F401RET6) board pin assignments
@@ -47,6 +48,8 @@
 //#undef DISABLE_DEBUG                            // DISABLE_(DEBUG|JTAG) is not supported for STM32F4.
 //#define DISABLE_JTAG
 
+#define BOARD_LCD_SERIAL_PORT 2
+
 //
 // EEPROM
 //
@@ -59,9 +62,9 @@
 #if ENABLED(IIC_BL24CXX_EEPROM)
   #define IIC_EEPROM_SDA                    PA11
   #define IIC_EEPROM_SCL                    PA12
-  #define MARLIN_EEPROM_SIZE                0x800  // 2K (24C16)
+  #define MARLIN_EEPROM_SIZE              0x800U  // 2K (24C16)
 #elif ENABLED(SDCARD_EEPROM_EMULATION)
-  #define MARLIN_EEPROM_SIZE                0x800  // 2K
+  #define MARLIN_EEPROM_SIZE              0x800U  // 2K
 #endif
 
 //
@@ -216,7 +219,6 @@
  *                 ------
  *                  EXP1
  */
-
 #define EXP1_01_PIN                         PC0
 #define EXP1_02_PIN                         PB2
 #define EXP1_03_PIN                         PA2
@@ -240,7 +242,7 @@
     #define BEEPER_PIN               EXP1_01_PIN
   #endif
 
-#elif ANY(HAS_DWIN_E3V2, IS_DWIN_MARLINUI)
+#elif HAS_DWIN_E3V2
 
   // DWIN ENCODER LCD
   #define BTN_ENC                    EXP1_05_PIN

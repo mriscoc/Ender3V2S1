@@ -213,7 +213,7 @@ namespace MMU3 {
 
   void EndReport(CommandInProgress /*cip*/, ProgressCode /*ec*/) {
     // clear the status msg line - let the printed filename get visible again
-    if (!printJobOngoing()) ui.reset_status();
+    if (!marlin.printJobOngoing()) ui.reset_status();
     //custom_message_type = CustomMsg::Status;
   }
 
@@ -449,7 +449,7 @@ namespace MMU3 {
 
     const uint8_t ei = PrusaErrorCodeIndex((ErrorCode)ec);
 
-    // This should be the equivelent of the switch..case above...
+    // This should be the equivalent of the switch..case above...
     if ((uint8_t)ReportErrorHookState == (uint8_t)ReportErrorHookStates::RENDER_ERROR_SCREEN) {
       KEEPALIVE_STATE(PAUSED_FOR_USER);
       #if HAS_WIRED_LCD

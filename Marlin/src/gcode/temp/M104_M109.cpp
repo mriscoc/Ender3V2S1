@@ -78,6 +78,9 @@
  *  (used by printingIsActive, etc.) and turning off heaters will stop the timer.
  */
 void GcodeSuite::M104_M109(const bool isM109) {
+  #if ENABLED(AUTOTEMP)
+    if (!isM109 && !parser.seen_any()) return M104_report();
+  #endif
 
   TERN_(CV_LASER_MODULE, laser_device.laser_set(false));
   // #if ENABLED(CV_LASER_MODULE)
@@ -138,10 +141,22 @@ void GcodeSuite::M104_M109(const bool isM109) {
       thermalManager.set_heating_message(target_extruder, !isM109 && got_temp);
   }
 
-  TERN_(AUTOTEMP, planner.autotemp_M104_M109());
+  TERN_(AUTOTEMP, thermalManager.autotemp_M104_M109());
 
   if (isM109 && got_temp)
     (void)thermalManager.wait_for_hotend(target_extruder, no_wait_for_cooling);
 }
+
+#if ENABLED(AUTOTEMP)
+  //
+  // Report AUTOTEMP settings saved to EEPROM
+  //
+  void GcodeSuite::M104_report(const bool forReplay/*=true*/) {
+    TERN_(MARLIN_SMALL_BUILD, return);
+    report_heading_etc(forReplay, F(STR_AUTOTEMP));
+    const autotemp_cfg_t &c = thermalManager.autotemp.cfg;
+    SERIAL_ECHOLNPGM("  M104 S", c.min, " B", c.max, " F", c.factor);
+  }
+#endif
 
 #endif // HAS_HOTEND

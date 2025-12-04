@@ -64,7 +64,11 @@
 #define COLOR_GREY            0x18E3
 
 // Default UI Colors
+#if ENABLED(TJC_DISPLAY)
+#define defColorBackground  COLOR_BLACK
+#else
 #define defColorBackground  RGB(0, 8, 6)
+#endif
 #define defColorCursor      RGB(20, 49, 31)
 #define defColorTitleBg     RGB(0, 23, 16)
 #define defColorTitleTxt    COLOR_WHITE

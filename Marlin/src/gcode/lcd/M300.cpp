@@ -34,6 +34,9 @@
  *
  *  S<frequency> - (Hz) The frequency of the tone. 0 for silence.
  *  P<duration>  - (ms) The duration of the tone.
+ *
+ * With SOUND_MENU_ITEM:
+ *  E<0|1>       - Mute or enable sound
  */
 void GcodeSuite::M300() {
 

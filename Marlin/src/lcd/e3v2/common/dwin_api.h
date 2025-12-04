@@ -127,6 +127,24 @@ void dwinFrameClear(const uint16_t color);
   void dwinDrawPoint(uint16_t color, uint8_t width, uint8_t height, uint16_t x, uint16_t y);
 #endif
 
+// Draw a map of multiple points using minimal amount of point drawing commands
+//  color: point color
+//  point_width: point width   0x01-0x0F
+//  point_height: point height 0x01-0x0F
+//  x,y: upper left point
+//  map_columns: columns in theh point map. each column is a byte in the map and contains 8 points
+//  map_rows: rows in the point map
+//  map: point bitmap. 2D array of points, 1 bit per point
+#if DISABLED(TJC_DISPLAY)
+  void dwinDrawPointMap(
+    const uint16_t color,
+    const uint8_t point_width, const uint8_t point_height,
+    const uint16_t x, const uint16_t y,
+    const uint16_t map_columns, const uint16_t map_rows,
+    const uint8_t *map_data
+  );
+#endif
+
 // Draw a line
 //  color: Line segment color
 //  xStart/yStart: Start point
@@ -196,6 +214,40 @@ inline void dwinDrawString(bool bShow, uint8_t size, uint16_t color, uint16_t bC
     dwinDrawString(bShow, size, color, bColor, x, y, FTOP(ftitle));
   #endif
 }
+
+#ifndef DWIN_LCD_PROUI
+// Draw a positive integer
+//  bShow: true=display background color; false=don't display background color
+//  zeroFill: true=zero fill; false=no zero fill
+//  zeroMode: 1=leading 0 displayed as 0; 0=leading 0 displayed as a space
+//  size: Font size
+//  color: Character color
+//  bColor: Background color
+//  iNum: Number of digits
+//  x/y: Upper-left coordinate
+//  value: Integer value
+void dwinDrawIntValue(uint8_t bShow, bool zeroFill, uint8_t zeroMode, uint8_t size, uint16_t color,
+                          uint16_t bColor, uint8_t iNum, uint16_t x, uint16_t y, uint32_t value);
+
+// Draw a floating point number
+//  bShow: true=display background color; false=don't display background color
+//  zeroFill: true=zero fill; false=no zero fill
+//  zeroMode: 1=leading 0 displayed as 0; 0=leading 0 displayed as a space
+//  size: Font size
+//  color: Character color
+//  bColor: Background color
+//  iNum: Number of whole digits
+//  fNum: Number of decimal digits
+//  x/y: Upper-left point
+//  value: Float value
+void dwinDrawFloatValue(uint8_t bShow, bool zeroFill, uint8_t zeroMode, uint8_t size, uint16_t color,
+                            uint16_t bColor, uint8_t iNum, uint8_t fNum, uint16_t x, uint16_t y, int32_t value);
+
+// Draw a floating point number
+//  value: positive unscaled float value
+void dwinDrawFloatValue(uint8_t bShow, bool zeroFill, uint8_t zeroMode, uint8_t size, uint16_t color,
+                            uint16_t bColor, uint8_t iNum, uint8_t fNum, uint16_t x, uint16_t y, float value);
+#endif
 
 /*---------------------------------------- Picture related functions ----------------------------------------*/
 

@@ -162,7 +162,7 @@ public:
   static void heatedBed();
   static void stopLeveling();
   static bool quitLeveling();
-  static void meshUpdate(const uint8_t x, const uint8_t y, const_float_t zval);
+  static void meshUpdate(const uint8_t x, const uint8_t y, const float zval);
   static void levelingDone();
 #endif
 #if HAS_MEDIA
@@ -266,5 +266,6 @@ extern ProUIEx proUIEx;
 #endif
 #if HAS_BED_PROBE
   #define Z_PROBE_FEEDRATE_SLOW PRO_data.zprobefeedslow
+  #define z_probe_slow_mm_s MMM_TO_MMS(PRO_data.zprobefeedslow)
 #endif
 #define INVERT_E0_DIR PRO_data.Invert_E0

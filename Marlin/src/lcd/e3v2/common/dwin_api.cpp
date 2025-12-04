@@ -25,6 +25,9 @@
 
 #include "dwin_api.h"
 #include "dwin_set.h"
+#ifndef DWIN_LCD_PROUI
+  #include "dwin_font.h"
+#endif
 
 #include "../../../inc/MarlinConfig.h"
 
@@ -127,6 +130,7 @@ void dwinFrameClear(const uint16_t color) {
 }
 
 #if DISABLED(TJC_DISPLAY)
+
   // Draw a point
   //  color: point color
   //  width: point width   0x01-0x0F
@@ -142,7 +146,67 @@ void dwinFrameClear(const uint16_t color) {
     dwinWord(i, y);
     dwinSend(i);
   }
-#endif
+
+  // Draw a map of multiple points using minimal amount of point drawing commands
+  //  color: point color
+  //  point_width: point width   0x01-0x0F
+  //  point_height: point height 0x01-0x0F
+  //  x,y: upper left point
+  //  map_columns: columns in theh point map. each column is a byte in the map and contains 8 points
+  //  map_rows: rows in the point map
+  //  map: point bitmap. 2D array of points, 1 bit per point
+  // Note: somewhat similar to U8G's drawBitmap() function, see https://github.com/olikraus/u8glib/wiki/userreference#drawbitmap
+  void dwinDrawPointMap(
+    const uint16_t color,
+    const uint8_t point_width, const uint8_t point_height,
+    const uint16_t x, const uint16_t y,
+    const uint16_t map_columns, const uint16_t map_rows,
+    const uint8_t *map_data
+  ) {
+    // At how many bytes should we flush the send buffer?
+    // One byte is used (hidden) for F_HONE, and we need 4 bytes when appending a point.
+    // So we should flush the send buffer when we have less than 5 bytes left.
+    constexpr size_t flush_send_buffer_at = (COUNT(dwinSendBuf) - 1 - 4);
+
+    // How long is the header of each draw command?
+    // => 1B CMD, 2B COLOR, 1B WIDTH, 1B HEIGHT
+    constexpr size_t command_header_size = 5;
+
+    size_t i = 0;
+    for (uint16_t row = 0; row < map_rows; row++) {
+      for (uint16_t col = 0; col < map_columns; col++) {
+        const uint8_t map_byte = map_data[(row * map_columns) + col];
+        for (uint8_t bit = 0; bit < 8; bit++) {
+          // Draw a point at this position?
+          if (TEST(map_byte, bit)) {
+            // Flush the send buffer and prepare next draw if either
+            // a) The buffer reached the 'should flush' state, or
+            // b) This is the first point to draw
+            if (i >= flush_send_buffer_at || i == 0) {
+              // Dispatch the current draw command
+              if (i > command_header_size) dwinSend(i);
+
+              // Prepare the next draw command
+              i = 0;
+              dwinByte(i, 0x02); // cmd: draw point(s)
+              dwinWord(i, color);
+              dwinByte(i, point_width);
+              dwinByte(i, point_height);
+            }
+
+            // Append point coordinates to draw command
+            dwinWord(i, x + (point_width * ((8 * col) + (7 - bit)))); // x
+            dwinWord(i, y + (point_height * (row)));                  // y
+          }
+        }
+      }
+    }
+
+    // Dispatch final draw command if the buffer contains any points
+    if (i > command_header_size) dwinSend(i);
+  }
+
+#endif // !TJC_DISPLAY
 
 // Draw a line
 //  color: Line segment color
@@ -226,6 +290,138 @@ void dwinDrawString(bool bShow, uint8_t size, uint16_t color, uint16_t bColor, u
   dwinWord(i, y);
   dwinText(i, string, rlimit);
   dwinSend(i);
+}
+
+#ifndef DWIN_LCD_PROUI
+// Get font character width
+uint8_t fontWidth(uint8_t cfont) {
+  switch (cfont) {
+    #if DISABLED(TJC_DISPLAY)
+      case font6x12 : return 6;
+      case font20x40: return 20;
+      case font24x48: return 24;
+      case font28x56: return 28;
+      case font32x64: return 32;
+    #endif
+    case font8x16 : return 8;
+    case font10x20: return 10;
+    case font12x24: return 12;
+    case font14x28: return 14;
+    case font16x32: return 16;
+    default: return 0;
+  }
+}
+
+// Get font character height
+uint8_t fontHeight(uint8_t cfont) {
+  switch (cfont) {
+    #if DISABLED(TJC_DISPLAY)
+      case font6x12 : return 12;
+      case font20x40: return 40;
+      case font24x48: return 48;
+      case font28x56: return 56;
+      case font32x64: return 64;
+    #endif
+    case font8x16 : return 16;
+    case font10x20: return 20;
+    case font12x24: return 24;
+    case font14x28: return 28;
+    case font16x32: return 32;
+    default: return 0;
+  }
+}
+
+// Draw a positive integer
+//  bShow: true=display background color; false=don't display background color
+//  zeroFill: true=zero fill; false=no zero fill
+//  zeroMode: 1=leading 0 displayed as 0; 0=leading 0 displayed as a space
+//  size: Font size
+//  color: Character color
+//  bColor: Background color
+//  iNum: Number of digits
+//  x/y: Upper-left coordinate
+//  value: Integer value
+void dwinDrawIntValue(uint8_t bShow, bool zeroFill, uint8_t zeroMode, uint8_t size, uint16_t color,
+                          uint16_t bColor, uint8_t iNum, uint16_t x, uint16_t y, uint32_t value) {
+  size_t i = 0;
+  #if DISABLED(DWIN_CREALITY_LCD_JYERSUI)
+    dwinDrawRectangle(1, bColor, x, y, x + fontWidth(size) * iNum + 1, y + fontHeight(size));
+  #endif
+  dwinByte(i, 0x14);
+  // Bit 7: bshow
+  // Bit 6: 1 = signed; 0 = unsigned number;
+  // Bit 5: zeroFill
+  // Bit 4: zeroMode
+  // Bit 3-0: size
+  dwinByte(i, (bShow * 0x80) | (zeroFill * 0x20) | (zeroMode * 0x10) | size);
+  dwinWord(i, color);
+  dwinWord(i, bColor);
+  dwinByte(i, iNum);
+  dwinByte(i, 0); // fNum
+  dwinWord(i, x);
+  dwinWord(i, y);
+  #if 0
+    for (char count = 0; count < 8; count++) {
+      dwinByte(i, value);
+      value >>= 8;
+      if (!(value & 0xFF)) break;
+    }
+  #else
+    // Write a big-endian 64 bit integer
+    const size_t p = i + 1;
+    for (char count = 8; count--;) { // 7..0
+      ++i;
+      dwinSendBuf[p + count] = value;
+      value >>= 8;
+    }
+  #endif
+
+  dwinSend(i);
+}
+
+// Draw a floating point number
+//  bShow: true=display background color; false=don't display background color
+//  zeroFill: true=zero fill; false=no zero fill
+//  zeroMode: 1=leading 0 displayed as 0; 0=leading 0 displayed as a space
+//  size: Font size
+//  color: Character color
+//  bColor: Background color
+//  iNum: Number of whole digits
+//  fNum: Number of decimal digits
+//  x/y: Upper-left point
+//  value: Float value
+void dwinDrawFloatValue(uint8_t bShow, bool zeroFill, uint8_t zeroMode, uint8_t size, uint16_t color,
+                          uint16_t bColor, uint8_t iNum, uint8_t fNum, uint16_t x, uint16_t y, int32_t value) {
+  //uint8_t *fvalue = (uint8_t*)&value;
+  size_t i = 0;
+  #if DISABLED(DWIN_CREALITY_LCD_JYERSUI)
+    dwinDrawRectangle(1, bColor, x, y, x + fontWidth(size) * (iNum + fNum + 1), y + fontHeight(size));
+  #endif
+  dwinByte(i, 0x14);
+  dwinByte(i, (bShow * 0x80) | (zeroFill * 0x20) | (zeroMode * 0x10) | size);
+  dwinWord(i, color);
+  dwinWord(i, bColor);
+  dwinByte(i, iNum);
+  dwinByte(i, fNum);
+  dwinWord(i, x);
+  dwinWord(i, y);
+  dwinLong(i, value);
+  /*
+  dwinByte(i, fvalue[3]);
+  dwinByte(i, fvalue[2]);
+  dwinByte(i, fvalue[1]);
+  dwinByte(i, fvalue[0]);
+  */
+  dwinSend(i);
+}
+#endif // !DWIN_LCD_PROUI
+
+// Draw a floating point number
+//  value: positive unscaled float value
+void dwinDrawFloatValue(uint8_t bShow, bool zeroFill, uint8_t zeroMode, uint8_t size, uint16_t color,
+                            uint16_t bColor, uint8_t iNum, uint8_t fNum, uint16_t x, uint16_t y, float value) {
+  const int32_t val = LROUND(value * POW(10, fNum));
+  dwinDrawFloatValue(bShow, zeroFill, zeroMode, size, color, bColor, iNum, fNum, x, y, val);
 }
 
 /*---------------------------------------- Picture related functions ----------------------------------------*/

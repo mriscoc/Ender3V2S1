@@ -70,7 +70,11 @@ namespace ExtUI {
     #endif
   }
 
-  void onStatusChanged(const char *lcd_msg) { StatusScreen::setStatusMessage(lcd_msg); }
+  void onHeatingError(const heater_id_t header_id) {}
+  void onMinTempError(const heater_id_t header_id) {}
+  void onMaxTempError(const heater_id_t header_id) {}
+
+  void onStatusChanged(const char * const lcd_msg) { StatusScreen::setStatusMessage(lcd_msg); }
 
   void onPrintTimerStarted() {
     InterfaceSoundsScreen::playEventSound(InterfaceSoundsScreen::PRINTING_STARTED);
@@ -129,13 +133,11 @@ namespace ExtUI {
   #endif
 
   // For fancy LCDs include an icon ID, message, and translated button title
-  void onUserConfirmRequired(const int icon, const char * const cstr, FSTR_P const fBtn) {
+  void onUserConfirmRequired(const int, const char * const cstr, FSTR_P const) {
     onUserConfirmRequired(cstr);
-    UNUSED(icon); UNUSED(fBtn);
   }
-  void onUserConfirmRequired(const int icon, FSTR_P const fstr, FSTR_P const fBtn) {
+  void onUserConfirmRequired(const int, FSTR_P const fstr, FSTR_P const) {
     onUserConfirmRequired(fstr);
-    UNUSED(icon); UNUSED(fBtn);
   }
 
   #if ENABLED(ADVANCED_PAUSE_FEATURE)
@@ -151,15 +153,22 @@ namespace ExtUI {
   #if HAS_LEVELING
     void onLevelingStart() {}
     void onLevelingDone() {}
+    #if ENABLED(PREHEAT_BEFORE_LEVELING)
+      celsius_t getLevelingBedTemp() { return LEVELING_BED_TEMP; }
+    #endif
   #endif
 
   #if HAS_MESH
-    void onMeshUpdate(const int8_t x, const int8_t y, const_float_t val) {
+    void onMeshUpdate(const int8_t x, const int8_t y, const float val) {
       BedMeshViewScreen::onMeshUpdate(x, y, val);
     }
     void onMeshUpdate(const int8_t x, const int8_t y, const ExtUI::probe_state_t state) {
       BedMeshViewScreen::onMeshUpdate(x, y, state);
     }
+  #endif
+
+  #if ENABLED(PREVENT_COLD_EXTRUSION)
+    void onSetMinExtrusionTemp(const celsius_t) {}
   #endif
 
   #if ENABLED(POWER_LOSS_RECOVERY)
@@ -175,12 +184,13 @@ namespace ExtUI {
   #endif
 
   #if HAS_PID_HEATING
-    void onPIDTuning(const result_t rst) {
+    void onPIDTuning(const pidresult_t rst) {
       // Called for temperature PID tuning result
-      //SERIAL_ECHOLNPGM("OnPidTuning:", rst);
+      //SERIAL_ECHOLNPGM("OnPIDTuning:", rst);
       switch (rst) {
         case PID_STARTED:
         case PID_BED_STARTED:
+        case PID_CHAMBER_STARTED:
           StatusScreen::setStatusMessage(GET_TEXT_F(MSG_PID_AUTOTUNE));
           break;
         case PID_BAD_HEATER_ID:
@@ -198,10 +208,31 @@ namespace ExtUI {
       }
       GOTO_SCREEN(StatusScreen);
     }
+    void onStartM303(const int count, const heater_id_t hid, const celsius_t temp) {
+      // Called by M303 to update the UI
+    }
   #endif // HAS_PID_HEATING
+
+  #if ENABLED(MPC_AUTOTUNE)
+    void onMPCTuning(const mpcresult_t rst) {
+      // Called for temperature PID tuning result
+      switch (rst) {
+        case MPC_STARTED:
+          StatusScreen::setStatusMessage(GET_TEXT_F(MSG_MPC_AUTOTUNE));
+          break;
+      }
+      GOTO_SCREEN(StatusScreen);
+    }
+  #endif
+
+  #if ENABLED(PLATFORM_M997_SUPPORT)
+    void onFirmwareFlash() {}
+  #endif
 
   void onSteppersDisabled() {}
   void onSteppersEnabled() {}
+  void onAxisDisabled(const axis_t) {}
+  void onAxisEnabled(const axis_t) {}
 }
 
 #endif // TOUCH_UI_FTDI_EVE
