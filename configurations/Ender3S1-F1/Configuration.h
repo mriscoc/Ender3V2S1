@@ -133,6 +133,7 @@
 
 // Name displayed in the LCD "Ready" message and Info menu
 #define CUSTOM_MACHINE_NAME "Ender3S1-F1"
+//#define CONFIGURABLE_MACHINE_NAME // Add G-code M550 to set/report the machine name
 
 // Printer's unique ID, used by some programs to differentiate between machines.
 // Choose your own or use a service like https://www.uuidgenerator.net/version4
@@ -151,9 +152,9 @@
  * Options: A4988, A5984, DRV8825, LV8729, TB6560, TB6600, TMC2100,
  *          TMC2130, TMC2130_STANDALONE, TMC2160, TMC2160_STANDALONE,
  *          TMC2208, TMC2208_STANDALONE, TMC2209, TMC2209_STANDALONE,
- *          TMC2660, TMC2660_STANDALONE, TMC5130, TMC5130_STANDALONE,
- *          TMC5160, TMC5160_STANDALONE
- * :['A4988', 'A5984', 'DRV8825', 'LV8729', 'TB6560', 'TB6600', 'TMC2100', 'TMC2130', 'TMC2130_STANDALONE', 'TMC2160', 'TMC2160_STANDALONE', 'TMC2208', 'TMC2208_STANDALONE', 'TMC2209', 'TMC2209_STANDALONE', 'TMC2660', 'TMC2660_STANDALONE', 'TMC5130', 'TMC5130_STANDALONE', 'TMC5160', 'TMC5160_STANDALONE']
+ *          TMC2240, TMC2660, TMC2660_STANDALONE,
+ *          TMC5130, TMC5130_STANDALONE, TMC5160, TMC5160_STANDALONE
+ * :['A4988', 'A5984', 'DRV8825', 'LV8729', 'TB6560', 'TB6600', 'TMC2100', 'TMC2130', 'TMC2130_STANDALONE', 'TMC2160', 'TMC2160_STANDALONE', 'TMC2208', 'TMC2208_STANDALONE', 'TMC2209', 'TMC2209_STANDALONE', 'TMC2240', 'TMC2660', 'TMC2660_STANDALONE', 'TMC5130', 'TMC5130_STANDALONE', 'TMC5160', 'TMC5160_STANDALONE']
  */
 #define X_DRIVER_TYPE  TMC2208_STANDALONE  // Ender Configs
 #define Y_DRIVER_TYPE  TMC2208_STANDALONE  // Ender Configs
@@ -263,6 +264,7 @@
   #define SWITCHING_NOZZLE_SERVO_ANGLES { 0, 90 }   // A pair of angles for { E0, E1 }.
                                                     // For Dual Servo use two pairs: { { lower, raise }, { lower, raise } }
   #define SWITCHING_NOZZLE_SERVO_DWELL 2500         // Dwell time to wait for servo to make physical move
+  #define SWITCHING_NOZZLE_LIFT_TO_PROBE            // Lift toolheads out of the way while probing
 #endif
 
 // Switch nozzles by bumping the toolhead. Requires EVENT_GCODE_TOOLCHANGE_#.
@@ -305,6 +307,18 @@
 
   #endif
 
+#endif
+
+/**
+ * Differential Extruder
+ *
+ * The X and E steppers work together to create a differential drive system.
+ * Simple  : E steps = X + E   ; X steps = X  (E drives a loop, X stays the same)
+ * Balanced: E steps = X + E/2 ; X steps = X - E/2  (Dual loop system)
+ */
+//#define DIFFERENTIAL_EXTRUDER
+#if ENABLED(DIFFERENTIAL_EXTRUDER)
+  //#define BALANCED_DIFFERENTIAL_EXTRUDER
 #endif
 
 /**
@@ -590,7 +604,7 @@
 #define DUMMY_THERMISTOR_998_VALUE  25
 #define DUMMY_THERMISTOR_999_VALUE 100
 
-// Resistor values when using MAX31865 sensors (-5) on TEMP_SENSOR_0 / 1
+// Resistor values when using MAX31865 sensors (-5) on TEMP_SENSOR_0 / 1 / 2 / BED
 #if TEMP_SENSOR_IS_MAX_TC(0)
   #define MAX31865_SENSOR_OHMS_0      100 // (Ω) Typically 100 or 1000 (PT100 or PT1000)
   #define MAX31865_CALIBRATION_OHMS_0 430 // (Ω) Typically 430 for Adafruit PT100; 4300 for Adafruit PT1000
@@ -602,6 +616,10 @@
 #if TEMP_SENSOR_IS_MAX_TC(2)
   #define MAX31865_SENSOR_OHMS_2      100
   #define MAX31865_CALIBRATION_OHMS_2 430
+#endif
+#if TEMP_SENSOR_IS_MAX_TC(BED)
+  #define MAX31865_SENSOR_OHMS_BED      100
+  #define MAX31865_CALIBRATION_OHMS_BED 430
 #endif
 
 #if HAS_E_TEMP_SENSOR
@@ -695,20 +713,22 @@
 #define PID_K1     0.95   // Smoothing factor within any PID loop
 
 #if ENABLED(PIDTEMP)
-  //#define PID_DEBUG             // Print PID debug data to the serial port. Use 'M303 D' to toggle activation.
+  //#define MIN_POWER 0           // Min power to improve PID stability (0..PID_MAX).
+                                  // Get the power from the temperature report ('M105' => @:nnn) and try P*2-20 to P*2-10.
+  //#define PID_DEBUG             // Print PID debug data to the serial port. Use 'M303 D' to enable/disable.
   //#define PID_PARAMS_PER_HOTEND // Use separate PID parameters for each extruder (useful for mismatched extruders)
                                   // Set/get with G-code: M301 E[extruder number, 0-2]
 
   #if ENABLED(PID_PARAMS_PER_HOTEND)
     // Specify up to one value per hotend here, according to your setup.
     // If there are fewer values, the last one applies to the remaining hotends.
-    #define DEFAULT_Kp_LIST {  22.20,  22.20 }
-    #define DEFAULT_Ki_LIST {   1.08,   1.08 }
-    #define DEFAULT_Kd_LIST { 114.00, 114.00 }
+    #define DEFAULT_KP_LIST {  22.20,  22.20 }
+    #define DEFAULT_KI_LIST {   1.08,   1.08 }
+    #define DEFAULT_KD_LIST { 114.00, 114.00 }
   #else
-    #define DEFAULT_Kp  17.10
-    #define DEFAULT_Ki   1.39
-    #define DEFAULT_Kd  52.79
+    #define DEFAULT_KP  17.10
+    #define DEFAULT_KI   1.39
+    #define DEFAULT_KD  52.79
   #endif
 #else
   #define BANG_MAX 255    // Limit hotend current while in bang-bang mode; 255=full current
@@ -731,7 +751,12 @@
   //#define MPC_AUTOTUNE_MENU                         // Add MPC auto-tuning to the "Advanced Settings" menu. (~350 bytes of flash)
 
   #define MPC_MAX 255                                 // (0..255) Current to nozzle while MPC is active.
-  #define MPC_HEATER_POWER { 40.0f }                  // (W) Heat cartridge powers.
+  #define MPC_HEATER_POWER { 40.0f }                  // (W) Nominal heat cartridge powers.
+  //#define MPC_PTC                                   // Hotend power changes with temperature (e.g., PTC heat cartridges).
+  #if ENABLED(MPC_PTC)
+    #define MPC_HEATER_ALPHA { 0.0028f }              // Temperature coefficient of resistance of the heat cartridges.
+    #define MPC_HEATER_REFTEMP { 20 }                 // (°C) Reference temperature for MPC_HEATER_POWER and MPC_HEATER_ALPHA.
+  #endif
 
   #define MPC_INCLUDE_FAN                             // Model the fan speed?
 
@@ -763,6 +788,7 @@
 
   #define MPC_TUNING_POS { X_CENTER, Y_CENTER, 1.0f } // (mm) M306 Autotuning position, ideally bed center at first layer height.
   #define MPC_TUNING_END_Z 10.0f                      // (mm) M306 Autotuning final Z position.
+  //#define EVENT_GCODE_AFTER_MPC_TUNE "M84"          // G-code to execute after MPC tune finished and Z raised.
 #endif
 
 //===========================================================================
@@ -794,14 +820,15 @@
 #define PIDTEMPBED  // Ender Configs
 
 #if ENABLED(PIDTEMPBED)
-  //#define MIN_BED_POWER 0
-  //#define PID_BED_DEBUG // Print Bed PID debug data to the serial port.
+  //#define MIN_BED_POWER 0   // Min power to improve PID stability (0..MAX_BED_POWER).
+                              // Get the power from the temperature report ('M105' => B@:nnn) and try P*2-20 to P*2-10.
+  //#define PID_BED_DEBUG     // Print Bed PID debug data to the serial port. Use 'M303 D' to enable/disable.
 
   // 120V 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
   // from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
-  #define DEFAULT_bedKp 54.86
-  #define DEFAULT_bedKi 10.06
-  #define DEFAULT_bedKd 199.38
+  #define DEFAULT_BED_KP  54.86
+  #define DEFAULT_BED_KI   10.06
+  #define DEFAULT_BED_KD 199.38
 
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
 #else
@@ -876,15 +903,15 @@
 #define MAX_CHAMBER_POWER 255 // limits duty cycle to chamber heater; 255=full current
 
 #if ENABLED(PIDTEMPCHAMBER)
-  #define MIN_CHAMBER_POWER 0
-  //#define PID_CHAMBER_DEBUG // Print Chamber PID debug data to the serial port.
+  //#define MIN_CHAMBER_POWER 0 // Min power to improve PID stability. (0..MAX_CHAMBER_POWER)
+                                // Get the power from the temperature report ('M105' => C@:nnn) and try P*2-20 to P*2-10.
+  //#define PID_CHAMBER_DEBUG   // Print Chamber PID debug data to the serial port. Use 'M303 D' to enable/disable.
 
   // Lasko "MyHeat Personal Heater" (200w) modified with a Fotek SSR-10DA to control only the heating element
   // and placed inside the small Creality printer enclosure tent.
-  //
-  #define DEFAULT_chamberKp  37.04
-  #define DEFAULT_chamberKi   1.40
-  #define DEFAULT_chamberKd 655.17
+  #define DEFAULT_CHAMBER_KP  37.04
+  #define DEFAULT_CHAMBER_KI   1.40
+  #define DEFAULT_CHAMBER_KD 655.17
   // M309 P37.04 I1.04 D655.17
 
   // FIND YOUR OWN: "M303 E-2 C8 S50" to run autotune on the chamber at 50 degreesC for 8 cycles.
@@ -895,7 +922,7 @@
 #if ANY(PIDTEMP, PIDTEMPBED, PIDTEMPCHAMBER)
   //#define PID_OPENLOOP          // Puts PID in open loop. M104/M140 sets the output power from 0 to PID_MAX
   //#define SLOW_PWM_HEATERS      // PWM with very low frequency (roughly 0.125Hz=8s) and minimum state time of approximately 1s useful for heaters driven by a relay
-  #define PID_FUNCTIONAL_RANGE 10 // If the temperature difference between the target temperature and the actual temperature
+  #define PID_FUNCTIONAL_RANGE 20 // If the temperature difference between the target temperature and the actual temperature
                                   // is more than PID_FUNCTIONAL_RANGE then the PID will be shut off and the heater will be set to min/max.
 
   #define PID_EDIT_MENU         // Add PID editing to the "Advanced Settings" menu. (~700 bytes of flash)  // Ender Configs
@@ -931,7 +958,7 @@
  * protect against a broken or disconnected thermistor wire.
  *
  * The issue: If a thermistor falls out, it will report the much lower
- * temperature of the air in the room, and the the firmware will keep
+ * temperature of the air in the room, and the firmware will keep
  * the heater on.
  *
  * If you get "Thermal Runaway" or "Heating failed" errors the
@@ -1023,9 +1050,6 @@
   // Print surface diameter/2 minus unreachable space (avoid collisions with vertical towers).
   #define PRINTABLE_RADIUS       140.0    // (mm)
 
-  // Maximum reachable area
-  #define DELTA_MAX_RADIUS       140.0    // (mm)
-
   // Center-to-center distance of the holes in the diagonal push rods.
   #define DELTA_DIAGONAL_ROD 250.0        // (mm)
 
@@ -1045,7 +1069,8 @@
   // Delta radius and diagonal rod adjustments
   //#define DELTA_RADIUS_TRIM_TOWER       { 0.0, 0.0, 0.0 } // (mm)
   //#define DELTA_DIAGONAL_ROD_TRIM_TOWER { 0.0, 0.0, 0.0 } // (mm)
-#endif
+
+#endif // DELTA
 
 // @section scara
 
@@ -1101,17 +1126,37 @@
   #define TPARA_LINKAGE_1 120     // (mm)
   #define TPARA_LINKAGE_2 120     // (mm)
 
-  // TPARA tower offset (position of Tower relative to bed zero position)
+  // Height of the Shoulder axis (pivot) relative to the tower floor
+  #define TPARA_SHOULDER_AXIS_HEIGHT 135.0     // (mm)
+
+  // The position of the last linkage relative to the robot arm origin
+  // (intersection of the base axis and floor) when at the home position
+  #define TPARA_ARM_X_HOME_POS  28.75  // (mm) Measured from shoulder axis to tool holder axis in home position
+  #define TPARA_ARM_Y_HOME_POS   0     // (mm)
+  #define TPARA_ARM_Z_HOME_POS 250.00  // (mm) Measured from tool holder axis to the floor
+
+  // TPARA Workspace offset relative to the tower (position of workspace origin relative to robot Tower origin )
   // This needs to be reasonably accurate as it defines the printbed position in the TPARA space.
-  #define TPARA_OFFSET_X    0     // (mm)
-  #define TPARA_OFFSET_Y    0     // (mm)
-  #define TPARA_OFFSET_Z    0     // (mm)
+  #define TPARA_OFFSET_X    127.0     // (mm) to coincide with minimum radius MIDDLE_DEAD_ZONE_R, and W(0,0,0) is reachable
+  #define TPARA_OFFSET_Y      0.0     // (mm)
+  #define TPARA_OFFSET_Z      0.0     // (mm)
+
+  // TPARA tool connection point offset, relative to the tool moving frame origin which is in the last linkage axis,
+  // (TCP: tool center/connection point) of the robot,
+  // the plane of measured offset must be alligned with home position plane
+  #define TPARA_TCP_OFFSET_X    27.0     // (mm) Tool flange: 27 (distance from pivot to bolt holes), extruder tool: 50.0,
+  #define TPARA_TCP_OFFSET_Y     0.0     // (mm)
+  #define TPARA_TCP_OFFSET_Z   -65.0     // (mm) Tool flange (bottom): -6 (caution as Z 0 posiion will crash second linkage to the floor, -35 is safe for testing with no tool), extruder tool (depends on extruder): -65.0
 
   #define FEEDRATE_SCALING        // Convert XY feedrate from mm/s to degrees/s on the fly
 
   // Radius around the center where the arm cannot reach
-  #define MIDDLE_DEAD_ZONE_R   0  // (mm)
-#endif
+  // For now use a hardcoded uniform limit, although it should be calculated, or fix a limit for each axis angle
+  #define MIDDLE_DEAD_ZONE_R   100    // (mm)
+
+  // Max angle between L1 and L2
+  #define TPARA_MAX_L1L2_ANGLE 140.0f // (degrees)
+#endif // AXEL_TPARA
 
 // @section polar
 
@@ -1351,7 +1396,7 @@
  * When changing speed and direction, if the difference is less than the
  * value set here, it may happen instantaneously.
  */
-#define CLASSIC_JERK  // Ender Configs
+//#define CLASSIC_JERK  // Enable JUNCTION DEVIATION
 #if ENABLED(CLASSIC_JERK)
   #define DEFAULT_XJERK 5.0  // Ender Configs
   #define DEFAULT_YJERK 5.0  // Ender Configs
@@ -1380,7 +1425,7 @@
  *   https://blog.kyneticcnc.com/2018/10/computing-junction-deviation-for-marlin.html
  */
 #if DISABLED(CLASSIC_JERK)
-  #define JUNCTION_DEVIATION_MM 0.013 // (mm) Distance from real junction edge
+  #define JUNCTION_DEVIATION_MM 0.1 // (mm) Distance from real junction edge
   #define JD_HANDLE_SMALL_SEGMENTS    // Use curvature estimation instead of just the junction angle
                                       // for small segments (< 1mm) with large junction angles (> 135°).
 #endif
@@ -1394,6 +1439,11 @@
  * See https://github.com/synthetos/TinyG/wiki/Jerk-Controlled-Motion-Explained
  */
 #define S_CURVE_ACCELERATION  // MRiscoC Enabled
+#if ENABLED(S_CURVE_ACCELERATION)
+  // Define to use 4th instead of 6th order motion curve
+  //#define S_CURVE_FACTOR 0.25    // Initial and final acceleration factor, ideally 0.1 to 0.4.
+                                   // Shouldn't generally require tuning.
+#endif
 
 //===========================================================================
 //============================= Z Probe Options =============================
@@ -1518,7 +1568,6 @@
  * For information about this sensor https://github.com/bigtreetech/MicroProbe
  *
  * Also requires PROBE_ENABLE_DISABLE
- * With FT_MOTION requires ENDSTOP_INTERRUPTS_FEATURE
  */
 //#define BIQU_MICROPROBE_V1  // Triggers HIGH
 //#define BIQU_MICROPROBE_V2  // Triggers LOW
@@ -1545,6 +1594,20 @@
 #if ENABLED(MAG_MOUNTED_PROBE)
   #define PROBE_DEPLOY_FEEDRATE (133*60)  // (mm/min) Probe deploy speed
   #define PROBE_STOW_FEEDRATE   (133*60)  // (mm/min) Probe stow speed
+
+  /**
+   * Magnetically Mounted Probe with a Servo mechanism
+   * Probe Deploy and Stow both follow the same basic sequence:
+   *  - Rotate the SERVO to its Deployed angle
+   *  - Perform XYZ moves to deploy or stow the PROBE
+   *  - Rotate the SERVO to its Stowed angle
+   */
+  //#define MAG_MOUNTED_PROBE_SERVO_NR 0             // Servo Number for this probe
+  #ifdef MAG_MOUNTED_PROBE_SERVO_NR
+    #define MAG_MOUNTED_PROBE_SERVO_ANGLES { 90, 0 } // Servo Angles for Deployed, Stowed
+    #define MAG_MOUNTED_PRE_DEPLOY { PROBE_DEPLOY_FEEDRATE, { 15, 160, 30 } }  // Safe position for servo activation
+    #define MAG_MOUNTED_PRE_STOW   { PROBE_DEPLOY_FEEDRATE, { 15, 160, 30 } }  // Safe position for servo deactivation
+  #endif
 
   #define MAG_MOUNTED_DEPLOY_1 { PROBE_DEPLOY_FEEDRATE, { 245, 114, 30 } }  // Move to side Dock & Attach probe
   #define MAG_MOUNTED_DEPLOY_2 { PROBE_DEPLOY_FEEDRATE, { 210, 114, 30 } }  // Move probe off dock
@@ -1652,6 +1715,8 @@
 #ifdef PROBING_TOOL
   //#define PROBE_TOOLCHANGE_NO_MOVE  // Suppress motion on probe tool-change
 #endif
+
+//#define PROBE_WAKEUP_TIME_MS  30    // (ms) Time for the probe to wake up
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
@@ -2029,8 +2094,11 @@
     //#define FILAMENT_MOTION_SENSOR
 
     #if ENABLED(FILAMENT_MOTION_SENSOR)
-      //#define FILAMENT_SWITCH_AND_MOTION
+      //#define FILAMENT_SWITCH_AND_MOTION      // Define separate pins below to sense motion
       #if ENABLED(FILAMENT_SWITCH_AND_MOTION)
+
+        #define FILAMENT_MOTION_DISTANCE_MM 3.0 // (mm) Missing distance required to trigger runout
+
         #define NUM_MOTION_SENSORS   1          // Number of sensors, up to one per extruder. Define a FIL_MOTION#_PIN for each.
         //#define FIL_MOTION1_PIN    -1
 
@@ -2066,7 +2134,7 @@
         //#define FIL_MOTION8_STATE LOW
         //#define FIL_MOTION8_PULLUP
         //#define FIL_MOTION8_PULLDOWN
-      #endif
+      #endif // FILAMENT_SWITCH_AND_MOTION
     #endif // FILAMENT_MOTION_SENSOR
   #endif // FILAMENT_RUNOUT_DISTANCE_MM
 #endif // FILAMENT_RUNOUT_SENSOR
@@ -2114,6 +2182,12 @@
 #define AUTO_BED_LEVELING_BILINEAR  // MRiscoC BLTouch auto level
 //#define AUTO_BED_LEVELING_UBL
 //#define MESH_BED_LEVELING
+
+/**
+ * Commands to execute at the start of G29 probing,
+ * after switching to the PROBING_TOOL.
+ */
+//#define EVENT_GCODE_BEFORE_G29 "M300 P440 S200"
 
 /**
  * Commands to execute at the end of G29 probing.
@@ -2263,7 +2337,7 @@
   //===========================================================================
 
   #define MESH_INSET 38          // Set Mesh bounds as an inset region of the bed  // MRiscoC Center mesh
-  #define GRID_MAX_POINTS_X 5    // Don't use more than 7 points per axis, implementation limited.  // MRiscoC Customizable by menu
+  #define GRID_MAX_POINTS_X 5  // MRiscoC Customizable by menu
   #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
 
   //#define MESH_G28_REST_ORIGIN // After homing all axes ('G28' or 'G28 XYZ') rest Z at Z_MIN_POS
@@ -2286,7 +2360,7 @@
 #define LCD_BED_TRAMMING  // ProUI has a bed tramming menu
 
 #if ENABLED(LCD_BED_TRAMMING)
-  //#define BED_TRAMMING_INSET_LFRB { 30, 30, 30, 30 } // (mm) Left, Front, Right, Back insets  // ProUI use mesh insets for bed tramming
+  #define BED_TRAMMING_INSET_LFRB { 30, 30, 30, 30 } // (mm) Left, Front, Right, Back insets
   #define BED_TRAMMING_HEIGHT      0.0        // (mm) Z height of nozzle at tramming points
   #define BED_TRAMMING_Z_HOP       5.0        // (mm) Z raise between tramming points
   //#define BED_TRAMMING_INCLUDE_CENTER       // Move to the center after the last corner
@@ -2909,13 +2983,15 @@
 //
 //#define MAKEBOARD_MINI_2_LINE_DISPLAY_1602
 
-//
-// ANET and Tronxy 20x4 Controller
-//
-//#define ZONESTAR_LCD            // Requires ADC_KEYPAD_PIN to be assigned to an analog pin.
-                                  // This LCD is known to be susceptible to electrical interference
-                                  // which scrambles the display.  Pressing any button clears it up.
-                                  // This is a LCD2004 display with 5 analog buttons.
+/**
+ * ANET and Tronxy 20x4 Controller
+ * LCD2004 display with 5 analog buttons.
+ *
+ * NOTE: Requires ADC_KEYPAD_PIN to be assigned to an analog pin.
+ * This LCD is known to be susceptible to electrical interference which
+ * scrambles the display. Press any button to clear it up.
+ */
+//#define ZONESTAR_LCD
 
 //
 // Generic 16x2, 16x4, 20x2, or 20x4 character-based LCD.
@@ -3103,7 +3179,7 @@
 
 //
 // FYSETC variant of the MINI12864 graphic controller with SD support
-// https://wiki.fysetc.com/Mini12864_Panel/
+// https://wiki.fysetc.com/docs/Mini12864Panel
 //
 //#define FYSETC_MINI_12864_X_X    // Type C/D/E/F. No tunable RGB Backlight by default
 //#define FYSETC_MINI_12864_1_2    // Type C/D/E/F. Simple RGB Backlight (always on)
@@ -3192,14 +3268,14 @@
 //
 // Tiny, but very sharp OLED display
 //
-//#define MKS_12864OLED          // Uses the SH1106 controller (default)
+//#define MKS_12864OLED          // Uses the SH1106 controller
 //#define MKS_12864OLED_SSD1306  // Uses the SSD1306 controller
 
 //
 // Zonestar OLED 128×64 Full Graphics Controller
 //
 //#define ZONESTAR_12864LCD           // Graphical (DOGM) with ST7920 controller
-//#define ZONESTAR_12864OLED          // 1.3" OLED with SH1106 controller (default)
+//#define ZONESTAR_12864OLED          // 1.3" OLED with SH1106 controller
 //#define ZONESTAR_12864OLED_SSD1306  // 0.96" OLED with SSD1306 controller
 
 //
@@ -3277,7 +3353,7 @@
 #endif
 
 //
-// Touch-screen LCD for Malyan M200/M300 printers
+// LCD for Malyan M200/M300 printers
 //
 //#define MALYAN_LCD
 
@@ -3448,20 +3524,22 @@
 
 #if ENABLED(TFT_COLOR_UI)
   /**
-   * TFT Font for Color_UI. Choose one of the following:
+   * TFT Font for Color UI. Choose one of the following:
    *
    * NOTOSANS  - Default font with anti-aliasing. Supports Latin Extended and non-Latin characters.
    * UNIFONT   - Lightweight font, no anti-aliasing. Supports Latin Extended and non-Latin characters.
    * HELVETICA - Lightweight font, no anti-aliasing. Supports Basic Latin (0x0020-0x007F) and Latin-1 Supplement (0x0080-0x00FF) characters only.
+   * :['NOTOSANS', 'UNIFONT', 'HELVETICA']
    */
   #define TFT_FONT  NOTOSANS
 
   /**
-   * TFT Theme for Color_UI. Choose one of the following or add a new one to 'Marlin/src/lcd/tft/themes' directory
+   * TFT Theme for Color UI. Choose one of the following or add a new one to 'Marlin/src/lcd/tft/themes' directory
    *
    * BLUE_MARLIN  - Default theme with 'midnight blue' background
    * BLACK_MARLIN - Theme with 'black' background
    * ANET_BLACK   - Theme used for Anet ET4/5
+   * :['BLUE_MARLIN', 'BLACK_MARLIN', 'ANET_BLACK']
    */
   #define TFT_THEME BLACK_MARLIN
 
@@ -3534,7 +3612,7 @@
   #define SHOW_SPEED_IND       // Show the axes speed in mm/s intermittently with the speed percentage
   //#define NO_BLINK_IND         // Disables dashboard icon background blink indicator
 #endif
-  //#define ZOFFSET_SAVE_SETTINGS // Saves settings after changing the z-offset via the menu
+//#define ZOFFSET_SAVE_SETTINGS // Saves settings after changing the z-offset via the menu
 //#define HAS_SD_EXTENDER 1  // Enable to support SD card extender cables
 //#define CCLOUD_PRINT_SUPPORT  // Allows enable/disable Creality Cloud Print Support
 #define ZHOME_BEFORE_LEVELING
@@ -3543,6 +3621,11 @@
 //#define DWIN_CREALITY_LCD_JYERSUI   // Jyers UI by Jacob Myers
 //#define DWIN_MARLINUI_PORTRAIT      // MarlinUI (portrait orientation)
 //#define DWIN_MARLINUI_LANDSCAPE     // MarlinUI (landscape orientation)
+
+#if ENABLED(DWIN_CREALITY_LCD)
+  //#define USE_STRING_HEADINGS       // Use string headings for Creality UI instead of images
+  //#define USE_STRING_TITLES         // Use string titles for Creality UI instead of images
+#endif
 
 //
 // Touch Screen Settings
@@ -3578,7 +3661,9 @@
 // https://reprapworld.com/products/electronics/ramps/keypad_v1_0_fully_assembled/
 //
 //#define REPRAPWORLD_KEYPAD
-//#define REPRAPWORLD_KEYPAD_MOVE_STEP 10.0 // (mm) Distance to move per key-press
+#if ENABLED(REPRAPWORLD_KEYPAD)
+  //#define REPRAPWORLD_KEYPAD_MOVE_STEP 10.0 // (mm) Distance to move per key-press
+#endif
 
 //
 // EasyThreeD ET-4000+ with button input and status LED
@@ -3595,22 +3680,26 @@
 // :[1,2,3,4,5,6,7,8]
 //#define NUM_M106_FANS 1
 
-// Use software PWM to drive the fan, as for the heaters. This uses a very low frequency
-// which is not as annoying as with the hardware PWM. On the other hand, if this frequency
-// is too low, you should also increment SOFT_PWM_SCALE.
+/**
+ * Use software PWM to drive the fan, as for the heaters. This uses a very low frequency
+ * which is not as annoying as with the hardware PWM. On the other hand, if this frequency
+ * is too low, you should also increment SOFT_PWM_SCALE.
+ */
 #define FAN_SOFT_PWM  // Ender Configs
 
-// Incrementing this by 1 will double the software PWM frequency,
-// affecting heaters, and the fan if FAN_SOFT_PWM is enabled.
-// However, control resolution will be halved for each increment;
-// at zero value, there are 128 effective control positions.
-// :[0,1,2,3,4,5,6,7]
+/**
+ * Incrementing this by 1 will double the software PWM frequency, affecting heaters, and
+ * the fan if FAN_SOFT_PWM is enabled. However, control resolution will be halved for each
+ * increment; at zero value, there are 128 effective control positions.
+ * :[0,1,2,3,4,5,6,7]
+ */
 #define SOFT_PWM_SCALE 0
 
-// If SOFT_PWM_SCALE is set to a value higher than 0, dithering can
-// be used to mitigate the associated resolution loss. If enabled,
-// some of the PWM cycles are stretched so on average the desired
-// duty cycle is attained.
+/**
+ * If SOFT_PWM_SCALE is set to a value higher than 0, dithering can be used to mitigate the
+ * associated resolution loss. If enabled, some of the PWM cycles are stretched so on average
+ * the desired duty cycle is attained.
+ */
 //#define SOFT_PWM_DITHER
 
 // @section extras
@@ -3620,9 +3709,11 @@
 
 // @section lights
 
-// Temperature status LEDs that display the hotend and bed temperature.
-// If all hotends, bed temperature, and target temperature are under 54C
-// then the BLUE led is on. Otherwise the RED led is on. (1C hysteresis)
+/**
+ * Temperature status LEDs that display the hotend and bed temperature.
+ * If all hotends, bed temperature, and target temperature are under 54C
+ * the BLUE led is on. Otherwise the RED led is on. (1C hysteresis)
+ */
 //#define TEMP_STAT_LEDS
 
 // Support for BlinkM/CyzRgb
