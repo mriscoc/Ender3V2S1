@@ -37,9 +37,9 @@
 #include "../../libs/vector_3.h"
 
 #if ENABLED(DWIN_LCD_PROUI)
-  #include "../../lcd/e3v2/proui/dwin.h"
-  #include "../../lcd/e3v2/proui/dwinui.h"
-  #include "../../lcd/e3v2/proui/dwin_popup.h"
+  #include "../../lcd/dwin/proui/dwin.h"
+  #include "../../lcd/dwin/proui/dwinui.h"
+  #include "../../lcd/dwin/proui/dwin_popup.h"
 #endif
 
 #include "bedlevel_tools.h"

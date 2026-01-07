@@ -74,7 +74,7 @@ bool FilamentMonitorBase::enabled = true,
   #include "../lcd/extui/ui_api.h"
 #elif ENABLED(DWIN_LCD_PROUI)
   #include "../lcd/marlinui.h"
-  #include "../lcd/e3v2/proui/dwin.h"
+  #include "../lcd/dwin/proui/dwin.h"
 #endif
 
 void event_filament_runout(const uint8_t extruder) {

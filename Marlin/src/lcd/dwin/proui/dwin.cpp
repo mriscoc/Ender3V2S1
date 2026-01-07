@@ -1087,8 +1087,8 @@ void eachMomentUpdate() {
         dwinPrintFinished();
     }
 
-    if ((print_job_timer.isPaused() != hmiFlag.pause_flag) && (checkkey != ID_Homing)) {
-      hmiFlag.pause_flag = print_job_timer.isPaused();
+    if ((hmiFlag.pause_flag != marlin.printingIsPaused()) && (checkkey != ID_Homing)) {
+      hmiFlag.pause_flag = marlin.printingIsPaused();
       DEBUG_ECHOLNPGM("pause_flag: ", hmiFlag.pause_flag);
       if (hmiFlag.pause_flag)
         DEBUG_ECHOLNPGM("dwinPrintPause");

@@ -686,6 +686,8 @@
   #include "gd32f1/pins_VOXELAB_AQUILA.h"           // GD32F1, N32G4, STM32F1               env:GD32F103RC_voxelab_maple env:N32G455RE_voxelab_maple env:STM32F103RE_creality_maple env:STM32F103RE_creality env:GD32F103RE_voxelab env:GD32F103RC_voxelab env:GD32F103RE_voxelab_maple
 #elif MB(SPRINGER_CONTROLLER)
   #include "stm32f1/pins_ORCA_3D_SPRINGER.h"        // STM32F1                              env:STM32F103VC_orca3d
+#elif MB(ATOMSTACK_FB5_V2)
+  #include "stm32f1/pins_ATOMSTACK_FB5_V2.h"        // STM32F1                              env:STM32F103RC_atomstack
 
 //
 // ARM Cortex-M4F
@@ -1072,7 +1074,7 @@
   #elif MB(ERROR)
     #warning "Most likely missing / misplaced Configuration files."
   #elif defined(MOTHERBOARD)
-    #error "Unknown MOTHERBOARD value set in Configuration.h."
+    static_assert(false, "Unknown MOTHERBOARD value (" STRINGIFY(MOTHERBOARD) ") set in Configuration.h.");
   #else
     #error "MOTHERBOARD not defined! Use '#define MOTHERBOARD BOARD_...' in Configuration.h."
   #endif

@@ -45,7 +45,7 @@
  * here we define this default string as the date where the latest release
  * version was tagged.
  */
-//#define STRING_DISTRIBUTION_DATE "2025-12-04"
+//#define STRING_DISTRIBUTION_DATE "2026-01-05"
 
 #define STRING_DISTRIBUTION_DATE __DATE__
 #define STRING_DISTRIBUTION_TIME __TIME__
@@ -65,7 +65,7 @@
 /**
  * The SOURCE_CODE_URL is the location where users will find the Marlin Source
  * Code which is installed on the device. In most cases —unless the manufacturer
- * has a distinct Github fork— the Source Code URL should just be the main
+ * has a distinct GitHub fork— the Source Code URL should just be the main
  * Marlin repository.
  */
 #define SOURCE_CODE_URL "github.com/mriscoc/Ender3V2S1"

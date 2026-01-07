@@ -35,7 +35,7 @@
 #include "../gcode.h"
 #include "../../lcd/marlinui.h"
 #include "../../MarlinCore.h" // for startOrResumeJob
-#include "../../lcd/e3v2/proui/dwin.h"
+#include "../../lcd/dwin/proui/dwin.h"
 
 //  * M79: cloud print
 void GcodeSuite::M79()

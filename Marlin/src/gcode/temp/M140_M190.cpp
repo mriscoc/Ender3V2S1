@@ -35,7 +35,7 @@
 #include "../../lcd/marlinui.h"
 
 #if ENABLED(DWIN_LCD_PROUI)
-  #include "../../lcd/e3v2/proui/dwin.h"
+  #include "../../lcd/dwin/proui/dwin.h"
 #endif
 
 #if ENABLED(CV_LASER_MODULE)
@@ -135,6 +135,13 @@ void GcodeSuite::M140_M190(const bool isM190) {
     #endif
 
     thermalManager.wait_for_bed(no_wait_for_cooling);
+
+    #if ENABLED(REMAINING_TIME_AUTOPRIME)
+      if (card.isStillPrinting()) {
+        print_job_timer.primeRemainingTimeEstimate(card.getIndex(), card.getFileSize());
+        //SERIAL_ECHOLN(F("M190 - Prime Remaining Time Estimate: "), print_job_timer.duration(), C(' '), card.getIndex(), C(' '), card.getFileSize() - card.getIndex());
+      }
+    #endif
   }
   else {
     ui.set_status_reset_fn([]{

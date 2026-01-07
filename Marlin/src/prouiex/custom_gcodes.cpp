@@ -34,9 +34,9 @@
 #endif
 
 #ifdef DWIN_LCD_PROUI
-  #include "../lcd/e3v2/proui/dwin.h"
+  #include "../lcd/dwin/proui/dwin.h"
   #if ENABLED(LCD_BED_TRAMMING)
-    #include "../lcd/e3v2/proui/bed_tramming.h"
+    #include "../lcd/dwin/proui/bed_tramming.h"
   #endif
 #endif
 

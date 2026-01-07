@@ -79,17 +79,17 @@
 #endif
 
 #if ENABLED(DWIN_LCD_PROUI)
-  #include "../lcd/e3v2/proui/dwin.h"
+  #include "../lcd/dwin/proui/dwin.h"
   #include "../feature/bedlevel/bedlevel_tools.h"
   #if ALL(PROUI_EX, HAS_MESH)
-    #include "../lcd/e3v2/proui/meshviewer.h"
+    #include "../lcd/dwin/proui/meshviewer.h"
   #endif
 #endif
 
 #if ENABLED(EXTENSIBLE_UI)
   #include "../lcd/extui/ui_api.h"
 #elif ENABLED(DWIN_CREALITY_LCD_JYERSUI)
-  #include "../lcd/e3v2/jyersui/dwin.h"
+  #include "../lcd/dwin/jyersui/dwin.h"
 #endif
 
 #if HAS_CGCODE
@@ -2401,7 +2401,7 @@ void MarlinSettings::postprocess() {
         #if ENABLED(PTC_PROBE)
           EEPROM_READ(ptc.z_offsets_probe);
         #endif
-        # if ENABLED(PTC_BED)
+        #if ENABLED(PTC_BED)
           EEPROM_READ(ptc.z_offsets_bed);
         #endif
         #if ENABLED(PTC_HOTEND)

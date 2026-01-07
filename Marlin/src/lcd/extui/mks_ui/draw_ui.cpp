@@ -651,7 +651,7 @@ char *creat_title_text() {
         if (card.isFileOpen()) {
           feedrate_percentage = 100;
           TERN_(HAS_EXTRUDERS, planner.set_flow(0, 100));
-          TERN_(HAS_MULTI_EXTRUDER, planner.set_flow(1, 100));
+          E_TERN_(planner.set_flow(1, 100));
           card.startOrResumeFilePrinting();
           TERN_(POWER_LOSS_RECOVERY, recovery.prepare());
           once_flag = false;
@@ -757,7 +757,7 @@ void GUI_RefreshPage() {
         disp_print_time();
         disp_fan_Zpos();
       }
-      if (printing_rate_update_flag || marlin.is(MarlinState::MF_SD_COMPLETE)) {
+      if (printing_rate_update_flag || marlin.is(MF_SD_COMPLETE)) {
         printing_rate_update_flag = false;
         if (!gcode_preview_over) setProBarRate();
       }

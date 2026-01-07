@@ -98,7 +98,7 @@ void drawPrintLabels() {
 
 void drawPrintProgressElapsed() {
   MString<12> buf;
-  duration_t elapsed = print_job_timer.duration(); // Print timer
+  const duration_t elapsed = print_job_timer.duration(); // Print timer
   buf.setf(F("%02i:%02i "), uint16_t(elapsed.value / 3600), (uint16_t(elapsed.value) % 3600) / 60);
   DWINUI::drawString(hmiData.colorText, hmiData.colorBackground, 47, 192, buf);
 }
@@ -155,16 +155,18 @@ void Printing::printUpdate(bool force) {
 
   // Progress percent
   static uint8_t _percent_done = 255;
-  if (force || (_percent_done != ui.get_progress_percent())) {
-    _percent_done = ui.get_progress_percent();
+  const uint8_t pp = ui.get_progress_percent();
+  if (force || (_percent_done != pp)) {
+    _percent_done = pp;
     drawPrintProgressBar();
   }
 
   // Remaining time
   #if ENABLED(SHOW_REMAINING_TIME)
     static uint32_t _remain_time = 0;
-    if (force || (_remain_time != ui.get_remaining_time())) {
-      _remain_time = ui.get_remaining_time();
+    const uint32_t rt = ui.get_remaining_time();
+    if (force || (_remain_time != rt)) {
+      _remain_time = rt;
       drawPrintProgressRemain();
     }
   #endif
