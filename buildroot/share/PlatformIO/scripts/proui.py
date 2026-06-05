@@ -1,8 +1,8 @@
 # ------------------------------------------------------------------------------
 # VSCode script for the Professional Firmware
 # URL: https://github.com/mriscoc/Marlin_Ender3v2/releases
-# Version: 3.2
-# Date: 2024/07/17
+# Version: 3.3
+# Date: 2025/01/08
 # Author: Miguel Risco-Castillo
 # ------------------------------------------------------------------------------
 
@@ -31,6 +31,7 @@ if "MARLIN_FEATURES" in env:
   stm32f1 = _GetMarlinEnv(MarlinEnv, 'MCU_STM32F1')
   stm32f4 = _GetMarlinEnv(MarlinEnv, 'MCU_STM32F4')
   stm32g0 = _GetMarlinEnv(MarlinEnv, 'MCU_STM32G0')
+  gd32f10 = _GetMarlinEnv(MarlinEnv, 'MCU_GD32F10')
   simulat = _GetMarlinEnv(MarlinEnv, '__PLAT_NATIVE_SIM__')
 
 # Select correct architecture
@@ -43,6 +44,9 @@ if "MARLIN_FEATURES" in env:
   elif stm32g0:
     arch = 'stm32g0/'
     print ('STM32G0 Architecture detected')
+  elif gd32f10:
+    arch = 'gd32f10/'
+    print ('GD32F10 Architecture detected')
   elif simulat:
     arch = 'simulat/'
     print ('Simulated Architecture detected')
@@ -86,4 +90,4 @@ if "MARLIN_FEATURES" in env:
     print ("Library file not found, possibly unsupported hardware configuration")
     exit()
 
-    
+
