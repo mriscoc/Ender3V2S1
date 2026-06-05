@@ -17,9 +17,8 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-    - uses: dessant/lock-threads@v5
+    - uses: dessant/lock-threads@v6
       with:
-        github-token: ${{ github.token }}
         process-only: 'issues'
         issue-inactive-days: '60'
         exclude-issue-created-before: ''
