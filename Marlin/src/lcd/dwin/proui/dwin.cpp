@@ -1893,6 +1893,9 @@ void autoHome() { queue.inject_P(G28_STR); }
   }
 
   void setMoveZto0() {
+    #if ANY(BABYSTEP_ZPROBE_OFFSET, JUST_BABYSTEP)
+      while (babystep.has_steps()) marlin.idle_no_sleep();
+    #endif
     #if HAS_LEVELING && ANY(RESTORE_LEVELING_AFTER_G28, ENABLE_LEVELING_AFTER_G28)
       set_bed_leveling_enabled(false);
     #endif
