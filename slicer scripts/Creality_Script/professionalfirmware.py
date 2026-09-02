@@ -4,8 +4,8 @@
 # Orca / Prusa / Super Slicer / Creality post-processor script for the Professional Firmware
 # URL: https://github.com/mriscoc/Ender3V2S1
 # Miguel A. Risco-Castillo
-# version: 2.2
-# date: 2023/12/10
+# version: 2.3
+# date: 2026/09/01
 #
 # Contains code from the jpg re-encoder thumbnail post processor script:
 # github.com/alexqzd/Marlin/blob/Gcode-preview/Display%20firmware/gcode_thumb_to_jpg.py
@@ -14,7 +14,7 @@
 import sys
 import re
 import os
-import base64 
+import base64
 import io
 import subprocess
 
@@ -23,7 +23,7 @@ try:
 except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "Pillow"])
     from PIL import Image
-    
+
 def install(package):
     subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 
@@ -88,7 +88,7 @@ for idx, match in enumerate(thumb_matches):
     img_png_rgb = img_png.convert('RGB')
     img_png_rgb = img_png_rgb.resize(size_tuple, Image.Resampling.LANCZOS)
     img_byte_arr = io.BytesIO()
-    img_png_rgb.save(img_byte_arr, format='jpeg', quality=85) 
+    img_png_rgb.save(img_byte_arr, format='jpeg', quality=85)
     img_byte_arr = img_byte_arr.getvalue()
     encodedjpg = base64.b64encode(img_byte_arr).decode("utf-8")
     encodedjpg_gcode = encodedStringToGcodeComment(encodedjpg)
