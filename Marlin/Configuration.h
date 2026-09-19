@@ -3250,7 +3250,7 @@
 //
 //#define SAV_3DGLCD
 #if ENABLED(SAV_3DGLCD)
-  #define U8GLIB_SSD1306
+  //#define U8GLIB_SSD1306
   //#define U8GLIB_SH1106
 #endif
 
