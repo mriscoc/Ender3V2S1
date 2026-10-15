@@ -71,7 +71,7 @@
 
 // Choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_CREALITY_V24S1_301F4  // Ender 3S1 v301F4
+  #define MOTHERBOARD BOARD_CREALITY_V24S1_301F4
 #endif
 
 // @section serial
