@@ -177,6 +177,13 @@ void PrintingPro::printUpdate(bool force) {
     return;
   }
 
+  // After the backlight comes back, redraw everything: values that only change rarely
+  // (remaining time once per layer) would otherwise stay blank until their next change.
+  #if HAS_LCD_BRIGHTNESS
+    static bool _backlightOn = true;
+    if (ui.backlight != _backlightOn) { _backlightOn = ui.backlight; force |= ui.backlight; }
+  #endif
+
   if (force || titleChanged) { titleChanged = false; drawPrintTitle(); }
 
   static bool _paused = false;
@@ -187,13 +194,10 @@ void PrintingPro::printUpdate(bool force) {
   const uint8_t pct = ui.get_progress_percent();
   if (force || _percent != pct) { _percent = pct; drawPrintProgressBar(); }
 
-  static uint32_t _remainMin = UINT32_MAX;
-  const uint32_t remainMin = ui.get_remaining_time() / 60;
-  if (force || _remainMin != remainMin) { _remainMin = remainMin; drawPrintProgressRemain(); }
-
-  static uint32_t _elapsedMin = UINT32_MAX;
-  const uint32_t elapsedMin = print_job_timer.duration() / 60;
-  if (force || _elapsedMin != elapsedMin) { _elapsedMin = elapsedMin; drawPrintProgressElapsed(); }
+  // The two time values are cheap (one short text each) and change rarely, so they are simply
+  // redrawn on every update (about once a second). That also heals them if the display lost them.
+  drawPrintProgressRemain();
+  drawPrintProgressElapsed();
 
   drawPoints();
 }
