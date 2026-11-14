@@ -373,7 +373,8 @@ void Marlin::startOrResumeJob() {
     TERN_(GCODE_REPEAT_MARKERS, repeat.reset());
     TERN_(CANCEL_OBJECTS, cancelable.reset());
     TERN_(LCD_SHOW_E_TOTAL, e_move_accumulator = 0);
-    TERN_(SET_REMAINING_TIME, ui.reset_remaining_time());
+    // The remaining time (M73 R) is not cleared here: M109/M190 start the job timer too, which
+    // would wipe the slicer's estimate during heat-up. It is cleared in M23 and when the job ends.
     TERN_(HAS_PRUSA_MMU3, MMU3::operation_statistics.reset_per_print_stats());
   }
   print_job_timer.start();

@@ -682,7 +682,7 @@ bool DWIN_lcd_sd_status = false;
 #endif
 
 inline uint16_t nr_sd_menu_items() {
-  return _MIN(card.get_num_items() + !card.flag.workDirIsRoot, MENU_MAX_ITEMS);
+  return _MIN(card.get_num_items() + !card.flag.workDirIsRoot, MENU_MAX_ITEMS - 1); // One slot is the Back item
 }
 
 void makeNameWithoutExt(char *dst, char *src, size_t maxlen=MENU_CHAR_LIMIT) {
@@ -1456,7 +1456,8 @@ void dwinHomingDone() {
 void dwinPrintStarted() {
   DEBUG_ECHOLNPGM("dwinPrintStarted: ", sdPrinting());
   TERN_(SET_PROGRESS_PERCENT, ui.progress_reset());
-  TERN_(SET_REMAINING_TIME, ui.reset_remaining_time());
+  // Don't reset the remaining time here: this runs after the file's first M73 R,
+  // so it would wipe the slicer estimate. It is cleared in dwinPrintFinished().
   hmiFlag.pause_flag = false;
   hmiFlag.abort_flag = false;
   #if PROUI_EX
@@ -1475,6 +1476,7 @@ void dwinPrintResume() {
 // Ended print job
 void dwinPrintFinished() {
   DEBUG_ECHOLNPGM("dwinPrintFinished");
+  TERN_(SET_REMAINING_TIME, ui.reset_remaining_time()); // Clear the slicer's M73 R for the next job
   hmiFlag.abort_flag = false;
   hmiFlag.pause_flag = false;
   marlin.heatup_done();
@@ -2824,27 +2826,32 @@ void drawTuneMenu() {
 #endif
 
 #if ENABLED(SHAPING_MENU)
-  void applyShapingFreq() { stepper.set_shaping_frequency((AxisEnum)hmiValue.select, menuData.value * 0.01); }
+  // Frequency is edited in 0.1 Hz steps; 0 = off, otherwise at least SHAPING_MIN_FREQ (buffer size).
+  void applyShapingFreq() {
+    float f = menuData.value * 0.1f;
+    if (f > 0.0f && f < shaping_min_freq) f = shaping_min_freq;
+    stepper.set_shaping_frequency((AxisEnum)hmiValue.select, f);
+  }
   void applyShapingZeta() { stepper.set_shaping_damping_ratio((AxisEnum)hmiValue.select, menuData.value * 0.01); }
 
   #if ENABLED(INPUT_SHAPING_X)
-    void onDrawShapingXFreq(int8_t pos, int8_t line) { onDrawFloatMenu(pos, line, 2, stepper.get_shaping_frequency(X_AXIS)); }
+    void onDrawShapingXFreq(int8_t pos, int8_t line) { onDrawFloatMenu(pos, line, 1, stepper.get_shaping_frequency(X_AXIS)); }
     void onDrawShapingXZeta(int8_t pos, int8_t line) { onDrawFloatMenu(pos, line, 2, stepper.get_shaping_damping_ratio(X_AXIS)); }
-    void setShapingXFreq() { hmiValue.select = X_AXIS; setFloatOnClick(0, 200, 2, stepper.get_shaping_frequency(X_AXIS), applyShapingFreq); }
+    void setShapingXFreq() { hmiValue.select = X_AXIS; setFloatOnClick(0, 200, 1, stepper.get_shaping_frequency(X_AXIS), applyShapingFreq); }
     void setShapingXZeta() { hmiValue.select = X_AXIS; setFloatOnClick(0, 1, 2, stepper.get_shaping_damping_ratio(X_AXIS), applyShapingZeta); }
   #endif
 
   #if ENABLED(INPUT_SHAPING_Y)
-    void onDrawShapingYFreq(int8_t pos, int8_t line) { onDrawFloatMenu(pos, line, 2, stepper.get_shaping_frequency(Y_AXIS)); }
+    void onDrawShapingYFreq(int8_t pos, int8_t line) { onDrawFloatMenu(pos, line, 1, stepper.get_shaping_frequency(Y_AXIS)); }
     void onDrawShapingYZeta(int8_t pos, int8_t line) { onDrawFloatMenu(pos, line, 2, stepper.get_shaping_damping_ratio(Y_AXIS)); }
-    void setShapingYFreq() { hmiValue.select = Y_AXIS; setFloatOnClick(0, 200, 2, stepper.get_shaping_frequency(Y_AXIS), applyShapingFreq); }
+    void setShapingYFreq() { hmiValue.select = Y_AXIS; setFloatOnClick(0, 200, 1, stepper.get_shaping_frequency(Y_AXIS), applyShapingFreq); }
     void setShapingYZeta() { hmiValue.select = Y_AXIS; setFloatOnClick(0, 1, 2, stepper.get_shaping_damping_ratio(Y_AXIS), applyShapingZeta); }
   #endif
 
   #if ENABLED(INPUT_SHAPING_Z)
-    void onDrawShapingZFreq(int8_t pos, int8_t line) { onDrawFloatMenu(pos, line, 2, stepper.get_shaping_frequency(Z_AXIS)); }
+    void onDrawShapingZFreq(int8_t pos, int8_t line) { onDrawFloatMenu(pos, line, 1, stepper.get_shaping_frequency(Z_AXIS)); }
     void onDrawShapingZZeta(int8_t pos, int8_t line) { onDrawFloatMenu(pos, line, 2, stepper.get_shaping_damping_ratio(Z_AXIS)); }
-    void setShapingZFreq() { hmiValue.select = Z_AXIS; setFloatOnClick(0, 200, 2, stepper.get_shaping_frequency(Z_AXIS), applyShapingFreq); }
+    void setShapingZFreq() { hmiValue.select = Z_AXIS; setFloatOnClick(0, 200, 1, stepper.get_shaping_frequency(Z_AXIS), applyShapingFreq); }
     void setShapingZZeta() { hmiValue.select = Z_AXIS; setFloatOnClick(0, 1, 2, stepper.get_shaping_damping_ratio(Z_AXIS), applyShapingZeta); }
   #endif
 

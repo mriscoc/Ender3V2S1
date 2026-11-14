@@ -1,8 +1,8 @@
 #------------------------------------------------------------------------------
 # Cura Professional firmware post processing script
 # Miguel A. Risco-Castillo
-# version: 2.1
-# date: 2023-09-17
+# version: 2.1-my-printer (adds M73 progress/remaining time)
+# date: 2026-11-14
 #
 # Contains thumbnail code from:
 # https://github.com/Ultimaker/Cura/blob/master/plugins/PostProcessingPlugin/scripts/CreateThumbnail.py
@@ -95,6 +95,50 @@ class QualityFinder:
             return Ordering.EQUAL
         else:
             return Ordering.LESS
+
+def add_progress_m73(data: list[str]) -> list[str]:
+    """Insert M73 P<percent> R<minutes left> using Cura's own time estimate.
+
+    Without M73 the firmware derives the remaining time from elapsed time and file
+    position, which shows absurd values (hundreds of hours) while the printer heats
+    up at ~0 % progress. Cura writes ';TIME:<total s>' in the header and
+    ';TIME_ELAPSED:<s>' at the end of each layer; this turns those into M73.
+    """
+    total = None
+    for chunk in data:
+        match = re.search(r"^;TIME:(\d+(?:\.\d+)?)\s*$", chunk, re.MULTILINE)
+        if match:
+            total = float(match.group(1))
+            break
+    if not total or total <= 0 or len(data) < 2:
+        return data
+    if any(line.startswith("M73 ") for line in data[1].split("\n")):
+        return data  # already processed
+
+    def m73(elapsed: float) -> str:
+        elapsed = min(max(elapsed, 0.0), total)
+        percent = int(elapsed * 100 / total)
+        minutes_left = int(round((total - elapsed) / 60))
+        return "M73 P{} R{}".format(percent, minutes_left)
+
+    # Show Cura's full estimate from the very start (before and during heat-up).
+    data[1] = m73(0) + " ;Progress and remaining time from Cura estimate\n" + data[1]
+
+    elapsed_re = re.compile(r"^;TIME_ELAPSED:(\d+(?:\.\d+)?)\s*$")
+    for index in range(1, len(data)):
+        lines = data[index].split("\n")
+        out = []
+        for line in lines:
+            if line.startswith(";LAYER:0"):
+                # Repeat at the start of printing, in case firmware without the
+                # remaining-time fix cleared the first M73 R at print start.
+                out.append(m73(0))
+            out.append(line)
+            match = elapsed_re.match(line)
+            if match:
+                out.append(m73(float(match.group(1))))
+        data[index] = "\n".join(out)
+    return data
 
 class professionalfirmware(Script):
     def __init__(self):
@@ -194,6 +238,13 @@ class professionalfirmware(Script):
                     "type": "int",
                     "default_value": 15000,
                     "minimum_value": "-1"
+                },
+                "add_progress":
+                {
+                    "label": "Add progress and remaining time (M73)",
+                    "description": "Insert M73 commands from Cura's time estimate so the printer shows a correct remaining time, also while heating up.",
+                    "type": "bool",
+                    "default_value": true
                 }
             }
         }, indent=4)
@@ -251,5 +302,8 @@ class professionalfirmware(Script):
 
                 final_lines = "\n".join(lines)
                 data[layer_index] = final_lines
+
+        if self.getSettingValueByKey("add_progress"):
+            data = add_progress_m73(data)
 
         return data

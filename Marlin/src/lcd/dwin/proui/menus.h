@@ -28,9 +28,9 @@
   #define MENU_MAX_ITEMS 64
 #endif
 
-// Create and draw menu
-#define SET_MENU(I,L) setMenu(I, GET_TEXT_F(L))
-#define SET_MENU_F(I,L) setMenu(I, F(L))
+// Create and draw menu (the remembered cursor is first kept inside the item list, see clampMenuSelection)
+#define SET_MENU(I,L) setMenu(clampMenuSelection(I), GET_TEXT_F(L))
+#define SET_MENU_F(I,L) setMenu(clampMenuSelection(I), F(L))
 
 // Create and add a MenuItem object to the menu array
 #define BACK_ITEM(OC) menuItemAdd(ICON_Back, GET_TEXT_F(MSG_BUTTON_BACK), onDrawMenuItem, OC, nullptr)
@@ -83,6 +83,21 @@ public:
 };
 extern Menu *currentMenu;
 extern Menu *previousMenu;
+
+// A menu remembers its cursor between visits, but a rebuilt menu can have fewer items
+// (e.g. the file list after files were deleted). The library's setMenu()/onClick() don't
+// check this, so a press could use a freed item. Keep selected/topline inside the list.
+inline Menu* &clampMenuSelection(Menu* &menu) {
+  if (menu) {
+    const int8_t last = menuItemCount ? int8_t(menuItemCount - 1) : 0;
+    if (menu->selected > last) menu->selected = last;
+    if (menu->selected < 0) menu->selected = 0;
+    if (menu->topline > menu->selected) menu->topline = menu->selected;
+    if (menu->selected - menu->topline >= TROWS) menu->topline = menu->selected - TROWS + 1;
+    if (menu->topline < 0) menu->topline = 0;
+  }
+  return menu;
+}
 
 // Menuitem Drawing functions =================================================
 
