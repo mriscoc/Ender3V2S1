@@ -44,6 +44,7 @@ void GcodeSuite::M23() {
   card.openFileRead(parser.string_arg);
 
   TERN_(SET_PROGRESS_PERCENT, ui.set_progress(0));
+  TERN_(SET_REMAINING_TIME, ui.reset_remaining_time());
 }
 
 #endif // HAS_MEDIA

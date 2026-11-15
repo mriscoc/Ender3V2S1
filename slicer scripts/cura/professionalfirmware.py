@@ -1,8 +1,8 @@
 #------------------------------------------------------------------------------
 # Cura Professional firmware post processing script
 # Miguel A. Risco-Castillo
-# version: 2.1
-# date: 2023-09-17
+# version: 2.1-my-printer (adds M73 progress/remaining time)
+# date: 2026-11-14
 #
 # Contains thumbnail code from:
 # https://github.com/Ultimaker/Cura/blob/master/plugins/PostProcessingPlugin/scripts/CreateThumbnail.py
@@ -95,6 +95,86 @@ class QualityFinder:
             return Ordering.EQUAL
         else:
             return Ordering.LESS
+
+def add_progress_m73(data: list[str]) -> list[str]:
+    """Insert M73 P<percent> R<minutes left> using Cura's own time estimate.
+
+    Without M73 the firmware derives the remaining time from elapsed time and file
+    position, which shows absurd values (hundreds of hours) while the printer heats
+    up at ~0 % progress. Cura writes ';TIME:<total s>' in the header and
+    ';TIME_ELAPSED:<s>' at the end of each layer; this turns those into M73.
+    """
+    total = None
+    for chunk in data:
+        match = re.search(r"^;TIME:(\d+(?:\.\d+)?)\s*$", chunk, re.MULTILINE)
+        if match:
+            total = float(match.group(1))
+            break
+    if not total or total <= 0 or len(data) < 2:
+        return data
+    if any(line.startswith("M73 ") for line in data[1].split("\n")):
+        return data  # already processed
+
+    def m73(elapsed: float) -> str:
+        elapsed = min(max(elapsed, 0.0), total)
+        percent = int(elapsed * 100 / total)
+        minutes_left = int(round((total - elapsed) / 60))
+        return "M73 P{} R{}".format(percent, minutes_left)
+
+    # Show Cura's full estimate from the very start (before and during heat-up).
+    data[1] = m73(0) + " ;Progress and remaining time from Cura estimate\n" + data[1]
+
+    elapsed_re = re.compile(r"^;TIME_ELAPSED:(\d+(?:\.\d+)?)\s*$")
+    for index in range(1, len(data)):
+        lines = data[index].split("\n")
+        out = []
+        for line in lines:
+            if line.startswith(";LAYER:0"):
+                # Repeat at the start of printing, in case firmware without the
+                # remaining-time fix cleared the first M73 R at print start.
+                out.append(m73(0))
+            out.append(line)
+            match = elapsed_re.match(line)
+            if match:
+                out.append(m73(float(match.group(1))))
+        data[index] = "\n".join(out)
+    return data
+
+BED_DROP_MARKER = ";Bed temperature lowered after the first layers"
+
+def add_bed_temp_drop(data: list[str], drop: int, after_layer: int, min_temp: int = 40) -> list[str]:
+    """Lower the heated bed after the first layers, relative to the material's own bed temperature.
+
+    The first M140 S<temp> of the file is taken as the printing bed temperature. From the start of
+    layer <after_layer> on, the bed is set to <temp> - <drop> (never below <min_temp>, and never
+    above the original). M140 does not wait, so the bed just cools down slowly. Does nothing when the
+    bed target is off, already at/below <min_temp>, or the change was already added.
+    """
+    if drop <= 0 or after_layer < 1 or len(data) < 3:
+        return data
+    if any(BED_DROP_MARKER in chunk for chunk in data):
+        return data  # already processed
+
+    base = None
+    for chunk in data[:2]:  # header and start G-code only
+        match = re.search(r"^M140 S(\d+)", chunk, re.MULTILINE)
+        if match and int(match.group(1)) > 0:
+            base = int(match.group(1))
+            break
+    if base is None:
+        return data
+    target = min(base, max(base - drop, min_temp))
+    if target >= base:
+        return data  # nothing to lower
+
+    marker = ";LAYER:{}".format(after_layer)
+    for index in range(2, len(data)):
+        lines = data[index].split("\n")
+        if lines[0].strip() == marker:
+            lines.insert(1, "M140 S{} {} (layer {}, {} -> {})".format(target, BED_DROP_MARKER, after_layer, base, target))
+            data[index] = "\n".join(lines)
+            break
+    return data
 
 class professionalfirmware(Script):
     def __init__(self):
@@ -194,6 +274,44 @@ class professionalfirmware(Script):
                     "type": "int",
                     "default_value": 15000,
                     "minimum_value": "-1"
+                },
+                "add_progress":
+                {
+                    "label": "Add progress and remaining time (M73)",
+                    "description": "Insert M73 commands from Cura's time estimate so the printer shows a correct remaining time, also while heating up.",
+                    "type": "bool",
+                    "default_value": True
+                },
+                "bed_temp_drop":
+                {
+                    "label": "Lower bed temperature after the first layers",
+                    "description": "After the first layers, lower the heated bed by this many degrees (relative to the material's bed temperature). 0 (default) disables. The first layers keep the full temperature for adhesion. Use a smaller value for large flat parts and ABS/ASA (0).",
+                    "unit": "°C",
+                    "type": "int",
+                    "default_value": 0,
+                    "minimum_value": "0",
+                    "maximum_value": "40"
+                },
+                "bed_temp_after_layer":
+                {
+                    "label": "Keep full bed temperature for this many layers",
+                    "description": "Number of layers printed at the full bed temperature before it is lowered.",
+                    "type": "int",
+                    "default_value": 5,
+                    "minimum_value": "1",
+                    "maximum_value": "50",
+                    "enabled": "bed_temp_drop > 0"
+                },
+                "bed_temp_minimum":
+                {
+                    "label": "Never lower the bed below",
+                    "description": "Lower limit for the reduced bed temperature.",
+                    "unit": "°C",
+                    "type": "int",
+                    "default_value": 40,
+                    "minimum_value": "0",
+                    "maximum_value": "120",
+                    "enabled": "bed_temp_drop > 0"
                 }
             }
         }, indent=4)
@@ -251,5 +369,13 @@ class professionalfirmware(Script):
 
                 final_lines = "\n".join(lines)
                 data[layer_index] = final_lines
+
+        if self.getSettingValueByKey("add_progress"):
+            data = add_progress_m73(data)
+
+        drop = self.getSettingValueByKey("bed_temp_drop")
+        if drop:
+            data = add_bed_temp_drop(data, int(drop), int(self.getSettingValueByKey("bed_temp_after_layer")),
+                                     int(self.getSettingValueByKey("bed_temp_minimum")))
 
         return data
