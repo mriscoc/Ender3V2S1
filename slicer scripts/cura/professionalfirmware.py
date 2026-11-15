@@ -285,10 +285,10 @@ class professionalfirmware(Script):
                 "bed_temp_drop":
                 {
                     "label": "Lower bed temperature after the first layers",
-                    "description": "After the first layers, lower the heated bed by this many degrees (relative to the material's bed temperature). 0 disables. The first layers keep the full temperature for adhesion. Use a smaller value for large flat parts and ABS/ASA (0).",
+                    "description": "After the first layers, lower the heated bed by this many degrees (relative to the material's bed temperature). 0 (default) disables. The first layers keep the full temperature for adhesion. Use a smaller value for large flat parts and ABS/ASA (0).",
                     "unit": "°C",
                     "type": "int",
-                    "default_value": 15,
+                    "default_value": 0,
                     "minimum_value": "0",
                     "maximum_value": "40"
                 },
