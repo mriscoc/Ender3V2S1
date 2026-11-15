@@ -280,7 +280,7 @@ class professionalfirmware(Script):
                     "label": "Add progress and remaining time (M73)",
                     "description": "Insert M73 commands from Cura's time estimate so the printer shows a correct remaining time, also while heating up.",
                     "type": "bool",
-                    "default_value": true
+                    "default_value": True
                 },
                 "bed_temp_drop":
                 {
